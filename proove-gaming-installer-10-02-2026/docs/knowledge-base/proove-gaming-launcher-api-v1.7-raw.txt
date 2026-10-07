@@ -1,0 +1,1352 @@
+﻿Proove Gaming Launcher API
+API Documentation
+
+
+Document Information
+Property
+Value
+Project
+Proove Gaming Launcher
+
+
+Protocol
+HTTPS
+Format
+JSON
+Authentication
+Bearer Token
+Encoding
+UTF-8
+ 
+ 
+ 
+
+Base URL
+https://proovegaming.com/index.php?route=
+All requests must be sent over HTTPS.
+Request body:
+application/json
+Response:
+application/json
+
+Authentication
+Protected endpoints require Bearer Token authentication.
+Header:
+Authorization: Bearer {access_token}
+Example
+Authorization: Bearer 79c5666282e64a2564645a10e579872072109498
+Public endpoints:
+●       POST api/check_email
+●       POST api/check_nickname
+●       POST api/register
+●       POST api/login
+●       POST api/forgotten
+●       POST api/reset_password
+Protected endpoints:
+●       GET api/profile
+●       POST api/profile/update
+●       POST api/profile/avatar
+●       POST api/profile/notifications
+●       POST api/profile/check_nickname
+●       POST api/profile/password_link
+●       POST api/profile/delete
+●       POST api/logout
+
+HTTP Status Codes
+Code
+Description
+200
+Success
+201
+Created
+400
+Validation Error
+401
+Unauthorized
+403
+Forbidden
+404
+Not Found
+409
+Conflict
+500
+Internal Server Error
+
+Error Response Format
+All validation errors return the same structure.
+Example
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "EMAIL_REQUIRED",
+        "field": "email",
+        "message": "Email required"
+    }
+]
+}
+Multiple validation errors
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "INVALID_EMAIL",
+        "field": "email",
+        "message": "Invalid email"
+    },
+    {
+        "error_code": "PASSWORD_TOO_SHORT",
+        "field": "password",
+        "message": "Minimum 8 characters"
+    }
+]
+}
+
+1. Check Email
+Checks email availability and password validity before registration.
+If validation succeeds, the API automatically generates nickname suggestions.
+
+Endpoint
+POST api/check_email
+
+Authentication
+Not required.
+
+Request
+{
+"email": "player@example.com",
+"password": "TestPass123"
+}
+
+Success Response
+HTTP 200
+{
+"success": true,
+"message": "Email and password are valid",
+"nicknames": [
+    "PlayerNova",
+    "PlayerPro",
+    "PlayerX",
+    "PlayerGG",
+    "PlayerPlay"
+]
+}
+
+Validation Errors
+Email required
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "EMAIL_REQUIRED",
+        "field": "email",
+        "message": "Email required"
+    }
+]
+}
+
+Invalid email
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "INVALID_EMAIL",
+        "field": "email",
+        "message": "Invalid email"
+    }
+]
+}
+
+Email already exists
+HTTP 409
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "EMAIL_ALREADY_EXISTS",
+        "field": "email",
+        "message": "Email already registered"
+    }
+]
+}
+
+Password required
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "PASSWORD_REQUIRED",
+        "field": "password",
+        "message": "Password required"
+    }
+]
+}
+
+Password too short
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "PASSWORD_TOO_SHORT",
+        "field": "password",
+        "message": "Minimum 8 characters"
+    }
+]
+}
+
+Password must contain uppercase letter
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "PASSWORD_NO_UPPERCASE",
+        "field": "password",
+        "message": "Need uppercase letter"
+    }
+]
+}
+
+Password must contain number
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "PASSWORD_NO_NUMBER",
+        "field": "password",
+        "message": "Need number"
+    }
+]
+}
+
+Password contains spaces
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "PASSWORD_HAS_SPACES",
+        "field": "password",
+        "message": "Spaces not allowed"
+    }
+]
+}
+
+Nickname Generation
+After successful email validation the API automatically generates up to five available nickname suggestions.
+Generation rules:
+●   Uses the local part of the email address as the base.
+●       Removes unsupported characters.
+●   Checks uniqueness before returning suggestions.
+●   Automatically generates another nickname if a conflict occurs.
+●   Maximum nickname length is 20 characters.
+●   Uses the same nickname generation engine as all nickname-related endpoints.
+
+2. Check Nickname
+Checks nickname availability.
+
+Endpoint
+POST api/check_nickname
+
+Authentication
+Not required.
+
+Request
+{
+    "nickname":"PlayerNova"
+}
+
+Success
+HTTP 200
+{
+"success": true,
+"message": "Nickname is available",
+"nickname": "PlayerNova"
+}
+
+Nickname already exists
+HTTP 409
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "NICKNAME_ALREADY_EXISTS",
+        "field": "nickname",
+        "message": "Nickname already exists"
+    }
+],
+"suggestions": [
+    "PlayerNova25",
+    "PlayerPro",
+    "PlayerGG",
+    "PlayerPlay",
+    "PlayerX"
+]
+}
+
+Validation Rules
+●       Minimum length: 3 characters.
+●       Maximum length: 20 characters.
+●       Latin letters only.
+●       Numbers allowed.
+●       Underscore (_) allowed.
+●       Spaces are not allowed.
+●       Nickname must be unique.
+
+Nickname Suggestions
+If the requested nickname already exists, the API automatically generates up to five alternative nicknames.
+All generated nicknames:
+●       are unique;
+●       satisfy validation rules;
+●   are immediately available for registration.
+3. Register
+Creates a new customer account.
+
+Endpoint
+POST api/register
+
+Authentication
+Not required.
+
+Request
+{
+"email": "player@example.com",
+"password": "TestPass123",
+"nickname": "PlayerNova",
+"agree_terms": true,
+"agree_newsletter": false
+}
+
+Request Parameters
+Field
+Type
+Required
+Description
+email
+string
+Yes
+Customer email
+password
+string
+Yes
+Customer password
+nickname
+string
+Yes
+Unique nickname
+agree_terms
+boolean
+Yes
+Must be true
+agree_newsletter
+boolean
+No
+Subscribe to newsletter
+
+Success
+HTTP 201 Created
+{
+"success": true,
+"message": "Registration successful",
+"customer": {
+    "customer_id": 15,
+    "email": "player@example.com",
+    "nickname": "PlayerNova",
+    "newsletter": 0
+}
+}
+
+Validation Errors
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "TERMS_REQUIRED",
+        "field": "agree_terms",
+        "message": "Terms agreement required"
+    }
+]
+}
+
+Conflict
+HTTP 409
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "EMAIL_ALREADY_EXISTS",
+        "field": "email",
+        "message": "Email already registered"
+    }
+]
+}
+
+Possible Error Codes
+EMAIL_REQUIRED
+INVALID_EMAIL
+EMAIL_ALREADY_EXISTS
+ 
+PASSWORD_REQUIRED
+PASSWORD_TOO_SHORT
+PASSWORD_NO_UPPERCASE
+PASSWORD_NO_NUMBER
+PASSWORD_HAS_SPACES
+ 
+NICKNAME_REQUIRED
+NICKNAME_TOO_SHORT
+NICKNAME_TOO_LONG
+NICKNAME_HAS_SPACES
+NICKNAME_INVALID_CHARACTERS
+NICKNAME_ALREADY_EXISTS
+ 
+TERMS_REQUIRED
+
+Registration Flow
+check_email
+ 
+↓
+ 
+email valid
+ 
+↓
+ 
+password valid
+ 
+↓
+ 
+nickname suggestions generated
+ 
+↓
+ 
+user selects nickname
+ 
+↓
+ 
+check_nickname
+ 
+↓
+ 
+nickname available
+ 
+↓
+ 
+register
+
+4. Login
+Authenticates customer and returns Session Token.
+
+Endpoint
+POST api/login
+
+Authentication
+Not required.
+
+Request
+{
+"email": "player@example.com",
+"password": "TestPass123"
+}
+
+Success
+HTTP 200
+{
+"success": true,
+"message": "Login successful",
+"token": "USER_SESSION_TOKEN",
+"token_expires_in_days": 30,
+"customer": {
+    "customer_id": 15,
+    "email": "player@example.com",
+    "nickname": "PlayerNova",
+    "firstname": "John",
+    "lastname": "Doe",
+    "newsletter": 0
+}
+}
+
+Missing Credentials
+HTTP 400
+{
+"success": false,
+"error_code": "MISSING_CREDENTIALS",
+"message": "Email and password required"
+}
+
+Invalid Credentials
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_CREDENTIALS",
+"message": "Invalid email or password"
+}
+
+Possible Error Codes
+MISSING_CREDENTIALS
+INVALID_CREDENTIALS
+CUSTOMER_NOT_FOUND
+
+Session Token
+The returned token must be included in every protected request.
+Example:
+Authorization: Bearer USER_SESSION_TOKEN
+Token lifetime:
+30 days
+
+5. Profile
+Returns complete customer profile.
+
+Endpoint
+POST api/profile
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{}
+
+Success
+HTTP 200
+{
+"success": true,
+"customer": {
+    "customer_id": 15,
+    "email": "player@example.com",
+    "nickname": "PlayerNova",
+    "firstname": "John",
+    "lastname": "Doe",
+    "telephone": "+380501112233",
+    "country": "Ukraine",
+    "date_birth": "1995-10-15",
+    "avatar": "https://proovegaming.com/image/profile/avatar_15_123456789.png",
+    "newsletter": 0,
+        "date_joined": "2026-06-09 13:33:03"
+}
+}
+
+Token Required
+HTTP 401
+{
+"success": false,
+"error_code": "TOKEN_REQUIRED",
+"message": "Token required"
+}
+
+Invalid Token
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_OR_EXPIRED_TOKEN",
+"message": "Invalid or expired token"
+}
+
+Returned Fields
+Field
+Description
+customer_id
+Internal customer ID
+email
+Customer email
+nickname
+Public nickname
+firstname
+First name
+lastname
+Last name
+telephone
+Phone number
+country
+Country
+date_birth
+Date of birth
+avatar
+Avatar URL
+newsletter
+Newsletter status
+date_joined
+Registration date
+
+6. Update Profile
+Updates customer profile information.
+
+Endpoint
+POST api/profile/update
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{
+"email": "player@example.com",
+"nickname": "PlayerNova",
+"firstname": "John",
+"lastname": "Doe",
+"telephone": "+380501112233",
+"country": "Ukraine",
+"date_birth": "1995-10-15"
+}
+
+Editable Fields
+●       email
+●       nickname
+●       firstname
+●       lastname
+●       telephone
+●       country
+●       date_birth
+
+Success
+HTTP 200
+{
+"success": true,
+"message": "Profile updated successfully"
+}
+
+Validation Errors
+HTTP 400
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "INVALID_EMAIL",
+        "field": "email",
+        "message": "Invalid email"
+    }
+]
+}
+
+Conflict
+HTTP 409
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "EMAIL_ALREADY_EXISTS",
+        "field": "email",
+        "message": "Email already registered"
+    }
+]
+}
+
+Nickname Validation
+During profile update the API validates nickname using the same validation rules as registration.
+If nickname already belongs to another customer, the request is rejected.
+7. Upload Avatar
+Uploads or replaces the customer's profile avatar.
+
+Endpoint
+POST api/profile/avatar
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: multipart/form-data
+
+Request
+avatar = image file
+
+Supported File Types
+●       JPG
+●       JPEG
+●       PNG
+●       WEBP
+
+Maximum File Size
+2 MB
+
+Success
+HTTP 200
+{
+"success": true,
+"message": "Avatar uploaded successfully",
+"avatar": "https://proovegaming.com/image/profile/avatar_15_123456789.png"
+}
+
+Upload Process
+After successful upload the API:
+●       validates Session Token;
+●       validates uploaded image;
+●   removes previous avatar if it exists;
+●   stores the new avatar in:
+image/profile/
+●       updates
+customer.avatar
+●   returns the new avatar URL.
+
+Avatar Required
+HTTP 400
+{
+"success": false,
+"error_code": "AVATAR_REQUIRED",
+"message": "Avatar file required"
+}
+
+Invalid File Type
+HTTP 400
+{
+"success": false,
+"error_code": "INVALID_FILE_TYPE",
+"message": "Allowed file types: jpg, jpeg, png, webp"
+}
+
+File Too Large
+HTTP 400
+{
+"success": false,
+"error_code": "FILE_TOO_LARGE",
+"message": "Maximum file size is 2MB"
+}
+
+Upload Failed
+HTTP 500
+{
+"success": false,
+"error_code": "UPLOAD_FAILED",
+"message": "Failed to save avatar"
+}
+
+Possible Error Codes
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+ 
+AVATAR_REQUIRED
+UPLOAD_ERROR
+FILE_TOO_LARGE
+INVALID_FILE_TYPE
+UPLOAD_FAILED
+
+8. Notifications
+Returns customer notification settings.
+
+Endpoint
+POST api/profile/notifications
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{}
+
+Success
+HTTP 200
+{
+"success": true,
+"notifications": {
+    "newsletter": 1
+}
+}
+Where
+1 = enabled
+0 = disabled
+
+Token Required
+HTTP 401
+{
+"success": false,
+"error_code": "TOKEN_REQUIRED",
+"message": "Token required"
+}
+
+Invalid Token
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_OR_EXPIRED_TOKEN",
+"message": "Invalid or expired token"
+}
+
+Possible Error Codes
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+
+9. Update Notifications
+Updates customer notification preferences.
+
+Endpoint
+POST api/profile/notifications_update
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{
+    "newsletter": 1
+}
+Where
+1 = enabled
+0 = disabled
+
+Success
+HTTP 200
+{
+"success": true,
+"message": "Notification settings updated successfully",
+"notifications": {
+        "newsletter": 1
+}
+}
+
+Token Required
+HTTP 401
+{
+"success": false,
+"error_code": "TOKEN_REQUIRED",
+"message": "Token required"
+}
+
+Invalid Token
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_OR_EXPIRED_TOKEN",
+"message": "Invalid or expired token"
+}
+
+Possible Error Codes
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+
+10. Check Nickname (Profile)
+Checks nickname availability during profile editing.
+Unlike
+api/check_nickname
+this endpoint ignores the current customer's own nickname.
+
+Endpoint
+POST api/profile/check_nickname
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{
+    "nickname": "PlayerNova"
+}
+
+Success
+HTTP 200
+{
+"success": true,
+"message": "Nickname is available",
+"nickname": "PlayerNova"
+}
+
+Nickname Already Exists
+HTTP 409
+{
+"success": false,
+"errors": [
+    {
+        "error_code": "NICKNAME_ALREADY_EXISTS",
+        "field": "nickname",
+        "message": "Nickname already exists"
+    }
+],
+"suggestions": [
+    "PlayerNova55",
+    "PlayerPro",
+    "PlayerGG",
+    "PlayerPlay",
+    "PlayerX"
+]
+}
+
+Nickname Suggestions
+If the requested nickname belongs to another customer, the API automatically returns up to five available nickname suggestions.
+The same nickname generation engine is used by:
+●       POST api/check_email
+●       POST api/check_nickname
+●       POST api/profile/check_nickname
+This guarantees consistent nickname generation across the entire platform.
+
+Validation Rules
+●       minimum length: 3
+●       maximum length: 20
+●       latin characters only
+●       numbers allowed
+●       underscore allowed
+●       spaces are not allowed
+●       uniqueness check is case-insensitive
+
+Possible Error Codes
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+ 
+NICKNAME_REQUIRED
+NICKNAME_TOO_SHORT
+NICKNAME_TOO_LONG
+NICKNAME_HAS_SPACES
+NICKNAME_INVALID_CHARACTERS
+NICKNAME_ALREADY_EXISTS
+
+11. Password Change Link
+Returns a secure web link for changing the customer's password.
+Unlike
+api/forgotten
+the customer does not enter an email address.
+The customer is identified using the current Session Token.
+
+Endpoint
+POST api/profile/password_link
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{}
+
+Success
+HTTP 200
+{
+"success": true,
+"password_change_url": "https://proovegaming.com/index.php?route=account/reset_password&code=RESET_CODE",
+"expires_in_minutes": 15
+}
+
+Launcher
+
+↓
+
+User clicks Change Password
+
+↓
+
+Launcher displays an email input dialog
+
+↓
+
+User enters the account email
+
+↓
+
+Launcher calls POST /api/forgotten
+
+↓
+
+API sends a password reset email
+
+↓
+
+Customer opens the reset link from the email
+
+↓
+
+Customer sets a new password on the website
+
+↓
+
+All Session Tokens become invalid
+
+↓
+
+On the next authorized API request Launcher receives
+INVALID_OR_EXPIRED_TOKEN
+
+↓
+
+Launcher asks the customer to sign in again
+ 
+
+12. Delete Account
+Permanently deletes the customer account.
+This operation cannot be undone.
+
+Endpoint
+POST api/profile/delete
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{
+"password": "CurrentPassword123",
+"confirm": true
+}
+
+Request Parameters
+Parameter
+Type
+Required
+Description
+password
+string
+Yes
+Current customer password
+confirm
+boolean
+Yes
+Must be true
+
+Success
+HTTP 200 OK
+{
+"success": true,
+"message": "Account deleted successfully"
+}
+
+Account Deletion Process
+After successful validation the API automatically:
+●       validates Session Token;
+●       validates customer password;
+●       validates deletion confirmation;
+●   deletes customer avatar (if exists);
+●   removes all active Session Tokens;
+●   permanently deletes the customer account.
+After deletion:
+●   Login is no longer possible.
+●   All Session Tokens become invalid.
+●   The account cannot be restored.
+
+Confirmation Required
+HTTP 400
+{
+"success": false,
+"error_code": "CONFIRMATION_REQUIRED",
+"message": "Confirmation required"
+}
+
+Password Required
+HTTP 400
+{
+"success": false,
+"error_code": "PASSWORD_REQUIRED",
+"message": "Password required"
+}
+
+Invalid Password
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_PASSWORD",
+"message": "Invalid password"
+}
+
+Possible Error Codes
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+ 
+PASSWORD_REQUIRED
+INVALID_PASSWORD
+ 
+CONFIRMATION_REQUIRED
+ACCOUNT_DELETE_FAILED
+
+13. Logout
+Invalidates the current Session Token.
+
+Endpoint
+POST api/logout
+
+Authentication
+Bearer Token required.
+
+Headers
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+
+Request
+{}
+
+Success
+HTTP 200
+{
+"success": true,
+"message": "Logout successful"
+}
+
+Possible Error Codes
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+
+14. Forgotten Password
+Requests a password reset email.
+
+Endpoint
+POST api/forgotten
+
+Authentication
+Not required.
+
+Request
+{
+    "email":"user@example.com"
+}
+
+Success
+HTTP 200
+{
+"success":true,
+"message":"Password reset email sent"
+}
+
+Password Recovery Process
+The API automatically:
+●       validates email;
+●       generates Reset Code;
+●       stores Reset Code;
+●       stores expiration time;
+●       sends password reset email.
+Reset Code lifetime:
+15 minutes
+
+Password Reset Page
+https://proovegaming.com/index.php?route=account/reset_password&code=RESET_CODE
+
+Validation Error
+HTTP 400
+{
+"success":false,
+    "error_code":"INVALID_EMAIL",
+"field":"email",
+"message":"Invalid email"
+}
+
+Email Not Found
+HTTP 404
+{
+"success":false,
+    "error_code":"EMAIL_NOT_FOUND",
+"field":"email",
+"message":"Email not found"
+}
+
+Mail Error
+HTTP 500
+{
+"success":false,
+    "error_code":"MAIL_ERROR",
+"message":"Mail error"
+}
+
+Possible Error Codes
+EMAIL_REQUIRED
+INVALID_EMAIL
+EMAIL_NOT_FOUND
+MAIL_ERROR
+
+15. Reset Password
+Changes password using Reset Code.
+
+Endpoint
+POST api/reset_password
+
+Authentication
+Not required.
+
+Request
+{
+"code":"RESET_CODE",
+    "new_password":"NewPass123"
+}
+
+Success
+HTTP 200
+{
+"success":true,
+"message":"Password has been reset successfully",
+"customer":{
+    "customer_id":15,
+        "email":"user@example.com"
+}
+}
+
+Password Reset Process
+After successful password change the API:
+●       updates customer password;
+●       removes Reset Code;
+●       removes Reset Code expiration;
+●   deletes all active Session Tokens.
+Customer must login again.
+
+Invalid Reset Code
+HTTP 400
+{
+"success":false,
+    "error_code":"INVALID_OR_EXPIRED_RESET_CODE",
+"message":"Invalid or expired reset code"
+}
+
+Possible Error Codes
+RESET_CODE_REQUIRED
+ 
+PASSWORD_REQUIRED
+PASSWORD_TOO_SHORT
+PASSWORD_NO_UPPERCASE
+PASSWORD_NO_NUMBER
+PASSWORD_HAS_SPACES
+ 
+INVALID_OR_EXPIRED_RESET_CODE
+
+Security Notes
+Public Endpoints
+No authentication required.
+●       POST api/check_email
+●       POST api/check_nickname
+●       POST api/register
+●       POST api/login
+●       POST api/forgotten
+●       POST api/reset_password
+
+Protected Endpoints
+Bearer Token required.
+●       POST api/profile
+●       POST api/profile/update
+●       POST api/profile/avatar
+●       POST api/profile/notifications
+●       POST api/profile/notifications_update
+●       POST api/profile/check_nickname
+●       POST api/profile/password_link
+●       POST api/profile/delete
+●       POST api/logout
+
+Session Token
+Generated by:
+POST api/login
+Lifetime:
+30 days
+Stored in:
+customer_token
+Expired tokens are automatically removed.
+
+Nickname Generator
+The API uses a unified nickname generation engine.
+Used by:
+●       POST api/check_email
+●       POST api/check_nickname
+●       POST api/profile/check_nickname
+Features:
+●       automatic nickname generation;
+●       uniqueness verification;
+●   automatic regeneration if conflict occurs;
+●   identical generation logic across all endpoints.
+
+Avatar Storage
+Avatar files are stored in:
+image/profile/
+Old avatar files are automatically deleted when uploading a new avatar.
+
+Password Security
+Password changes are performed only on the website.
+Launcher opens the password recovery page.
+Customer completes the password change through the website.
+After successful password change:
+●       Reset Code is removed;
+●   all Session Tokens are deleted;
+●       customer must login again.
+
+Account Deletion
+After successful deletion:
+●       avatar is removed;
+●       Session Tokens are removed;
+●   customer record is permanently deleted;
+●       account cannot be restored.
+
+API Summary
+Endpoint
+Authentication
+POST api/check_email
+No
+POST api/check_nickname
+No
+POST api/register
+No
+POST api/login
+No
+POST api/profile
+Bearer Token
+POST api/profile/update
+Bearer Token
+POST api/profile/avatar
+Bearer Token
+POST api/profile/notifications
+Bearer Token
+POST api/profile/notifications_update
+Bearer Token
+POST api/profile/check_nickname
+Bearer Token
+POST api/profile/password_link
+Bearer Token
+POST api/profile/delete
+Bearer Token
+POST api/logout
+Bearer Token
+POST api/forgotten
+No
+POST api/reset_password
+No
+
+Changelog
+v1.0
+●       Registration API
+●       Login API
+
+v1.1
+●       Forgotten Password
+●       Reset Password
+
+v1.2
+●       Profile API
+●       Logout API
+
+v1.3
+●       Profile Update
+●       Avatar Upload
+
+v1.4
+●       Notifications API
+●       Notification Settings Update
+●       Profile Nickname Validation
+
+v1.5
+●       Password Change Link
+●       Account Deletion
+●       Email Update
+●       Nickname Update
+●       Extended Profile API
+
+v1.6
+●       Unified Nickname Generator
+●       Automatic Nickname Suggestions
+●       Nickname Suggestions in Registration
+●       Nickname Suggestions in Profile
+●   Automatic Nickname Generation after Email Validation
+●       Improved Registration Flow
+●       Extended Security Notes
+ 
+
+

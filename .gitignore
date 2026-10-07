@@ -24,10 +24,3 @@
 Thumbs.db
 .DS_Store
 
-# Prebuilt application and API example documents (kept locally)
-/Proove_Gaming_Control_Center.exe
-/proove-gaming-installer-10-02-2026/docs/knowledge-base/proove-gaming-launcher-api-v1.6-*.md
-/proove-gaming-installer-10-02-2026/docs/knowledge-base/proove-gaming-launcher-api-v1.6-*.txt
-/proove-gaming-installer-10-02-2026/docs/knowledge-base/proove-gaming-launcher-api-v1.7-*.md
-/proove-gaming-installer-10-02-2026/docs/knowledge-base/proove-gaming-launcher-api-v1.7-*.txt
-/proove-gaming-installer-10-02-2026/docs/knowledge-base/proove-gaming-launcher-api-v2.0-en.md

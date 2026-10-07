@@ -1,0 +1,1143 @@
+﻿Proove Gaming Launcher API
+Документація API
+Версія 1.6
+Інформація про документ
+Властивість
+Значення
+Проєкт
+Proove Gaming Launcher
+Версія API
+1.6
+Протокол
+HTTPS
+Формат
+JSON
+Автентифікація
+Bearer Token
+Кодування
+UTF-8
+
+
+Базовий URL
+https://proovegaming.com/index.php?route=
+Усі запити мають надсилатися через HTTPS.
+Тіло запиту:
+application/json
+Відповідь:
+application/json
+Автентифікація
+Захищені ендпоінти вимагають автентифікації за Bearer Token.
+Заголовок:
+Authorization: Bearer {access_token}
+Приклад
+Authorization: Bearer 79c5666282e64a2564645a10e579872072109498
+Публічні ендпоінти:
+POST api/check_email
+POST api/check_nickname
+POST api/register
+POST api/login
+POST api/forgotten
+POST api/reset_password
+Захищені ендпоінти:
+GET api/profile
+POST api/profile/update
+POST api/profile/avatar
+POST api/profile/notifications
+POST api/profile/check_nickname
+POST api/profile/password_link
+POST api/profile/delete
+POST api/logout
+Коди стану HTTP
+Код
+Опис
+200
+Успішно
+201
+Створено
+400
+Помилка валідації
+401
+Не авторизовано
+403
+Заборонено
+404
+Не знайдено
+409
+Конфлікт
+500
+Внутрішня помилка сервера
+Формат відповіді з помилкою
+Усі помилки валідації повертаються в однаковій структурі.
+Приклад
+{
+"success": false,
+"errors": [
+{
+"error_code": "EMAIL_REQUIRED",
+"field": "email",
+"message": "Email required"
+}
+]
+}
+Кілька помилок валідації
+{
+"success": false,
+"errors": [
+{
+"error_code": "INVALID_EMAIL",
+"field": "email",
+"message": "Invalid email"
+},
+{
+"error_code": "PASSWORD_TOO_SHORT",
+"field": "password",
+"message": "Minimum 8 characters"
+}
+]
+}
+1. Check Email (перевірка email)
+Перевіряє доступність email та валідність пароля перед реєстрацією.
+Якщо валідація успішна, API автоматично генерує варіанти нікнеймів.
+Ендпоінт
+POST api/check_email
+Автентифікація
+Не потрібна.
+Запит
+{
+"email": "player@example.com",
+"password": "TestPass123"
+}
+Успішна відповідь
+HTTP 200
+{
+"success": true,
+"message": "Email and password are valid",
+"nicknames": [
+"PlayerNova",
+"PlayerPro",
+"PlayerX",
+"PlayerGG",
+"PlayerPlay"
+]
+}
+Помилки валідації
+Email обов'язковий
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "EMAIL_REQUIRED",
+"field": "email",
+"message": "Email required"
+}
+]
+}
+Некоректний email
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "INVALID_EMAIL",
+"field": "email",
+"message": "Invalid email"
+}
+]
+}
+Email вже існує
+HTTP 409
+{
+"success": false,
+"errors": [
+{
+"error_code": "EMAIL_ALREADY_EXISTS",
+"field": "email",
+"message": "Email already registered"
+}
+]
+}
+Пароль обов'язковий
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "PASSWORD_REQUIRED",
+"field": "password",
+"message": "Password required"
+}
+]
+}
+Пароль занадто короткий
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "PASSWORD_TOO_SHORT",
+"field": "password",
+"message": "Minimum 8 characters"
+}
+]
+}
+Пароль має містити велику літеру
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "PASSWORD_NO_UPPERCASE",
+"field": "password",
+"message": "Need uppercase letter"
+}
+]
+}
+Пароль має містити цифру
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "PASSWORD_NO_NUMBER",
+"field": "password",
+"message": "Need number"
+}
+]
+}
+Пароль містить пробіли
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "PASSWORD_HAS_SPACES",
+"field": "password",
+"message": "Spaces not allowed"
+}
+]
+}
+Генерація нікнеймів
+Після успішної валідації email API автоматично генерує до п'яти доступних варіантів нікнеймів.
+Правила генерації:
+За основу береться локальна частина email-адреси.
+Видаляються непідтримувані символи.
+Перед поверненням варіантів перевіряється унікальність.
+У разі конфлікту автоматично генерується інший нікнейм.
+Максимальна довжина нікнейма — 20 символів.
+Використовується той самий механізм генерації нікнеймів, що й в усіх пов'язаних ендпоінтах.
+2. Check Nickname (перевірка нікнейма)
+Перевіряє доступність нікнейма.
+Ендпоінт
+POST api/check_nickname
+Автентифікація
+Не потрібна.
+Запит
+{
+"nickname":"PlayerNova"
+}
+Успішно
+HTTP 200
+{
+"success": true,
+"message": "Nickname is available",
+"nickname": "PlayerNova"
+}
+Нікнейм вже існує
+HTTP 409
+{
+"success": false,
+"errors": [
+{
+"error_code": "NICKNAME_ALREADY_EXISTS",
+"field": "nickname",
+"message": "Nickname already exists"
+}
+],
+"suggestions": [
+"PlayerNova25",
+"PlayerPro",
+"PlayerGG",
+"PlayerPlay",
+"PlayerX"
+]
+}
+Правила валідації
+Мінімальна довжина: 3 символи.
+Максимальна довжина: 20 символів.
+Лише латинські літери.
+Цифри дозволені.
+Знак підкреслення (_) дозволений.
+Пробіли не дозволені.
+Нікнейм має бути унікальним.
+Варіанти нікнеймів
+Якщо запитаний нікнейм вже існує, API автоматично генерує до п'яти альтернативних нікнеймів.
+Усі згенеровані нікнейми:
+унікальні;
+відповідають правилам валідації;
+одразу доступні для реєстрації.
+
+3. Register (реєстрація)
+Створює новий обліковий запис клієнта.
+Ендпоінт
+POST api/register
+Автентифікація
+Не потрібна.
+Запит
+{
+"email": "player@example.com",
+"password": "TestPass123",
+"nickname": "PlayerNova",
+"agree_terms": true,
+"agree_newsletter": false
+}
+Параметри запиту
+Поле
+Тип
+Обов'язкове
+Опис
+email
+string
+Так
+Email клієнта
+password
+string
+Так
+Пароль клієнта
+nickname
+string
+Так
+Унікальний нікнейм
+agree_terms
+boolean
+Так
+Має бути true
+agree_newsletter
+boolean
+Ні
+Підписка на розсилку
+Успішно
+HTTP 201 Created
+{
+"success": true,
+"message": "Registration successful",
+"customer": {
+"customer_id": 15,
+"email": "player@example.com",
+"nickname": "PlayerNova",
+"newsletter": 0
+}
+}
+Помилки валідації
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "TERMS_REQUIRED",
+"field": "agree_terms",
+"message": "Terms agreement required"
+}
+]
+}
+Конфлікт
+HTTP 409
+{
+"success": false,
+"errors": [
+{
+"error_code": "EMAIL_ALREADY_EXISTS",
+"field": "email",
+"message": "Email already registered"
+}
+]
+}
+Можливі коди помилок
+EMAIL_REQUIRED
+INVALID_EMAIL
+EMAIL_ALREADY_EXISTS
+PASSWORD_REQUIRED
+PASSWORD_TOO_SHORT
+PASSWORD_NO_UPPERCASE
+PASSWORD_NO_NUMBER
+PASSWORD_HAS_SPACES
+NICKNAME_REQUIRED
+NICKNAME_TOO_SHORT
+NICKNAME_TOO_LONG
+NICKNAME_HAS_SPACES
+NICKNAME_INVALID_CHARACTERS
+NICKNAME_ALREADY_EXISTS
+TERMS_REQUIRED
+Процес реєстрації
+check_email
+↓
+email валідний
+↓
+пароль валідний
+↓
+згенеровано варіанти нікнеймів
+↓
+користувач обирає нікнейм
+↓
+check_nickname
+↓
+нікнейм доступний
+↓
+register
+4. Login (вхід)
+Автентифікує клієнта та повертає Session Token.
+Ендпоінт
+POST api/login
+Автентифікація
+Не потрібна.
+Запит
+{
+"email": "player@example.com",
+"password": "TestPass123"
+}
+Успішно
+HTTP 200
+{
+"success": true,
+"message": "Login successful",
+"token": "USER_SESSION_TOKEN",
+"token_expires_in_days": 30,
+"customer": {
+"customer_id": 15,
+"email": "player@example.com",
+"nickname": "PlayerNova",
+"firstname": "John",
+"lastname": "Doe",
+"newsletter": 0
+}
+}
+Відсутні облікові дані
+HTTP 400
+{
+"success": false,
+"error_code": "MISSING_CREDENTIALS",
+"message": "Email and password required"
+}
+Невірні облікові дані
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_CREDENTIALS",
+"message": "Invalid email or password"
+}
+Можливі коди помилок
+MISSING_CREDENTIALS
+INVALID_CREDENTIALS
+CUSTOMER_NOT_FOUND
+Session Token
+Отриманий токен має передаватися в кожному захищеному запиті.
+Приклад:
+Authorization: Bearer USER_SESSION_TOKEN
+Термін дії токена:
+30 днів
+5. Profile (профіль)
+Повертає повний профіль клієнта.
+Ендпоінт
+POST api/profile
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{}
+Успішно
+HTTP 200
+{
+"success": true,
+"customer": {
+"customer_id": 15,
+"email": "player@example.com",
+"nickname": "PlayerNova",
+"firstname": "John",
+"lastname": "Doe",
+"telephone": "+380501112233",
+"country": "Ukraine",
+"date_birth": "1995-10-15",
+"avatar":
+"https://proovegaming.com/image/profile/avatar_15_123456789.png",
+"newsletter": 0,
+"date_joined": "2026-06-09 13:33:03"
+}
+}
+Токен обов'язковий
+HTTP 401
+{
+"success": false,
+"error_code": "TOKEN_REQUIRED",
+"message": "Token required"
+}
+Недійсний токен
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_OR_EXPIRED_TOKEN",
+"message": "Invalid or expired token"
+}
+Поля відповіді
+Поле
+Опис
+customer_id
+Внутрішній ID клієнта
+email
+Email клієнта
+nickname
+Публічний нікнейм
+firstname
+Ім'я
+lastname
+Прізвище
+telephone
+Номер телефону
+country
+Країна
+date_birth
+Дата народження
+avatar
+URL аватара
+newsletter
+Статус підписки на розсилку
+date_joined
+Дата реєстрації
+6. Update Profile (оновлення профілю)
+Оновлює інформацію профілю клієнта.
+Ендпоінт
+POST api/profile/update
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{
+"email": "player@example.com",
+"nickname": "PlayerNova",
+"firstname": "John",
+"lastname": "Doe",
+"telephone": "+380501112233",
+"country": "Ukraine",
+"date_birth": "1995-10-15"
+}
+Поля, доступні для редагування
+email
+nickname
+firstname
+lastname
+telephone
+country
+date_birth
+Успішно
+HTTP 200
+{
+"success": true,
+"message": "Profile updated successfully"
+}
+Помилки валідації
+HTTP 400
+{
+"success": false,
+"errors": [
+{
+"error_code": "INVALID_EMAIL",
+"field": "email",
+"message": "Invalid email"
+}
+]
+}
+Конфлікт
+HTTP 409
+{
+"success": false,
+"errors": [
+{
+"error_code": "EMAIL_ALREADY_EXISTS",
+"field": "email",
+"message": "Email already registered"
+}
+]
+}
+Валідація нікнейма
+Під час оновлення профілю API валідує нікнейм за тими самими правилами, що й під час реєстрації.
+Якщо нікнейм вже належить іншому клієнту, запит відхиляється.
+7. Upload Avatar (завантаження аватара)
+Завантажує або замінює аватар профілю клієнта.
+Ендпоінт
+POST api/profile/avatar
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: multipart/form-data
+Запит
+avatar = файл зображення
+Підтримувані типи файлів
+JPG
+JPEG
+PNG
+WEBP
+Максимальний розмір файлу
+2 МБ
+Успішно
+HTTP 200
+{
+"success": true,
+"message": "Avatar uploaded successfully",
+"avatar":
+"https://proovegaming.com/image/profile/avatar_15_123456789.png"
+}
+Процес завантаження
+Після успішного завантаження API:
+валідує Session Token;
+валідує завантажене зображення;
+видаляє попередній аватар, якщо він існує;
+зберігає новий аватар у:
+image/profile/
+оновлює
+customer.avatar
+повертає URL нового аватара.
+Аватар обов'язковий
+HTTP 400
+{
+"success": false,
+"error_code": "AVATAR_REQUIRED",
+"message": "Avatar file required"
+}
+Неприпустимий тип файлу
+HTTP 400
+{
+"success": false,
+"error_code": "INVALID_FILE_TYPE",
+"message": "Allowed file types: jpg, jpeg, png, webp"
+}
+Файл занадто великий
+HTTP 400
+{
+"success": false,
+"error_code": "FILE_TOO_LARGE",
+"message": "Maximum file size is 2MB"
+}
+Помилка завантаження
+HTTP 500
+{
+"success": false,
+"error_code": "UPLOAD_FAILED",
+"message": "Failed to save avatar"
+}
+Можливі коди помилок
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+AVATAR_REQUIRED
+UPLOAD_ERROR
+FILE_TOO_LARGE
+INVALID_FILE_TYPE
+UPLOAD_FAILED
+8. Notifications (сповіщення)
+Повертає налаштування сповіщень клієнта.
+Ендпоінт
+POST api/profile/notifications
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{}
+Успішно
+HTTP 200
+{
+"success": true,
+"notifications": {
+"newsletter": 1
+}
+}
+Де
+1 = увімкнено
+0 = вимкнено
+Токен обов'язковий
+HTTP 401
+{
+"success": false,
+"error_code": "TOKEN_REQUIRED",
+"message": "Token required"
+}
+Недійсний токен
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_OR_EXPIRED_TOKEN",
+"message": "Invalid or expired token"
+}
+Можливі коди помилок
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+9. Update Notifications (оновлення сповіщень)
+Оновлює налаштування сповіщень клієнта.
+Ендпоінт
+POST api/profile/notifications_update
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{
+"newsletter": 1
+}
+Де
+1 = увімкнено
+0 = вимкнено
+Успішно
+HTTP 200
+{
+"success": true,
+"message": "Notification settings updated successfully",
+"notifications": {
+"newsletter": 1
+}
+}
+Токен обов'язковий
+HTTP 401
+{
+"success": false,
+"error_code": "TOKEN_REQUIRED",
+"message": "Token required"
+}
+Недійсний токен
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_OR_EXPIRED_TOKEN",
+"message": "Invalid or expired token"
+}
+Можливі коди помилок
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+10. Check Nickname (Profile) — перевірка нікнейма в профілі
+Перевіряє доступність нікнейма під час редагування профілю.
+На відміну від
+api/check_nickname
+цей ендпоінт ігнорує власний нікнейм поточного клієнта.
+Ендпоінт
+POST api/profile/check_nickname
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{
+"nickname": "PlayerNova"
+}
+Успішно
+HTTP 200
+{
+"success": true,
+"message": "Nickname is available",
+"nickname": "PlayerNova"
+}
+Нікнейм вже існує
+HTTP 409
+{
+"success": false,
+"errors": [
+{
+"error_code": "NICKNAME_ALREADY_EXISTS",
+"field": "nickname",
+"message": "Nickname already exists"
+}
+],
+"suggestions": [
+"PlayerNova55",
+"PlayerPro",
+"PlayerGG",
+"PlayerPlay",
+"PlayerX"
+]
+}
+Варіанти нікнеймів
+Якщо запитаний нікнейм належить іншому клієнту, API автоматично повертає до п'яти доступних варіантів нікнеймів.
+Той самий механізм генерації нікнеймів використовують:
+POST api/check_email
+POST api/check_nickname
+POST api/profile/check_nickname
+Це гарантує однакову генерацію нікнеймів на всій платформі.
+Правила валідації
+мінімальна довжина: 3
+максимальна довжина: 20
+лише латинські символи
+цифри дозволені
+знак підкреслення дозволений
+пробіли не дозволені
+перевірка унікальності не залежить від регістру
+Можливі коди помилок
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+NICKNAME_REQUIRED
+NICKNAME_TOO_SHORT
+NICKNAME_TOO_LONG
+NICKNAME_HAS_SPACES
+NICKNAME_INVALID_CHARACTERS
+NICKNAME_ALREADY_EXISTS
+11. Password Change Link (посилання для зміни пароля)
+Повертає захищене веб-посилання для зміни пароля клієнта.
+На відміну від
+api/forgotten
+клієнт не вводить email-адресу.
+Клієнт ідентифікується за поточним Session Token.
+Ендпоінт
+POST api/profile/password_link
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{}
+Успішно
+HTTP 200
+{
+"success": true,
+"password_change_url":
+"https://proovegaming.com/index.php?route=account/reset_password&code=RESET_CODE",
+"expires_in_minutes": 15
+}
+Лаунчер
+↓
+Користувач натискає «Змінити пароль»
+↓
+Лаунчер відкриває сторінку відновлення пароля на сайті
+↓
+Клієнт вводить email облікового запису
+↓
+Сайт надсилає лист для скидання пароля
+↓
+Клієнт відкриває посилання для скидання з листа
+↓
+Клієнт встановлює новий пароль на сайті
+↓
+Усі Session Token стають недійсними
+↓
+Клієнт повторно входить у Лаунчер
+12. Delete Account (видалення облікового запису)
+Безповоротно видаляє обліковий запис клієнта.
+Цю операцію неможливо скасувати.
+Ендпоінт
+POST api/profile/delete
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{
+"password": "CurrentPassword123",
+"confirm": true
+}
+Параметри запиту
+Параметр
+Тип
+Обов'язкове
+Опис
+password
+string
+Так
+Поточний пароль клієнта
+confirm
+boolean
+Так
+Має бути true
+Успішно
+HTTP 200 OK
+{
+"success": true,
+"message": "Account deleted successfully"
+}
+Процес видалення облікового запису
+Після успішної валідації API автоматично:
+валідує Session Token;
+валідує пароль клієнта;
+валідує підтвердження видалення;
+видаляє аватар клієнта (якщо існує);
+видаляє всі активні Session Token;
+безповоротно видаляє обліковий запис клієнта.
+Після видалення:
+Вхід більше неможливий.
+Усі Session Token стають недійсними.
+Обліковий запис неможливо відновити.
+Підтвердження обов'язкове
+HTTP 400
+{
+"success": false,
+"error_code": "CONFIRMATION_REQUIRED",
+"message": "Confirmation required"
+}
+Пароль обов'язковий
+HTTP 400
+{
+"success": false,
+"error_code": "PASSWORD_REQUIRED",
+"message": "Password required"
+}
+Невірний пароль
+HTTP 401
+{
+"success": false,
+"error_code": "INVALID_PASSWORD",
+"message": "Invalid password"
+}
+Можливі коди помилок
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+PASSWORD_REQUIRED
+INVALID_PASSWORD
+CONFIRMATION_REQUIRED
+ACCOUNT_DELETE_FAILED
+13. Logout (вихід)
+Робить недійсним поточний Session Token.
+Ендпоінт
+POST api/logout
+Автентифікація
+Потрібен Bearer Token.
+Заголовки
+Authorization: Bearer USER_SESSION_TOKEN
+Content-Type: application/json
+Запит
+{}
+Успішно
+HTTP 200
+{
+"success": true,
+"message": "Logout successful"
+}
+Можливі коди помилок
+TOKEN_REQUIRED
+INVALID_OR_EXPIRED_TOKEN
+14. Forgotten Password (відновлення пароля)
+Запитує лист для скидання пароля.
+Ендпоінт
+POST api/forgotten
+Автентифікація
+Не потрібна.
+Запит
+{
+"email":"user@example.com"
+}
+Успішно
+HTTP 200
+{
+"success":true,
+"message":"Password reset email sent"
+}
+Процес відновлення пароля
+API автоматично:
+валідує email;
+генерує Reset Code;
+зберігає Reset Code;
+зберігає час закінчення дії;
+надсилає лист для скидання пароля.
+Термін дії Reset Code:
+15 хвилин
+Сторінка скидання пароля
+https://proovegaming.com/index.php?route=account/reset_password&code=RESET_CODE
+Помилка валідації
+HTTP 400
+{
+"success":false,
+"error_code":"INVALID_EMAIL",
+"field":"email",
+"message":"Invalid email"
+}
+Email не знайдено
+HTTP 404
+{
+"success":false,
+"error_code":"EMAIL_NOT_FOUND",
+"field":"email",
+"message":"Email not found"
+}
+Помилка надсилання пошти
+HTTP 500
+{
+"success":false,
+"error_code":"MAIL_ERROR",
+"message":"Mail error"
+}
+Можливі коди помилок
+EMAIL_REQUIRED
+INVALID_EMAIL
+EMAIL_NOT_FOUND
+MAIL_ERROR
+15. Reset Password (скидання пароля)
+Змінює пароль за допомогою Reset Code.
+Ендпоінт
+POST api/reset_password
+Автентифікація
+Не потрібна.
+Запит
+{
+"code":"RESET_CODE",
+"new_password":"NewPass123"
+}
+Успішно
+HTTP 200
+{
+"success":true,
+"message":"Password has been reset successfully",
+"customer":{
+"customer_id":15,
+"email":"user@example.com"
+}
+}
+Процес скидання пароля
+Після успішної зміни пароля API:
+оновлює пароль клієнта;
+видаляє Reset Code;
+видаляє час закінчення дії Reset Code;
+видаляє всі активні Session Token.
+Клієнт має увійти повторно.
+Недійсний Reset Code
+HTTP 400
+{
+"success":false,
+"error_code":"INVALID_OR_EXPIRED_RESET_CODE",
+"message":"Invalid or expired reset code"
+}
+Можливі коди помилок
+RESET_CODE_REQUIRED
+PASSWORD_REQUIRED
+PASSWORD_TOO_SHORT
+PASSWORD_NO_UPPERCASE
+PASSWORD_NO_NUMBER
+PASSWORD_HAS_SPACES
+INVALID_OR_EXPIRED_RESET_CODE
+Примітки щодо безпеки
+Публічні ендпоінти
+Автентифікація не потрібна.
+POST api/check_email
+POST api/check_nickname
+POST api/register
+POST api/login
+POST api/forgotten
+POST api/reset_password
+Захищені ендпоінти
+Потрібен Bearer Token.
+POST api/profile
+POST api/profile/update
+POST api/profile/avatar
+POST api/profile/notifications
+POST api/profile/notifications_update
+POST api/profile/check_nickname
+POST api/profile/password_link
+POST api/profile/delete
+POST api/logout
+Session Token
+Генерується через:
+POST api/login
+Термін дії:
+30 днів
+Зберігається в:
+customer_token
+Токени із закінченим терміном дії видаляються автоматично.
+Генератор нікнеймів
+API використовує єдиний механізм генерації нікнеймів.
+Використовується в:
+POST api/check_email
+POST api/check_nickname
+POST api/profile/check_nickname
+Можливості:
+автоматична генерація нікнеймів;
+перевірка унікальності;
+автоматична повторна генерація у разі конфлікту;
+однакова логіка генерації в усіх ендпоінтах.
+Зберігання аватарів
+Файли аватарів зберігаються в:
+image/profile/
+Старі файли аватарів автоматично видаляються під час завантаження нового аватара.
+Безпека паролів
+Зміна пароля виконується лише на сайті.
+Лаунчер відкриває сторінку відновлення пароля.
+Клієнт завершує зміну пароля через сайт.
+Після успішної зміни пароля:
+Reset Code видаляється;
+усі Session Token видаляються;
+клієнт має увійти повторно.
+Видалення облікового запису
+Після успішного видалення:
+аватар видаляється;
+Session Token видаляються;
+запис клієнта безповоротно видаляється;
+обліковий запис неможливо відновити.
+
+
+
+Зведення API
+Ендпоінт
+Автентифікація
+POST api/check_email
+Ні
+POST api/check_nickname
+Ні
+POST api/register
+Ні
+POST api/login
+Ні
+POST api/profile
+Bearer Token
+POST api/profile/update
+Bearer Token
+POST api/profile/avatar
+Bearer Token
+POST api/profile/notifications
+Bearer Token
+POST api/profile/notifications_update
+Bearer Token
+POST api/profile/check_nickname
+Bearer Token
+POST api/profile/password_link
+Bearer Token
+POST api/profile/delete
+Bearer Token
+POST api/logout
+Bearer Token
+POST api/forgotten
+Ні
+POST api/reset_password
+Ні
+Історія змін
+v1.0
+API реєстрації
+API входу
+v1.1
+Відновлення пароля
+Скидання пароля
+v1.2
+API профілю
+API виходу
+v1.3
+Оновлення профілю
+Завантаження аватара
+v1.4
+API сповіщень
+Оновлення налаштувань сповіщень
+Валідація нікнейма в профілі
+v1.5
+Посилання для зміни пароля
+Видалення облікового запису
+Оновлення email
+Оновлення нікнейма
+Розширений API профілю
+v1.6
+Єдиний генератор нікнеймів
+Автоматичні варіанти нікнеймів
+Варіанти нікнеймів під час реєстрації
+Варіанти нікнеймів у профілі
+Автоматична генерація нікнеймів після валідації email
+Покращений процес реєстрації
+Розширені примітки щодо безпеки
+
+
