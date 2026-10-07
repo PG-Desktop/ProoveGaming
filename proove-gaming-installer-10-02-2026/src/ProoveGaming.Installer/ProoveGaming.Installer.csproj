@@ -1,0 +1,185 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>ProoveGaming.Installer</AssemblyName>
+    <RootNamespace>ProoveGaming.Installer</RootNamespace>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <AppProjectPath>$(MSBuildThisFileDirectory)..\ProoveGaming.App\ProoveGaming.App.csproj</AppProjectPath>
+    <DeviceHostProjectPath>$(MSBuildThisFileDirectory)..\ProoveGaming.DeviceHost\ProoveGaming.DeviceHost.csproj</DeviceHostProjectPath>
+    <GrpcDependenciesProjectPath>$(MSBuildThisFileDirectory)..\ProoveGaming.GrpcDependencies\ProoveGaming.GrpcDependencies.csproj</GrpcDependenciesProjectPath>
+    <UninstallerProjectPath>$(MSBuildThisFileDirectory)..\ProoveGaming.Uninstaller\ProoveGaming.Uninstaller.csproj</UninstallerProjectPath>
+    <AppPayloadRootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\artifacts\installer-payload\'))</AppPayloadRootDir>
+    <AppPublishDir>$(AppPayloadRootDir)AppPayload\</AppPublishDir>
+    <DeviceHostPublishDir>$(AppPublishDir)host\</DeviceHostPublishDir>
+    <AppPayloadZipPath>$(AppPayloadRootDir)app-payload.zip</AppPayloadZipPath>
+    <AppPayloadLogicalName>ProoveGaming.Installer.Payload.app.zip</AppPayloadLogicalName>
+    <UninstallerPayloadRootDir>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\artifacts\uninstaller-payload\'))</UninstallerPayloadRootDir>
+    <UninstallerPublishDir>$(UninstallerPayloadRootDir)publish\</UninstallerPublishDir>
+    <UninstallerPayloadFilePath>$(UninstallerPayloadRootDir)ProoveGaming.Uninstaller.win-x64.exe</UninstallerPayloadFilePath>
+    <UninstallerPayloadLogicalName>ProoveGaming.Installer.Uninstaller.win-x64.exe</UninstallerPayloadLogicalName>
+    <ApplicationIcon>Assets\PG_Favicon_128x128.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishTrimmed>false</PublishTrimmed>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <!-- Compress the single-file bundle. The embedded app payload is already a zip and will not
+         shrink further, but the installer's own self-contained runtime (~127 MB) does. The cost is
+         paid once, at self-extract on launch, which for a program the user runs a single time is a
+         better trade than the download size. -->
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\**" />
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="12.1.3" />
+    <PackageReference Include="Avalonia.Desktop" Version="12.1.3" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.3" />
+    <PackageReference Include="Svg.Skia" Version="5.2.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProoveGaming.Common\ProoveGaming.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ProoveGaming.Installer.Tests" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(Configuration)' == 'Release'">
+    <EmbeddedResource Include="$(AppPayloadZipPath)" LogicalName="$(AppPayloadLogicalName)" />
+    <EmbeddedResource Include="$(UninstallerPayloadFilePath)" LogicalName="$(UninstallerPayloadLogicalName)" />
+  </ItemGroup>
+
+  <!-- The App and the DeviceHost each publish self-contained, so the payload carried the .NET
+       runtime TWICE — 338 byte-identical files, 107 MB, worth 51 MB in the compressed payload.
+       Rather than merge the two directories (their appsettings.json files are different documents
+       under the same name, and their Windows SDK projections differ because the target frameworks
+       do), the duplicates are stripped from host\ at build time and listed in a manifest that the
+       installer replays after extraction. The host stays fully self-contained on disk; only the
+       download shrinks.
+
+       Content-hash compared, not name compared: three files DO collide by name while differing in
+       content, and copying the App's over the host's would break it. -->
+  <UsingTask TaskName="DedupeSharedRuntime" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <AppDir ParameterType="System.String" Required="true" />
+      <HostDir ParameterType="System.String" Required="true" />
+      <ManifestPath ParameterType="System.String" Required="true" />
+      <RemovedCount ParameterType="System.Int32" Output="true" />
+      <RemovedBytes ParameterType="System.Int64" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.Text" />
+      <Using Namespace="System.Security.Cryptography" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        static string HashOf(string path)
+        {
+            using (var sha = SHA256.Create())
+            using (var stream = File.OpenRead(path))
+                return Convert.ToBase64String(sha.ComputeHash(stream));
+        }
+
+        var manifest = new StringBuilder();
+        long bytes = 0;
+        int count = 0;
+
+        foreach (var hostFile in Directory.GetFiles(HostDir))
+        {
+            var name = Path.GetFileName(hostFile);
+            var appFile = Path.Combine(AppDir, name);
+            if (!File.Exists(appFile)) continue;
+
+            var hostInfo = new FileInfo(hostFile);
+            if (new FileInfo(appFile).Length != hostInfo.Length) continue;
+            if (HashOf(appFile) != HashOf(hostFile)) continue;
+
+            bytes += hostInfo.Length;
+            count++;
+            manifest.AppendLine(name);
+            File.Delete(hostFile);
+        }
+
+        File.WriteAllText(ManifestPath, manifest.ToString());
+        RemovedCount = count;
+        RemovedBytes = bytes;
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
+
+  <Target Name="BuildEmbeddedAppPayload" BeforeTargets="CoreCompile" Condition="'$(Configuration)' == 'Release'">
+    <RemoveDir Directories="$(AppPublishDir)" />
+    <MakeDir Directories="$(AppPayloadRootDir)" />
+    <MakeDir Directories="$(AppPublishDir)" />
+
+    <Exec Command="dotnet restore &quot;$(AppProjectPath)&quot; -r win-x64" WorkingDirectory="$(MSBuildThisFileDirectory)" />
+
+    <Exec Command="dotnet publish &quot;$(AppProjectPath)&quot; -c $(Configuration) -r win-x64 -f net10.0-windows10.0.17763.0 --self-contained --no-restore -o &quot;$(AppPublishDir)&quot;" WorkingDirectory="$(MSBuildThisFileDirectory)" />
+
+    <MakeDir Directories="$(DeviceHostPublishDir)" />
+
+    <MSBuild Projects="$(DeviceHostProjectPath)" Targets="Restore" Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;TargetFramework=$(WindowsTargetFramework);RestoreForce=true" />
+
+    <MSBuild Projects="$(DeviceHostProjectPath)" Targets="Publish" Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;TargetFramework=$(WindowsTargetFramework);SelfContained=true;PublishSingleFile=false;PublishDir=$(DeviceHostPublishDir);NoRestore=true" />
+
+    <RemoveDir Directories="$(UninstallerPublishDir)" />
+    <MakeDir Directories="$(UninstallerPayloadRootDir)" />
+    <MakeDir Directories="$(UninstallerPublishDir)" />
+
+    <MSBuild Projects="$(UninstallerProjectPath)" Targets="Restore" Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64" />
+
+    <MSBuild Projects="$(UninstallerProjectPath)" Targets="Publish" Properties="Configuration=$(Configuration);RuntimeIdentifier=win-x64;SelfContained=true;PublishSingleFile=true;PublishDir=$(UninstallerPublishDir);NoRestore=true" />
+
+    <Delete Files="$(UninstallerPayloadFilePath)" ContinueOnError="true" />
+    <Copy SourceFiles="$(UninstallerPublishDir)ProoveGaming.Uninstaller.exe" DestinationFiles="$(UninstallerPayloadFilePath)" SkipUnchangedFiles="true" />
+
+    <!-- Debug symbols must not reach the payload. The App publish alone carries 101 MB of them —
+         81 MB of it libSkiaSharp.pdb, shipped by the SkiaSharp package rather than produced by our
+         build, so DebugType=None does not remove it. They survived because CleanupPublishSymbols
+         below only sweeps the INSTALLER's own publish directory, and only AfterTargets="Publish",
+         while this payload is zipped much earlier (BeforeTargets="CoreCompile"). Measured worth:
+         the payload zip drops from 210 MB to 180 MB, i.e. 30 MB straight off the installer. -->
+    <ItemGroup>
+      <PayloadSymbols Include="$(AppPublishDir)**\*.pdb" />
+      <PayloadSymbols Include="$(UninstallerPublishDir)**\*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(PayloadSymbols)" ContinueOnError="true" />
+
+    <!-- After the symbol sweep, so the manifest never lists a .pdb the payload no longer carries. -->
+    <DedupeSharedRuntime AppDir="$(AppPublishDir)" HostDir="$(DeviceHostPublishDir)" ManifestPath="$(DeviceHostPublishDir)shared-runtime.manifest">
+      <Output TaskParameter="RemovedCount" PropertyName="SharedRuntimeFileCount" />
+      <Output TaskParameter="RemovedBytes" PropertyName="SharedRuntimeByteCount" />
+    </DedupeSharedRuntime>
+    <Message Importance="high" Text="Shared runtime: $(SharedRuntimeFileCount) duplicate file(s), $([MSBuild]::Divide($(SharedRuntimeByteCount), 1048576).ToString('F0')) MB, removed from host\ and listed in shared-runtime.manifest for the installer to restore." />
+    <Error Condition="'$(SharedRuntimeFileCount)' == '0'" Text="Shared-runtime dedupe removed nothing. The App and DeviceHost payloads no longer share any identical file, so either the publish layout changed or one of them failed to publish — failing rather than silently shipping a payload twice the size." />
+
+    <Delete Files="$(AppPayloadZipPath)" ContinueOnError="true" />
+    <ZipDirectory SourceDirectory="$(AppPublishDir)" DestinationFile="$(AppPayloadZipPath)" Overwrite="true" />
+
+  </Target>
+
+  <Target Name="CleanupPublishSymbols" AfterTargets="Publish" Condition="'$(Configuration)' == 'Release'">
+    <ItemGroup>
+      <PublishSymbols Include="$(PublishDir)**\*.pdb" />
+    </ItemGroup>
+    <Delete Files="@(PublishSymbols)" ContinueOnError="true" />
+  </Target>
+</Project>

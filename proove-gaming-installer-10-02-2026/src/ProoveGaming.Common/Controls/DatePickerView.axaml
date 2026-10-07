@@ -1,0 +1,285 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.Common.Controls.DatePickerView"
+			 ClipToBounds="False">
+	<UserControl.Styles>
+		<StyleInclude Source="avares://ProoveGaming.Common/Styles/SharedFieldBoxStyles.axaml" />
+		<!-- Declared after the include so the open state wins over the shared idle/filled/hover rules. -->
+		<Style Selector="Border#DateContainer.open">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button#DateHeaderButton">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="VerticalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions" Value="{x:Null}" />
+		</Style>
+		<Style Selector="Button#DateHeaderButton:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button#DateHeaderButton:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="RenderTransform" Value="none" />
+		</Style>
+		<Style Selector="Path#DateArrowHoverBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Grid#DateArrowHoverArea:pointerover Path#DateArrowHoverBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+	</UserControl.Styles>
+
+	<Grid ClipToBounds="False">
+		<Border x:Name="DateContainer"
+				Classes="pgFieldBox"
+				Height="55"
+				HorizontalAlignment="Stretch"
+				ClipToBounds="False">
+			<Button x:Name="DateHeaderButton" ClipToBounds="False">
+				<Grid ColumnDefinitions="19,18,1,15,*,24,19" VerticalAlignment="Center" ClipToBounds="False">
+					<!-- Calendar icon -->
+					<Path Grid.Column="1"
+						  Width="18" Height="18" Stretch="Uniform"
+						  Fill="#80BEBCEA"
+						  VerticalAlignment="Center"
+						  Data="M2 20C1.45 20 0.979167 19.8042 0.5875 19.4125C0.195833 19.0208 0 18.55 0 18V4C0 3.45 0.195833 2.97917 0.5875 2.5875C0.979167 2.19583 1.45 2 2 2H3V0H5V2H13V0H15V2H16C16.55 2 17.0208 2.19583 17.4125 2.5875C17.8042 2.97917 18 3.45 18 4V18C18 18.55 17.8042 19.0208 17.4125 19.4125C17.0208 19.8042 16.55 20 16 20H2ZM2 18H16V8H2V18ZM2 6H16V4H2V6Z"/>
+					<TextBlock x:Name="DateSelectedText"
+							   Grid.Column="4"
+							   FontFamily="Segoe UI"
+							   FontWeight="400"
+							   FontSize="16"
+							   LineHeight="24"
+							   Foreground="#B2BEBCEA"
+							   VerticalAlignment="Center"/>
+					<Grid x:Name="DateArrowHoverArea"
+						  Grid.Column="5"
+						  VerticalAlignment="Stretch"
+						  Background="Transparent"
+						  ClipToBounds="False">
+						<Path x:Name="DateArrowHoverBg"
+							  Width="32" Height="32" Stretch="Uniform"
+							  HorizontalAlignment="Center" VerticalAlignment="Center"
+							  Fill="#4D6357FF"
+							  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+						<Path x:Name="DateArrowDownIcon"
+							  Width="12" Height="8" Stretch="Uniform"
+							  HorizontalAlignment="Center" VerticalAlignment="Center"
+							  Margin="0,2,0,0"
+							  Fill="#B2BEBCEA"
+							  Data="M6 7.4L0 1.4L1.4 0L6 4.6L10.6 0L12 1.4L6 7.4Z"/>
+						<Path x:Name="DateArrowUpIcon"
+							  Width="12" Height="8" Stretch="Uniform"
+							  HorizontalAlignment="Center" VerticalAlignment="Center"
+							  Margin="0,2,0,0"
+							  Fill="#B2BEBCEA"
+							  IsVisible="False"
+							  Data="M0 6L6 0L12 6L10.6 7.4L6 2.8L1.4 7.4L0 6Z"/>
+					</Grid>
+				</Grid>
+			</Button>
+		</Border>
+
+		<Popup x:Name="DatePickerPopup"
+			   PlacementTarget="{Binding #DateContainer}"
+			   Placement="BottomEdgeAlignedRight"
+			   HorizontalOffset="30"
+			   VerticalOffset="-22"
+			   IsLightDismissEnabled="True"
+			   WindowManagerAddShadowHint="False"
+			   OverlayDismissEventPassThrough="True">
+			<!-- Outer padding gives the shadow blur room to spread beyond the visible shape;
+			     offsets on the Popup shift it back so the shape aligns with the field. -->
+			<Panel Width="372"
+				   Height="404"
+				   Background="Transparent"
+				   ClipToBounds="False">
+			<Panel Width="312"
+				   Height="344"
+				   HorizontalAlignment="Center"
+				   VerticalAlignment="Center"
+				   ClipToBounds="False">
+				<Panel.Effect>
+					<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="40" Color="#6357FF" Opacity="0.3" />
+				</Panel.Effect>
+				<Panel.Styles>
+					<Style Selector="Button.navArrow">
+						<Setter Property="Background" Value="Transparent" />
+						<Setter Property="BorderBrush" Value="Transparent" />
+						<Setter Property="BorderThickness" Value="0" />
+						<Setter Property="CornerRadius" Value="0" />
+						<Setter Property="Padding" Value="0" />
+						<Setter Property="Width" Value="24" />
+						<Setter Property="Height" Value="24" />
+						<Setter Property="Cursor" Value="Hand" />
+						<Setter Property="ClipToBounds" Value="False" />
+					</Style>
+					<Style Selector="Button.navArrow /template/ ContentPresenter">
+						<Setter Property="Background" Value="Transparent" />
+					</Style>
+					<!-- Hover background: chamfered rectangle behind the arrow. Same style as
+					     the presets kebab menu hover (PresetsSectionView.axaml). -->
+					<Style Selector="Path.navArrowBg">
+						<Setter Property="IsVisible" Value="False" />
+					</Style>
+					<Style Selector="Button.navArrow:pointerover Path.navArrowBg">
+						<Setter Property="IsVisible" Value="True" />
+					</Style>
+					<Style Selector="Button.dayCell">
+						<Setter Property="Background" Value="Transparent" />
+						<Setter Property="BorderBrush" Value="Transparent" />
+						<Setter Property="BorderThickness" Value="1" />
+						<Setter Property="CornerRadius" Value="0" />
+						<Setter Property="Padding" Value="0" />
+						<Setter Property="Width" Value="40" />
+						<Setter Property="Height" Value="40" />
+						<Setter Property="Foreground" Value="White" />
+						<Setter Property="HorizontalContentAlignment" Value="Center" />
+						<Setter Property="VerticalContentAlignment" Value="Center" />
+						<Setter Property="Cursor" Value="Hand" />
+					</Style>
+					<Style Selector="Button.dayCell:pointerover">
+						<Setter Property="Background" Value="#4D6357FF" />
+					</Style>
+					<Style Selector="Button.dayCell:pointerover TextBlock">
+						<Setter Property="FontWeight" Value="SemiBold" />
+					</Style>
+					<Style Selector="Button.dayCell.today TextBlock">
+						<Setter Property="FontWeight" Value="SemiBold" />
+					</Style>
+					<Style Selector="Button.dayCell.selected TextBlock">
+						<Setter Property="FontWeight" Value="SemiBold" />
+					</Style>
+					<!-- Selected: solid purple fill. Declared after :pointerover so it wins when
+					     both selectors match (hovering a selected cell keeps the solid fill). -->
+					<Style Selector="Button.dayCell.selected">
+						<Setter Property="Background" Value="#6357FF" />
+					</Style>
+					<Style Selector="Button.dayCell.selected:pointerover">
+						<Setter Property="Background" Value="#6357FF" />
+					</Style>
+					<Style Selector="Button.dayCell.outside">
+						<Setter Property="Foreground" Value="#4DBEBCEA" />
+					</Style>
+					<Style Selector="Button.dayCell.outside:pointerover">
+						<Setter Property="Foreground" Value="White" />
+					</Style>
+					<!-- Month / year cells: same visual language as dayCell, 3 columns × 4 rows. -->
+					<Style Selector="Button.periodCell">
+						<Setter Property="Background" Value="Transparent" />
+						<Setter Property="BorderBrush" Value="Transparent" />
+						<Setter Property="BorderThickness" Value="1" />
+						<Setter Property="CornerRadius" Value="0" />
+						<Setter Property="Padding" Value="0" />
+						<Setter Property="Height" Value="70" />
+						<Setter Property="HorizontalAlignment" Value="Stretch" />
+						<Setter Property="Foreground" Value="White" />
+						<Setter Property="HorizontalContentAlignment" Value="Center" />
+						<Setter Property="VerticalContentAlignment" Value="Center" />
+						<Setter Property="Cursor" Value="Hand" />
+					</Style>
+					<Style Selector="Button.periodCell:pointerover">
+						<Setter Property="Background" Value="#4D6357FF" />
+					</Style>
+					<Style Selector="Button.periodCell:pointerover TextBlock">
+						<Setter Property="FontWeight" Value="SemiBold" />
+					</Style>
+					<Style Selector="Button.periodCell.today TextBlock">
+						<Setter Property="FontWeight" Value="SemiBold" />
+					</Style>
+					<Style Selector="Button.periodCell.selected TextBlock">
+						<Setter Property="FontWeight" Value="SemiBold" />
+					</Style>
+					<Style Selector="Button.periodCell.selected">
+						<Setter Property="Background" Value="#6357FF" />
+					</Style>
+					<Style Selector="Button.periodCell.selected:pointerover">
+						<Setter Property="Background" Value="#6357FF" />
+					</Style>
+				</Panel.Styles>
+				<!-- Chamfered panel: top-right + bottom-left 16px cuts (matches the design SVG). -->
+				<Path Fill="#000000"
+					  Stretch="None"
+					  Data="M 0,0 L 296,0 L 312,16 L 312,344 L 16,344 L 0,328 Z"/>
+				<StackPanel Margin="16,8,16,0">
+						<!-- Header row: [dynamic label] ▾    ◄  ►   (280×40, positions per design SVG) -->
+						<Grid Width="280" Height="40" ColumnDefinitions="Auto,6,24,*,24,16,24" VerticalAlignment="Center">
+							<TextBlock x:Name="HeaderLabel"
+									   Grid.Column="0"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontStyle="Normal"
+									   FontWeight="250"
+									   FontSize="18"
+									   LineHeight="18"
+									   LetterSpacing="0"
+									   Foreground="#6357FF"
+									   VerticalAlignment="Center" />
+							<Button Grid.Column="2" x:Name="ModeToggleButton" Classes="navArrow">
+								<Grid ClipToBounds="False">
+									<Path Classes="navArrowBg"
+										  Width="32" Height="32"
+										  HorizontalAlignment="Center" VerticalAlignment="Center"
+										  Stretch="Uniform" Fill="#4D6357FF"
+										  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+									<Path Width="12" Height="7.4" Stretch="Uniform"
+										  Fill="#6357FF"
+										  HorizontalAlignment="Center" VerticalAlignment="Center"
+										  Data="M6 7.4L0 1.4L1.4 0L6 4.6L10.6 0L12 1.4L6 7.4Z"/>
+								</Grid>
+							</Button>
+							<Button Grid.Column="4" x:Name="PrevMonthButton" Classes="navArrow">
+								<Grid ClipToBounds="False">
+									<Path Classes="navArrowBg"
+										  Width="32" Height="32"
+										  HorizontalAlignment="Center" VerticalAlignment="Center"
+										  Stretch="Uniform" Fill="#4D6357FF"
+										  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+									<Path Width="7.4" Height="12" Stretch="Uniform"
+										  Fill="#6357FF"
+										  HorizontalAlignment="Center" VerticalAlignment="Center"
+										  Data="M0 6L6 0L7.4 1.4L2.8 6L7.4 10.6L6 12L0 6Z"/>
+								</Grid>
+							</Button>
+							<Button Grid.Column="6" x:Name="NextMonthButton" Classes="navArrow">
+								<Grid ClipToBounds="False">
+									<Path Classes="navArrowBg"
+										  Width="32" Height="32"
+										  HorizontalAlignment="Center" VerticalAlignment="Center"
+										  Stretch="Uniform" Fill="#4D6357FF"
+										  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+									<Path Width="7.4" Height="12" Stretch="Uniform"
+										  Fill="#6357FF"
+										  HorizontalAlignment="Center" VerticalAlignment="Center"
+										  Data="M7.4 6L1.4 12L0 10.6L4.6 6L0 1.4L1.4 0L7.4 6Z"/>
+								</Grid>
+							</Button>
+						</Grid>
+
+						<!-- Calendar block: 7-column, day-of-week header + 6 date rows (280×280).
+						     6 rows are required: a month starting late in the week can span 6 weeks
+						     (e.g. October 2005), and a 5-row grid would drop its last days. -->
+						<Grid x:Name="CalendarBlock"
+							  Width="280"
+							  RowDefinitions="40,40,40,40,40,40,40"
+							  ColumnDefinitions="40,40,40,40,40,40,40" />
+
+						<!-- Month / year picker, shown in place of the calendar block when the
+						     header mode-toggle switches away from day selection. -->
+						<Grid x:Name="PeriodBlock"
+							  Width="280"
+							  Height="280"
+							  IsVisible="False"
+							  RowDefinitions="70,70,70,70"
+							  ColumnDefinitions="*,*,*" />
+					</StackPanel>
+			</Panel>
+			</Panel>
+		</Popup>
+	</Grid>
+</UserControl>

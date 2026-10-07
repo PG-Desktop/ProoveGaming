@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- Windows TFM so this project can reference ProoveGaming.Infrastructure and drive real
+       devices through the SAME code the DeviceHost uses. Reimplementing BLAZE's coordinated
+       all-blocks write here instead would recreate the exact code path that corrupted its
+       flash once already (docs/mouse/blaze). -->
+    <TargetFramework>$(WindowsTargetFramework)</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- No HidSharp package of its own: Infrastructure brings HidSharpCore, and referencing both
+       makes every HidDevice ambiguous (CS0433 - the two packages declare the same types). -->
+
+  <ItemGroup>
+    <ProjectReference Include="..\ProoveGaming.Infrastructure\ProoveGaming.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

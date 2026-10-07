@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:MacroViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.MacroRowKebabView">
+	<!-- The macro row's kebab (3-dot Edit/Remove) menu, shared by the two device-type row
+	     variants in MacrosSectionView (mouse assign row / keyboard inspect row) so the flyout
+	     chrome is not duplicated per row. DataContext is the row's MacroViewModel. -->
+	<Button Classes="macroKebab" VerticalAlignment="Center">
+		<StackPanel Spacing="3">
+			<Ellipse Classes="macroKebabDot" />
+			<Ellipse Classes="macroKebabDot" />
+			<Ellipse Classes="macroKebabDot" />
+		</StackPanel>
+		<Button.Flyout>
+			<Flyout Placement="BottomEdgeAlignedRight" FlyoutPresenterClasses="macroMenuPresenter">
+				<!-- Same chrome as the Home device-card dots menu: black shape with
+				chamfered top-right / bottom-left corners + purple glow.
+				Outer margin gives the glow room inside the popup bounds. -->
+				<Grid Width="204" Height="96" Margin="16">
+					<Grid.Effect>
+						<DropShadowEffect BlurRadius="40" Color="#6357FF" Opacity="0.3"/>
+					</Grid.Effect>
+
+					<Canvas Width="204" Height="96">
+						<Rectangle Canvas.Left="0" Canvas.Top="0" Width="16" Height="80" Fill="Black"/>
+						<Path Fill="Black" Data="M16 96 L0 80 L16 80 Z"/>
+						<Rectangle Canvas.Left="16" Canvas.Top="0" Width="172" Height="96" Fill="Black"/>
+						<Path Fill="Black" Data="M188 0 L204 16 L188 16 Z"/>
+						<Rectangle Canvas.Left="188" Canvas.Top="16" Width="16" Height="80" Fill="Black"/>
+					</Canvas>
+
+					<StackPanel Margin="22,8,12,0" Spacing="0" VerticalAlignment="Top">
+						<Button Classes="macroMenuItem"
+								Click="OnMacroMenuItemClick"
+								Command="{Binding EditCommand}" CommandParameter="{Binding}">
+							<StackPanel Orientation="Horizontal" Spacing="10">
+								<Viewbox Width="18" Height="18">
+									<Canvas Width="24" Height="24">
+										<Path Fill="#BEBCEA" Opacity="0.7"
+											  Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.42-1.83Z"/>
+									</Canvas>
+								</Viewbox>
+								<TextBlock Text="{DynamicResource Macros_Menu_Edit}" Foreground="White" FontSize="16" FontFamily="{DynamicResource BaseAppFont}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+						<Button Classes="macroMenuItem macroMenuItemDelete"
+								Click="OnMacroMenuItemClick"
+								Command="{Binding RemoveCommand}" CommandParameter="{Binding}">
+							<StackPanel Orientation="Horizontal" Spacing="10">
+								<Viewbox Width="16" Height="18">
+									<Canvas Width="16" Height="18">
+										<Path Fill="#FF383C">
+											<Path.RenderTransform><TranslateTransform X="-68" Y="-139"/></Path.RenderTransform>
+											<Path.Data>M71 157C70.45 157 69.9792 156.804 69.5875 156.413C69.1958 156.021 69 155.55 69 155V142H68V140H73V139H79V140H84V142H83V155C83 155.55 82.8042 156.021 82.4125 156.413C82.0208 156.804 81.55 157 81 157H71ZM81 142H71V155H81V142ZM73 153H75V144H73V153ZM77 153H79V144H77V153Z</Path.Data>
+										</Path>
+									</Canvas>
+								</Viewbox>
+								<TextBlock Text="{DynamicResource Macros_Menu_Remove}" Foreground="#FF383C" FontSize="16" FontFamily="{DynamicResource BaseAppFont}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+							</StackPanel>
+						</Button>
+					</StackPanel>
+				</Grid>
+			</Flyout>
+		</Button.Flyout>
+	</Button>
+</UserControl>

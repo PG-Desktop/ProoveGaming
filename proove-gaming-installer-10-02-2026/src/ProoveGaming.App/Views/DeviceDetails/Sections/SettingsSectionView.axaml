@@ -1,0 +1,200 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:controls="clr-namespace:ProoveGaming.App.Controls"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.SettingsSectionView"
+			 Design.Width="336"
+			 Design.Height="800">
+	<StackPanel Margin="0" Spacing="8" IsVisible="{Binding IsSettingsSection}" Width="336" HorizontalAlignment="Left"
+				IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+		<!-- Default Settings button — always shown. Outside the bluetoothLocked block below: its
+			 :disabled colours are the mock's absolute alphas, and a panel Opacity on top would
+			 halve them again (PR #124 M1). -->
+		<Button Classes="sectionActionButton"
+				Content="{DynamicResource DeviceDetails_Settings_DefaultSettings}"
+				Command="{Binding ResetSettingsCommand}" />
+
+		<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+
+		<!-- ═══ Device-specific settings (e.g. BLAZE) ════════════════════════ -->
+		<StackPanel IsVisible="{Binding HasDeviceSpecificSettings}" Spacing="8" Classes="bluetoothLocked">
+
+			<!-- Button Debounce slider -->
+			<StackPanel IsVisible="{Binding HasButtonDebounce}" Spacing="8">
+				<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+					<TextBlock Grid.Column="0"
+							   Text="{DynamicResource DeviceDetails_Settings_ButtonDebounce}"
+							   Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
+							   VerticalAlignment="Center" />
+					<TextBlock Grid.Column="1"
+							   Text="{Binding ButtonDenounceSetting.DisplayValue}"
+							   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+				</Grid>
+				<TextBlock Text="{DynamicResource DeviceDetails_Settings_ButtonDebounce_Subtitle}"
+						   Foreground="#BEBCEA" FontSize="14" Opacity="0.7" TextWrapping="Wrap" />
+				<Grid Name="ButtonDebounceSliderGrid" Height="32" ClipToBounds="False"
+					  PointerPressed="OnButtonDebouncePointerPressed"
+					  PointerMoved="OnButtonDebouncePointerMoved"
+					  Cursor="Hand">
+					<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+					<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<Rectangle.Width>
+							<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+								<Binding Path="ButtonDenounceSetting.SliderPct" />
+								<Binding ElementName="ButtonDebounceSliderGrid" Path="Bounds.Width" />
+							</MultiBinding>
+						</Rectangle.Width>
+					</Rectangle>
+					<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<Rectangle.Margin>
+							<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+								<Binding Path="ButtonDenounceSetting.SliderPct" />
+								<Binding ElementName="ButtonDebounceSliderGrid" Path="Bounds.Width" />
+							</MultiBinding>
+						</Rectangle.Margin>
+					</Rectangle>
+				</Grid>
+				<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+			</StackPanel>
+
+		</StackPanel>
+
+		<!-- ═══ Generic (stub) settings — HIDDEN per request: not device-relevant
+		     (scroll / double-click / sleep are generic Windows-style stubs). Only
+		     Button Debounce above is relevant to the BLAZE. Commented out below;
+		     restore when implementing real device-specific settings. ═══ -->
+		<!--
+		<StackPanel Spacing="8">
+
+			Scroll One Screen at a Time toggle
+			<Grid ColumnDefinitions="*,Auto" Height="40" VerticalAlignment="Center">
+				<TextBlock Grid.Column="0"
+						   Text="{DynamicResource DeviceDetails_Settings_ScrollOneScreen}"
+						   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+				<controls:ToggleSwitchControl Grid.Column="1"
+											  IsChecked="{Binding ScrollOneScreenAtATime}"
+											  VerticalAlignment="Center" />
+			</Grid>
+
+			<Border Height="24" Background="Transparent" IsHitTestVisible="False" />
+
+			Scroll Lines
+			<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+				<TextBlock Grid.Column="0"
+						   Text="{DynamicResource DeviceDetails_Settings_ScrollLines}"
+						   Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
+						   VerticalAlignment="Center" />
+				<TextBlock Grid.Column="1"
+						   Text="{Binding ScrollLines, StringFormat={}{0:0}}"
+						   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+			</Grid>
+			<TextBlock Text="{DynamicResource DeviceDetails_Settings_ScrollLines_Subtitle}"
+					   Foreground="#BEBCEA" FontSize="14" Opacity="0.7" TextWrapping="Wrap" />
+			<Grid Name="ScrollLinesSliderGrid" Height="32" ClipToBounds="False"
+				  PointerPressed="OnScrollLinesPointerPressed"
+				  PointerMoved="OnScrollLinesPointerMoved"
+				  Cursor="Hand">
+				<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+				<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Width>
+						<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+							<Binding Path="ScrollLinesPct" />
+							<Binding ElementName="ScrollLinesSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Width>
+				</Rectangle>
+				<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Margin>
+						<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+							<Binding Path="ScrollLinesPct" />
+							<Binding ElementName="ScrollLinesSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Margin>
+				</Rectangle>
+			</Grid>
+
+			<Border Height="24" Background="Transparent" IsHitTestVisible="False" />
+
+			Double-Click Speed
+			<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+				<TextBlock Grid.Column="0"
+						   Text="{DynamicResource DeviceDetails_Settings_DoubleClickSpeed}"
+						   Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
+						   VerticalAlignment="Center" />
+				<TextBlock Grid.Column="1"
+						   Text="{Binding DoubleClickSpeed, StringFormat={}{0:0}ms}"
+						   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+			</Grid>
+			<TextBlock Text="{DynamicResource DeviceDetails_Settings_DoubleClickSpeed_Subtitle}"
+					   Foreground="#BEBCEA" FontSize="14" Opacity="0.7" TextWrapping="Wrap" />
+			<Grid Name="DoubleClickSpeedSliderGrid" Height="32" ClipToBounds="False"
+				  PointerPressed="OnDoubleClickSpeedPointerPressed"
+				  PointerMoved="OnDoubleClickSpeedPointerMoved"
+				  Cursor="Hand">
+				<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+				<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Width>
+						<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+							<Binding Path="DoubleClickSpeedPct" />
+							<Binding ElementName="DoubleClickSpeedSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Width>
+				</Rectangle>
+				<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Margin>
+						<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+							<Binding Path="DoubleClickSpeedPct" />
+							<Binding ElementName="DoubleClickSpeedSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Margin>
+				</Rectangle>
+			</Grid>
+
+			<Border Height="24" Background="Transparent" IsHitTestVisible="False" />
+
+			Sleep Timer
+			<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+				<TextBlock Grid.Column="0"
+						   Text="{DynamicResource DeviceDetails_Settings_SleepTimer}"
+						   Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
+						   VerticalAlignment="Center" />
+				<TextBlock Grid.Column="1"
+						   Text="{Binding SleepTimerLabel}"
+						   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+			</Grid>
+			<TextBlock Text="{DynamicResource DeviceDetails_Settings_SleepTimer_Subtitle}"
+					   Foreground="#BEBCEA" FontSize="14" Opacity="0.7" TextWrapping="Wrap" />
+			<Grid Name="SleepTimerSliderGrid" Height="32" ClipToBounds="False"
+				  PointerPressed="OnSleepTimerPointerPressed"
+				  PointerMoved="OnSleepTimerPointerMoved"
+				  Cursor="Hand">
+				<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+				<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Width>
+						<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+							<Binding Path="SleepTimerPct" />
+							<Binding ElementName="SleepTimerSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Width>
+				</Rectangle>
+				<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Margin>
+						<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+							<Binding Path="SleepTimerPct" />
+							<Binding ElementName="SleepTimerSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Margin>
+				</Rectangle>
+			</Grid>
+
+		</StackPanel>
+		-->
+
+	</StackPanel>
+</UserControl>

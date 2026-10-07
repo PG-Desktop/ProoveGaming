@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:common="clr-namespace:ProoveGaming.Common.Controls"
+			 x:Class="ProoveGaming.Common.Controls.ProgressWithPercentageView">
+	<StackPanel Spacing="4">
+		<TextBlock x:Name="PercentText"
+				   Foreground="#D8D3FF"
+				   HorizontalAlignment="Center"
+				   TextAlignment="Center"
+				   FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7, Inter"
+				   Text="0%" />
+
+		<common:AnimatedLoadingBarView x:Name="LoadingBar"
+									   HorizontalAlignment="Center" />
+	</StackPanel>
+</UserControl>

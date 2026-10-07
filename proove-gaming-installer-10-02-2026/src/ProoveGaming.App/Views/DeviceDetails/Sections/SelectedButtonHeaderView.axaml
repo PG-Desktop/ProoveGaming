@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.SelectedButtonHeaderView">
+	<!-- Selected-button header shared by the Buttons and Macros pages: the selected button's title
+	     on the left, a Reset link (reverts just that button to default) on the right. The row shows
+	     only while a hotspot is selected; Reset shows only for a remappable button, and is disabled
+	     (greyed) while that button already holds its default. -->
+	<UserControl.Styles>
+		<!-- Foreground (text) purple while it can reset; the HEX grey (#70698B) when disabled
+		     (button already at default). Set on the template ContentPresenter — which the label text
+		     inherits — so it overrides the Fluent disabled foreground. The disabled Background is
+		     forced transparent so the theme's default disabled box does not appear (this is a text
+		     link, not a filled button). -->
+		<Style Selector="Button.resetButton /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Foreground" Value="#6357FF" />
+		</Style>
+		<Style Selector="Button.resetButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Foreground" Value="#70698B" />
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+	</UserControl.Styles>
+	<!-- Callers bind this control's IsVisible to whether a key / hotspot is selected. The Buttons
+	     page lets the surrounding StackPanel skip its spacing when hidden; the Macros page wraps
+	     it in a fixed 38px slot instead (14px margin + the 24px line below), so its list does not
+	     jump when the selection toggles — keep that slot in sync if this control's height changes. -->
+	<Grid ColumnDefinitions="*,Auto"
+		  VerticalAlignment="Center"
+		  Margin="0,14,0,0">
+		<!-- Resolves to the mouse hotspot or the keyboard key, whichever this device selects. -->
+		<TextBlock Grid.Column="0"
+				   Text="{Binding SelectedMacroTargetLabel}"
+				   Foreground="#FFFFFF"
+				   FontSize="18"
+				   FontWeight="SemiBold"
+				   LineHeight="24"
+				   VerticalAlignment="Center" />
+		<!-- Mouse and keyboard both reset, but through different paths (a mouse button reverts
+			 to its default action, a key to its own keycode), so the header dispatches on the
+			 device type rather than carrying two buttons. -->
+		<Button Grid.Column="1"
+				Classes="pgLinkButton resetButton"
+				VerticalAlignment="Center"
+				IsVisible="{Binding IsSelectedMacroTargetResettable}"
+				IsEnabled="{Binding CanResetSelectedMacroTarget}"
+				Command="{Binding ResetSelectedMacroTargetCommand}">
+			<TextBlock Text="{DynamicResource DeviceDetails_Buttons_Reset}"
+					   FontFamily="{DynamicResource AppPixelFont}"
+					   FontSize="18" />
+		</Button>
+	</Grid>
+</UserControl>

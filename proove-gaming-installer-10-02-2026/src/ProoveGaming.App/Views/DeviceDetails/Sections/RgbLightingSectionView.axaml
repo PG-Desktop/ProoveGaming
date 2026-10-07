@@ -1,0 +1,198 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 xmlns:common="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 xmlns:controls="clr-namespace:ProoveGaming.App.Controls"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.RgbLightingSectionView"
+			 Design.Width="360"
+			 Design.Height="600">
+	<UserControl.Styles>
+
+		<!-- Random lighting button -->
+		<!-- Everything but the fill comes from the shared sectionActionButton style. -->
+		<Style Selector="Button.rgbRandomButton">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+
+		<!-- Radio options -->
+		<Style Selector="RadioButton.rgbOptionRadio">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Height" Value="56" />
+			<Setter Property="MinHeight" Value="56" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="18,0" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							Padding="{TemplateBinding Padding}"
+							MinHeight="{TemplateBinding MinHeight}"
+							HorizontalAlignment="Stretch">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="Stretch"
+										  VerticalContentAlignment="Center"
+										  VerticalAlignment="Center" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="RadioButton.rgbOptionRadio:checked">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<!-- Solid fill rather than the previous 10%-alpha purple, which barely registered against
+		     the panel behind it. Only unchecked rows react; a checked row keeps its base fill so
+		     the purple selection border stays the strongest cue. -->
+		<Style Selector="RadioButton.rgbOptionRadio:pointerover:not(:checked)">
+			<Setter Property="Background" Value="#231E5A" />
+		</Style>
+		<Style Selector="RadioButton.rgbOptionRadio:pointerover:checked">
+			<Setter Property="Background" Value="#0DFFFFFF" />
+		</Style>
+		<Style Selector="Ellipse.rgbOptionCircleOuter">
+			<Setter Property="Width" Value="18" />
+			<Setter Property="Height" Value="18" />
+			<Setter Property="Stroke" Value="#4DBEBCEA" />
+			<Setter Property="StrokeThickness" Value="2" />
+			<Setter Property="Fill" Value="Transparent" />
+		</Style>
+		<Style Selector="RadioButton.rgbOptionRadio:checked Ellipse.rgbOptionCircleOuter">
+			<Setter Property="Stroke" Value="#6357FF" />
+		</Style>
+		<Style Selector="Ellipse.rgbOptionCircleInner">
+			<Setter Property="Width" Value="12" />
+			<Setter Property="Height" Value="12" />
+			<Setter Property="Fill" Value="#6357FF" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="RadioButton.rgbOptionRadio:checked Ellipse.rgbOptionCircleInner">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- Expandable radio (color picker inside) -->
+		<Style Selector="RadioButton.rgbOptionRadioExpandable">
+			<Setter Property="MinHeight" Value="56" />
+			<Setter Property="Padding" Value="12,0" />
+		</Style>
+		<Style Selector="RadioButton.rgbOptionRadioExpandable:checked">
+			<Setter Property="Height" Value="NaN" />
+			<Setter Property="Padding" Value="12" />
+		</Style>
+
+		<!-- Bluetooth-locked state: the whole section is IsEnabled=false (see the content
+		     StackPanel), and these carry the design's dimming — effect rows at half opacity, the
+		     toggle a touch dimmer. The random button needs no rule here: the shared
+		     sectionActionButton:disabled presenter style (App.axaml) already paints the mock's
+		     outline-only look, and stacking an Opacity would dim it twice. The section title
+		     deliberately keeps full opacity per the mock; the Bluetooth banner on the preview
+		     panel names the reason. -->
+		<Style Selector="RadioButton.rgbOptionRadio:disabled">
+			<Setter Property="Opacity" Value="0.5" />
+		</Style>
+		<Style Selector="controls|ToggleSwitchControl:disabled">
+			<Setter Property="Opacity" Value="0.4" />
+		</Style>
+
+	</UserControl.Styles>
+
+	<Grid IsVisible="{Binding IsRgbLightingSection}" ClipToBounds="False">
+		<!-- The toggle hover glow overflows the switch by ~8px on top/right, and this section's
+			 on/off toggle sits at the very top-right, so the scroll viewport would clip it. Widen the
+			 viewport (Width) for right room and add top Padding for top room. The 336px item content
+			 stays left-aligned to the frosted panel; the extra width falls in the surrounding gutter
+			 and the top Padding keeps every item consistently inset. -->
+		<ScrollViewer VerticalScrollBarVisibility="Hidden"
+					  HorizontalScrollBarVisibility="Disabled"
+					  HorizontalAlignment="Left"
+					  Width="348"
+					  ClipToBounds="False"
+					  Padding="0,8,0,0">
+			<!-- Disabled while the live transport is a Bluetooth link that cannot carry
+			     configuration (Device.IsBluetoothConfigLocked; headsets stay unlocked —
+			     see remove-headset-bluetooth-lock plan). Sits on the content, not the
+			     ScrollViewer, so a long effect list still scrolls. FallbackValue keeps the
+			     section usable while Device is null during navigation. -->
+			<StackPanel Spacing="8" Width="336" HorizontalAlignment="Left" ClipToBounds="False"
+						IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+				<!-- Title row with toggle -->
+				<Grid ColumnDefinitions="*,Auto"
+					  VerticalAlignment="Center"
+					  ClipToBounds="False"
+					  Margin="0,0,0,8">
+					<TextBlock Grid.Column="0"
+							   Text="{DynamicResource DeviceDetails_Rgb_LightingEffect}"
+							   Foreground="#FFFFFF"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="18"
+							   FontWeight="SemiBold"
+							   LineHeight="24"
+							   LetterSpacing="0"
+							   VerticalAlignment="Center" />
+					<controls:ToggleSwitchControl Grid.Column="1"
+												  IsChecked="{Binding IsRgbEnabled, Mode=TwoWay}"
+												  VerticalAlignment="Center" />
+				</Grid>
+
+				<!-- Random lighting button (28px gap above, 24px gap below; title.Bottom=8 + Spacing=8 + Top=12 = 28; Bottom=16 + Spacing=8 + next.Top=0 = 24) -->
+				<Button Classes="sectionActionButton rgbRandomButton"
+						Content="{DynamicResource DeviceDetails_Rgb_RandomLighting}"
+						Command="{Binding ApplyRgbPresetCommand}"
+						CommandParameter="Random"
+						IsVisible="{Binding HasVisibleRgbEffects}"
+						Margin="0,12,0,16" />
+
+				<!-- Effect options — bound to the device-filtered view so Static (keyboard-only)
+					 doesn't show up for mice. -->
+				<ItemsControl ItemsSource="{Binding VisibleRgbEffects}">
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="viewmodels:RgbEffectSettingsViewModel">
+							<RadioButton Classes="rgbOptionRadio"
+										 Classes.rgbOptionRadioExpandable="{Binding HasExpandableContent}"
+										 GroupName="RgbEffectOptions"
+										 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+										 Command="{Binding SelectCommand}">
+								<Grid RowDefinitions="Auto,Auto">
+									<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12" VerticalAlignment="Center" Margin="4,0,0,0">
+										<Grid Width="18" Height="18" VerticalAlignment="Center">
+											<Ellipse Classes="rgbOptionCircleOuter" />
+											<Ellipse Classes="rgbOptionCircleInner" />
+										</Grid>
+										<TextBlock Grid.Column="1"
+												   Text="{Binding DisplayName}"
+												   Foreground="#FFFFFF"
+												   FontSize="16"
+												   VerticalAlignment="Center" />
+									</Grid>
+									<controls:RgbColorPickerControl Grid.Row="1"
+																	DataContext="{Binding}"
+																	IsVisible="{Binding IsSelected}"
+																	Margin="0,12,0,0" />
+								</Grid>
+							</RadioButton>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel Spacing="8" />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+				</ItemsControl>
+
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

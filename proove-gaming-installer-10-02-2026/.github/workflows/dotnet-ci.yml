@@ -1,0 +1,74 @@
+name: .NET CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+# Read-only: this workflow only checks the code out, builds and tests it. Without this block the job
+# gets the repository's default token scope (docs/plans/fix-repository-audit-findings, S12).
+permissions:
+  contents: read
+
+env:
+  CSPROJ: ./src/ProoveGaming.App/ProoveGaming.App.csproj
+
+jobs:
+  build-and-test:
+    # windows-latest, not ubuntu: every project targets net10.0-windows, and a solution-wide
+    # test run builds each project directly — on Linux that dies with NETSDK1100 for any
+    # project missing EnableWindowsTargeting (only 3 of them set it). Running on Windows also
+    # executes the tests on the OS the product actually ships on, matching release.yml.
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore ${{ env.CSPROJ }}
+
+      - name: Build
+        run: dotnet build ${{ env.CSPROJ }} --configuration Release --no-restore
+
+      - name: Test
+        # The solution, not the App csproj: tests/ projects are only referenced by the slnx,
+        # so testing the csproj alone ran zero tests (PR #81 review m7). This step restores
+        # and builds the remaining projects itself.
+        run: dotnet test ./src/ProveGaming.slnx --configuration Release
+
+      - name: Vulnerable packages
+        # After Test, which restored every project in the slnx. Fails the build on any High or
+        # Critical advisory against a direct or transitive package; lower severities are listed
+        # but do not fail (docs/plans/fix-repository-audit-findings, S12). JSON output rather than
+        # the text table, which is meant for people and changes shape between SDK versions.
+        shell: pwsh
+        run: |
+          $report = dotnet list ./src/ProveGaming.slnx package --vulnerable --include-transitive --format json | Out-String | ConvertFrom-Json
+          $findings = foreach ($project in $report.projects) {
+            foreach ($framework in @($project.frameworks)) {
+              foreach ($package in @($framework.topLevelPackages) + @($framework.transitivePackages)) {
+                foreach ($vulnerability in @($package.vulnerabilities)) {
+                  if ($vulnerability) {
+                    [pscustomobject]@{ Project = Split-Path $project.path -Leaf; Package = $package.id; Version = $package.resolvedVersion; Severity = $vulnerability.severity; Advisory = $vulnerability.advisoryurl }
+                  }
+                }
+              }
+            }
+          }
+          if (-not $findings) { Write-Output "No vulnerable packages."; exit 0 }
+          $findings | Format-Table -AutoSize | Out-String -Width 300 | Write-Output
+          if ($findings | Where-Object { $_.Severity -in 'High', 'Critical' }) {
+            Write-Error "High or Critical vulnerable packages found."
+            exit 1
+          }

@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+			 x:Class="ProoveGaming.Uninstaller.Views.CompleteStepView">
+	<commonLayouts:StepFrameLayoutView>
+		<commonLayouts:StepFrameLayoutView.StepContent>
+			<Border VerticalAlignment="Center"
+					Padding="0">
+				<Grid Width="600"
+					  HorizontalAlignment="Center"
+					  RowDefinitions="Auto,Auto,Auto"
+					  RowSpacing="18">
+					<TextBlock x:Name="CompleteTitleText"
+							   Grid.Row="0"
+							   Text="{DynamicResource Step3_Title_Success}"
+							   Classes="uninstallerStepTitle"
+							   Foreground="White"
+							   HorizontalAlignment="Center" />
+
+					<TextBlock x:Name="CompleteMessageText"
+							   Grid.Row="1"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   FontWeight="Normal"
+							   FontStyle="Normal"
+							   FontSize="16"
+							   LineHeight="24"
+							   HorizontalAlignment="Center"
+							   TextAlignment="Center"
+							   TextWrapping="Wrap">
+						<Run Text="{DynamicResource Complete_Message_Prefix}" Foreground="#B3BEBCEA"/>
+						<Run Text="{DynamicResource Complete_Message_Action}" FontWeight="Bold" Foreground="#FFFFFF" />
+						<Run Text="{DynamicResource Complete_Message_Suffix}" Foreground="#B3BEBCEA"/>
+					</TextBlock>
+
+					<Button x:Name="FinishButton"
+							Grid.Row="2"
+							Content="{DynamicResource Button_Finish}"
+							Margin="0,16,0,0"
+							HorizontalAlignment="Center"
+							Height="56"
+							Width="292"
+							Classes="uninstallerPrimaryButton" />
+				</Grid>
+			</Border>
+		</commonLayouts:StepFrameLayoutView.StepContent>
+	</commonLayouts:StepFrameLayoutView>
+</UserControl>

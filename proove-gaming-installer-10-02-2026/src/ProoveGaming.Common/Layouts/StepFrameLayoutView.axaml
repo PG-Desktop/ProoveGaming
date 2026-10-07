@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:commonControls="using:ProoveGaming.Common.Controls"
+             x:Class="ProoveGaming.Common.Layouts.StepFrameLayoutView">
+    <Viewbox Stretch="Uniform"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Top">
+        <Grid Width="920"
+              Height="810">
+            <commonControls:SvgImageView Width="920"
+                                         Height="810"
+                                         Stretch="Fill"
+                                         SourceUri="avares://ProoveGaming.Common/Assets/background-frame.svg"
+                                         IsHitTestVisible="False" />
+            <Border VerticalAlignment="Center">
+                <ContentPresenter x:Name="StepContentPresenter" />
+            </Border>
+        </Grid>
+    </Viewbox>
+</UserControl>

@@ -1,0 +1,206 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+             xmlns:converters="using:ProoveGaming.App.Converters"
+             mc:Ignorable="d"
+             x:DataType="viewmodels:InactiveDeviceCardViewModel"
+             x:Class="ProoveGaming.App.InactiveDeviceCard">
+	<UserControl.Styles>
+		<Style Selector="Button.deleteButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4DFF383C" />
+		</Style>
+	</UserControl.Styles>
+	<!-- 336 wide — matches SingleCard, whose comment explains the row sizing.
+		 The hover-lift transition lives on this root element, not the UserControl —
+		 DeviceCardBase lifts the CONTENT so the hit-area stays put (the jitter fix). -->
+	<Panel Width="336" Height="324" Background="Transparent">
+		<Panel.Transitions>
+			<Transitions>
+				<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+			</Transitions>
+		</Panel.Transitions>
+
+		<!-- Background — same angular shapes as SingleCard, all Fill="#CC000000" -->
+		<Canvas Width="336" Height="324">
+			<Path Fill="#CC000000"
+				  Data="M0 21.306L21.4766 0L36 5.90786e-07L42 0V21.306H0Z"/>
+			<Rectangle Canvas.Left="0"
+					   Canvas.Top="21.3057"
+					   Width="42"
+					   Height="214.792"
+					   Fill="#CC000000"/>
+			<Path Fill="#CC000000"
+				  Data="M22.5906 310.598L22.5906 258.677L0 236.099H42V324H36L22.5906 310.598Z"/>
+			<Path Fill="#CC000000"
+				  Data="M0 245L17 261.999L17 305.237L0 288.237L0 245Z"/>
+			<Rectangle Canvas.Left="42"
+					   Canvas.Top="0"
+					   Width="252"
+					   Height="324"
+					   Fill="#CC000000"/>
+			<Path Fill="#CC000000"
+				  Data="M300 0L300 50L336 86L336 0.000347503L300 0Z"/>
+			<!-- Decorative dots -->
+			<Path Fill="#6357FF"
+				  Data="M315.334 28C315.334 26.5272 316.528 25.3333 318.001 25.3333C319.473 25.3333 320.667 26.5272 320.667 28C320.667 29.4728 319.473 30.6667 318.001 30.6667C316.528 30.6667 315.334 29.4728 315.334 28Z"/>
+			<Path Fill="#6357FF"
+				  Data="M315.334 18.6667C315.334 17.1939 316.528 16 318.001 16C319.473 16 320.667 17.1939 320.667 18.6667C320.667 20.1394 319.473 21.3333 318.001 21.3333C316.528 21.3333 315.334 20.1394 315.334 18.6667Z"/>
+			<Path Fill="#6357FF"
+				  Data="M315.334 37.3333C315.334 35.8606 316.528 34.6667 318.001 34.6667C319.473 34.6667 320.667 35.8606 320.667 37.3333C320.667 38.8061 319.473 40 318.001 40C316.528 40 315.334 38.8061 315.334 37.3333Z"/>
+			<Path Fill="#CC000000"
+				  Data="M294 95.3673L294 54L336 95.3567L294 95.3673Z"/>
+			<Rectangle Canvas.Left="294"
+					   Canvas.Top="95.3672"
+					   Width="42"
+					   Height="207.318"
+					   Fill="#CC000000"/>
+			<Path Fill="#CC000000"
+				  Data="M336 302.686L314.354 324H294L294.001 302.686H336Z"/>
+		</Canvas>
+
+		<Grid ColumnDefinitions="42,*,42">
+
+			<Grid Grid.Column="1">
+				<Border Padding="0,40,0,0">
+					<StackPanel>
+
+						<!-- Device image placeholder -->
+						<Rectangle Width="200" Height="140"
+								   HorizontalAlignment="Center"
+								   Fill="#0DBEBCEA"/>
+
+						<Border Padding="0,15,0,10">
+							<StackPanel Spacing="5">
+								<TextBlock
+									Width="252"
+									Text="{Binding DeviceTypeLabel, Converter={x:Static converters:DeviceTypeLabelConverter.Instance}}"
+									TextAlignment="Center"
+									Foreground="#4DBEBCEA"
+									FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7"
+									FontStyle="Normal"
+									FontSize="14"
+									LineHeight="14"/>
+								<TextBlock
+									Width="252"
+									Text="{Binding DisplayName, Converter={x:Static converters:StringToUpperConverter.Instance}}"
+									TextAlignment="Center"
+									Foreground="#66FFFFFF"
+									FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7"
+									FontStyle="Normal"
+									FontSize="16"
+									LineHeight="18"/>
+							</StackPanel>
+						</Border>
+
+						<!-- DynamicResource + !Connected keeps the old StatusText semantics (empty
+						     while connected) and follows a runtime language switch. -->
+						<TextBlock
+							Text="{DynamicResource Card_NoConnection}"
+							IsVisible="{Binding !Connected}"
+							TextAlignment="Center"
+							Foreground="#4DBEBCEA"
+							FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7"
+							FontStyle="Normal"
+							FontSize="14"
+							LineHeight="14"/>
+
+					</StackPanel>
+				</Border>
+			</Grid>
+
+		</Grid>
+
+		<!-- Dots menu dropdown. Hangs off the card root, not inside the content grid's 42px
+			 right column — see the active SingleCard's DotsOverlay note (the column's measure
+			 constraint collapses the localized natural width back to the 204 floor). -->
+		<Grid
+			x:Name="DotsOverlay"
+			MinWidth="204" Height="64"
+			HorizontalAlignment="Right"
+			VerticalAlignment="Top"
+			Margin="0,60,20,0"
+			IsVisible="False">
+			<Grid.Effect>
+				<DropShadowEffect BlurRadius="40" Color="#6357FF" Opacity="0.3"/>
+			</Grid.Effect>
+			<!-- MinWidth + stretching middle, never a fixed Width — see the active card's
+				 DotsOverlay note (localized rows size the menu). -->
+			<Grid ColumnDefinitions="16,*,16" Height="64">
+				<Rectangle VerticalAlignment="Top" Height="48" Fill="Black"/>
+				<Path Fill="Black" Data="M16 64 L0 48 L16 48 Z"/>
+				<Rectangle Grid.Column="1" Height="64" Fill="Black"/>
+				<Path Grid.Column="2" Fill="Black" Data="M0 0 L16 16 L0 16 Z"/>
+				<Rectangle Grid.Column="2" VerticalAlignment="Top" Margin="0,16,0,0" Height="48" Fill="Black"/>
+			</Grid>
+			<StackPanel Margin="22,8,24,0" Spacing="0" VerticalAlignment="Top">
+				<Button Classes="deleteButton" Background="Transparent" BorderThickness="0"
+						Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Left" Command="{Binding DeleteCommand}">
+					<StackPanel Orientation="Horizontal" Spacing="10">
+						<Viewbox Width="22" Height="18">
+							<Canvas Width="16" Height="18">
+								<Path Fill="#FF383C">
+									<Path.RenderTransform><TranslateTransform X="-68" Y="-139"/></Path.RenderTransform>
+									<Path.Data>M71 157C70.45 157 69.9792 156.804 69.5875 156.413C69.1958 156.021 69 155.55 69 155V142H68V140H73V139H79V140H84V142H83V155C83 155.55 82.8042 156.021 82.4125 156.413C82.0208 156.804 81.55 157 81 157H71ZM81 142H71V155H81V142ZM73 153H75V144H73V153ZM77 153H79V144H77V153Z</Path.Data>
+								</Path>
+							</Canvas>
+						</Viewbox>
+						<TextBlock Text="{DynamicResource HomeView_CardMenu_Delete}" Foreground="#FF383C" FontSize="16" FontFamily="{DynamicResource BaseAppFont}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Button>
+			</StackPanel>
+		</Grid>
+
+		<!-- Three-dots button -->
+		<Button
+			x:Name="DotsButton"
+			Width="36"
+			Height="86"
+			Background="Transparent"
+			BorderThickness="0"
+			VerticalAlignment="Top"
+			HorizontalAlignment="Right"
+			Padding="0"
+			Classes="dotsMenuButton">
+			<Button.Styles>
+				<Style Selector="Button.dotsMenuButton">
+					<Setter Property="Template">
+						<ControlTemplate>
+							<Canvas Width="36" Height="86">
+								<Path x:Name="BgPath"
+									  Width="36"
+									  Height="86"
+									  Data="M0 0 L0 50 L36 86 L36 0 Z"
+									  Fill="Transparent"/>
+								<Ellipse Canvas.Left="15.334" Canvas.Top="16"
+										 Width="5.333" Height="5.333" Fill="Transparent"/>
+								<Ellipse Canvas.Left="15.334" Canvas.Top="25.333"
+										 Width="5.333" Height="5.333" Fill="Transparent"/>
+								<Ellipse Canvas.Left="15.334" Canvas.Top="34.667"
+										 Width="5.333" Height="5.333" Fill="Transparent"/>
+							</Canvas>
+						</ControlTemplate>
+					</Setter>
+				</Style>
+				<Style Selector="Button.dotsMenuButton:pointerover /template/ Path#BgPath">
+					<Setter Property="Fill" Value="#786DFF"/>
+				</Style>
+				<Style Selector="Button.dotsMenuButton:pointerover /template/ Ellipse">
+					<Setter Property="Fill" Value="White"/>
+				</Style>
+				<Style Selector="Button.dotsMenuButton:pressed">
+					<Setter Property="RenderTransform" Value="none"/>
+				</Style>
+				<Style Selector="Button.dotsMenuButton.open /template/ Path#BgPath">
+					<Setter Property="Fill" Value="#786DFF"/>
+				</Style>
+				<Style Selector="Button.dotsMenuButton.open /template/ Ellipse">
+					<Setter Property="Fill" Value="White"/>
+				</Style>
+			</Button.Styles>
+		</Button>
+
+	</Panel>
+</UserControl>

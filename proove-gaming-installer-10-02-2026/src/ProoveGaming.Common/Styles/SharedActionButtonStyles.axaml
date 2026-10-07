@@ -1,0 +1,74 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Style Selector="Button.pgSecondaryActionButton">
+		<Setter Property="Background" Value="#110F32" />
+		<Setter Property="Foreground" Value="#FFFFFF" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="FontFamily" Value="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7, Inter" />
+		<Setter Property="FontWeight" Value="Light" />
+		<Setter Property="FontStyle" Value="Normal" />
+		<Setter Property="FontSize" Value="18" />
+		<Setter Property="BorderBrush" Value="#6357FF" />
+		<Setter Property="BorderThickness" Value="1" />
+		<Setter Property="Padding" Value="0,2,0,0" />
+		<Setter Property="Height" Value="56" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="Button.pgSecondaryActionButton:pointerover">
+		<Setter Property="Background" Value="#2A2660" />
+		<Setter Property="BorderBrush" Value="#6357FF" />
+		<Setter Property="Foreground" Value="#FFFFFF" />
+	</Style>
+
+	<Style Selector="Button.pgSecondaryActionButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#2A2660" />
+		<Setter Property="BorderBrush" Value="#6357FF" />
+		<Setter Property="Foreground" Value="#FFFFFF" />
+	</Style>
+
+	<Style Selector="Button.pgCancelActionButton">
+		<Setter Property="Background" Value="#FF383C" />
+		<Setter Property="Foreground" Value="#FFFFFF" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="FontFamily" Value="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7, Inter" />
+		<Setter Property="FontWeight" Value="Light" />
+		<Setter Property="FontStyle" Value="Normal" />
+		<Setter Property="FontSize" Value="18" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Padding" Value="0,2,0,0" />
+		<Setter Property="Height" Value="56" />
+		<Setter Property="HorizontalContentAlignment" Value="Center" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+	</Style>
+
+	<Style Selector="Button.pgCancelActionButton:pointerover">
+		<Setter Property="Background" Value="#FF585C" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="Foreground" Value="#FFFFFF" />
+	</Style>
+
+	<Style Selector="Button.pgCancelActionButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="#FF585C" />
+		<Setter Property="BorderBrush" Value="Transparent" />
+		<Setter Property="Foreground" Value="#FFFFFF" />
+	</Style>
+
+	<!-- Text-link button: transparent, no chrome, purple text that underlines on hover. Font family
+	     and size are left to the call site (the installer uses its pixel font, the app its own). -->
+	<Style Selector="Button.pgLinkButton">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Foreground" Value="#6357FF" />
+		<Setter Property="Cursor" Value="Hand" />
+	</Style>
+	<Style Selector="Button.pgLinkButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="Transparent" />
+	</Style>
+	<Style Selector="Button.pgLinkButton:pointerover TextBlock">
+		<Setter Property="TextDecorations" Value="Underline" />
+	</Style>
+</Styles>

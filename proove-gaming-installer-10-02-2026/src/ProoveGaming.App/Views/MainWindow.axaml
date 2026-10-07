@@ -1,0 +1,1442 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:views="using:ProoveGaming.App.Views"
+		xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+		xmlns:commonControls="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+		xmlns:controls="clr-namespace:ProoveGaming.App.Controls"
+		xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+		xmlns:detailSections="using:ProoveGaming.App.Views.DeviceDetailsSections"
+		xmlns:presetDialogs="using:ProoveGaming.App.Views.DeviceDetailsDialogs"
+		xmlns:dialogs="using:ProoveGaming.App.Views.Dialogs"
+		xmlns:avConverters="using:Avalonia.Data.Converters"
+		x:Class="ProoveGaming.App.Views.MainWindow"
+		Icon="avares://ProoveGaming.App/Assets/PG_Favicon_128x128.ico"
+		Title="{DynamicResource Window_Title}"
+		Height="900"
+		Width="1440"
+		MinHeight="880"
+		MinWidth="1200"
+		Background="Transparent"
+		CanResize="True"
+		WindowDecorations="BorderOnly"
+		CornerRadius="0"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterScreen">
+	<!-- WindowDecorations is BorderOnly, not None. None strips the OS frame entirely and the resize
+		 borders go with it, so CanResize="True" had nothing to act on and the window could not be
+		 dragged to a new size. BorderOnly keeps the frame and its resize grips while still omitting
+		 the system title bar, leaving the custom chrome below untouched. -->
+	<Window.Styles>
+		<Style Selector="Button.windowControlButton">
+			<Setter Property="Width" Value="40" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Opacity" Value="0.7" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.windowControlButton:pointerover">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+
+		<Style Selector="ToolTip">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="Padding" Value="0"/>
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="Black" Padding="14,8" Margin="10">
+						<Border.Effect>
+							<DropShadowEffect Color="#6357FF" Opacity="0.5" BlurRadius="20" OffsetX="0" OffsetY="0"/>
+						</Border.Effect>
+						<!-- ContentPresenter, not a TextBlock bound to Content: a tip given as a control
+							 (a wrapping TextBlock, say) rendered as its type name. String tips still get
+							 the text styling below through the presenter's default TextBlock. -->
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalAlignment="Center"
+										  VerticalAlignment="Center"/>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<!-- Long tips (the uk sentences of the Extended Keys mode descriptions) wrap instead of
+			 running off the screen; MaxWidth caps the line, short tips stay one line. -->
+		<Style Selector="ToolTip TextBlock">
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="FontFamily" Value="Segoe UI"/>
+			<Setter Property="FontWeight" Value="400"/>
+			<Setter Property="FontStyle" Value="Normal"/>
+			<Setter Property="FontSize" Value="12"/>
+			<Setter Property="LineHeight" Value="16"/>
+			<Setter Property="LetterSpacing" Value="0"/>
+			<Setter Property="TextAlignment" Value="Center"/>
+			<Setter Property="TextWrapping" Value="Wrap"/>
+			<Setter Property="MaxWidth" Value="280"/>
+		</Style>
+	</Window.Styles>
+	<!-- Everything scales as one unit when the window is smaller than the layout needs.
+		 LayoutTransformControl measures its child through the INVERSE transform, so at 0.8 a
+		 960px-wide window still hands the layout its full 1200px of logical width and simply
+		 draws it smaller. Above the design size the scale is exactly 1 and this is inert, so
+		 normal and maximised windows behave as before.
+
+		 This is what makes the app usable on a small screen or at 150-200% display scaling,
+		 where the window cannot physically fit its minimum and the title bar (with minimise
+		 and close) ended up off-screen. See ApplyRootScale. -->
+	<LayoutTransformControl x:Name="RootScaler">
+	<Grid>
+	<commonLayouts:BackgroundLayoutView x:Name="BackgroundLayoutHost">
+		<commonLayouts:BackgroundLayoutView.LayoutContent>
+			<Grid RowDefinitions="Auto,*">
+				<Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+					<Border Grid.Column="0"
+							Background="Transparent"
+							PointerPressed="OnTitleBarPointerPressed">
+						<TextBlock Text="{DynamicResource Window_Title}"
+								   Margin="12,0,0,0"
+								   VerticalAlignment="Center"
+								   Foreground="#BEBCEA"
+								   FontSize="14" />
+					</Border>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button x:Name="MinimizeButton"
+								Classes="windowControlButton"
+								Click="OnMinimizeClick">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Remove.svg"
+													 Width="16"
+													 Height="16" />
+						</Button>
+						<Button x:Name="MaximizeButton"
+								Classes="windowControlButton"
+								Click="OnMaximizeClick">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Square.svg"
+													 Width="16"
+													 Height="16" />
+						</Button>
+						<Button x:Name="CloseWindowButton"
+								Classes="windowControlButton"
+								Click="OnCloseWindowClick">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Close.svg"
+													 Width="16"
+													 Height="16" />
+						</Button>
+					</StackPanel>
+				</Grid>
+
+				<Grid x:Name="RootLayoutGrid"
+					  Grid.Row="1"
+					  ClipToBounds="False"
+					  Margin="24,0,24,16">
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
+					</Grid.RowDefinitions>
+
+				<StackPanel x:Name="LanguagePanel"
+							Grid.Row="0"
+							Orientation="Horizontal"
+							HorizontalAlignment="Right"
+							IsVisible="False">
+					<TextBlock Text="{DynamicResource Label_Language}"
+							   VerticalAlignment="Center"
+							   Margin="0,0,10,0" />
+					<ComboBox x:Name="LanguageSelector"
+							  Width="130" />
+				</StackPanel>
+
+				<TextBlock x:Name="HeaderTitleText"
+						   Grid.Row="1"
+						   Margin="0,12,0,0"
+						   Text="{DynamicResource Header_Title}"
+						   Foreground="#1F1F1F"
+						   FontSize="28"
+						   FontWeight="SemiBold"
+						   IsVisible="False" />
+
+				<TextBlock x:Name="HeaderSubtitleText"
+						   Grid.Row="2"
+						   Margin="0,10,0,0"
+						   Foreground="#525252"
+						   TextWrapping="Wrap"
+						   IsVisible="False" />
+
+				<!-- ClipToBounds=False on the WHOLE chain from HomeView's card grid up to
+				     RootLayoutGrid: HomeView's scrollbar renders inside the RootLayoutGrid
+				     margin (docked at the window's right edge per design). This is the
+				     measured minimum — dropping the attribute from any of these (leaving it
+				     only on this Border, say) makes the bar vanish; verified against the
+				     running app, so don't "clean up" a link without re-checking the bar. The
+				     other pages sharing this host are IsVisible=False while Home is active,
+				     so nothing else gains overdraw from the unclipped chain in practice. -->
+				<Border x:Name="ContentHostBorder"
+						Grid.Row="3"
+						Background="Transparent"
+						ClipToBounds="False"
+						CornerRadius="8">
+					<Grid ClipToBounds="False">
+						<commonLayouts:StepFrameLayoutView x:Name="StepLayoutView">
+							<commonLayouts:StepFrameLayoutView.StepContent>
+								<Grid>
+									<views:WelcomeView x:Name="WelcomeView" />
+									<views:AgreementTermsView x:Name="AgreementTermsView" IsVisible="False" />
+									<views:ChooseNicknameView x:Name="ChooseNicknameView" IsVisible="False" />
+								</Grid>
+							</commonLayouts:StepFrameLayoutView.StepContent>
+						</commonLayouts:StepFrameLayoutView>
+						<views:HomeView x:Name="HomeView" IsVisible="False" ClipToBounds="False" />
+						<views:ProfileView x:Name="ProfileView" IsVisible="False" />
+						<views:InformationView x:Name="InformationView" IsVisible="False" />
+						<views:SettingsView x:Name="SettingsView" IsVisible="False" />
+						<views:DeviceDetailsView x:Name="DeviceDetailsView" IsVisible="False" />
+					</Grid>
+				</Border>
+				</Grid>
+			<!-- Notification popup-->
+			<!-- MinWidth keeps short messages on the design's 432px chip; MaxWidth caps growth —
+				 backend-originated messages (ProfileViewModel passes result.Message straight
+				 through) are unbounded, and without the cap the right-aligned toast grew LEFT
+				 past the window edge, hiding the icon and the START of the message. Overflow
+				 ellipsizes instead (see NotificationText). -->
+			<Grid x:Name="NotificationGrid" Grid.Row="1"
+				  IsVisible="False"
+				  HorizontalAlignment="Right" VerticalAlignment="Top"
+				  Margin="0,60,24,0" MinWidth="432" MaxWidth="720" Height="56">
+				<Grid.Effect>
+					<DropShadowEffect BlurRadius="80" Color="#6357FF" OffsetX="0" OffsetY="0" Opacity="0.3"/>
+				</Grid.Effect>
+				<!-- Chamfered background: fixed 16px corner pieces, middle stretches with content width -->
+				<Grid ColumnDefinitions="16,*,16" Height="56">
+					<Canvas Grid.Column="0" Width="16" Height="56">
+						<Path Fill="Black" Data="M0 16L16 0L16 16Z"/>
+						<Rectangle Canvas.Left="0" Canvas.Top="16" Width="16" Height="40" Fill="Black"/>
+					</Canvas>
+					<Rectangle Grid.Column="1" Fill="Black"/>
+					<Canvas Grid.Column="2" Width="16" Height="56">
+						<Rectangle Canvas.Left="0" Canvas.Top="0" Width="16" Height="40" Fill="Black"/>
+						<Path Fill="Black" Data="M16 40L0 56L0 40Z"/>
+					</Canvas>
+				</Grid>
+				<!-- Grid, not a horizontal StackPanel: a StackPanel measures its children with
+					 infinite width, so the TextBlock would never see the MaxWidth above and its
+					 trimming could never engage — the text would just overflow under the ✕. -->
+				<Grid ColumnDefinitions="Auto,*" ColumnSpacing="12"
+					  VerticalAlignment="Center" Margin="26,0,54,0">
+					<Path Width="20" Height="20" Stretch="Uniform" Fill="#00CE4F" VerticalAlignment="Center"
+						  Data="M114.6 112.6L121.65 105.55L120.25 104.15L114.6 109.8L111.75 106.95L110.35 108.35L114.6 112.6ZM116 118C114.617 118 113.317 117.738 112.1 117.212C110.883 116.688 109.825 115.975 108.925 115.075C108.025 114.175 107.312 113.117 106.788 111.9C106.263 110.683 106 109.383 106 108C106 106.617 106.263 105.317 106.788 104.1C107.312 102.883 108.025 101.825 108.925 100.925C109.825 100.025 110.883 99.3125 112.1 98.7875C113.317 98.2625 114.617 98 116 98C117.383 98 118.683 98.2625 119.9 98.7875C121.117 99.3125 122.175 100.025 123.075 100.925C123.975 101.825 124.688 102.883 125.212 104.1C125.738 105.317 126 106.617 126 108C126 109.383 125.738 110.683 125.212 111.9C124.688 113.117 123.975 114.175 123.075 115.075C122.175 115.975 121.117 116.688 119.9 117.212C118.683 117.738 117.383 118 116 118ZM116 116C118.233 116 120.125 115.225 121.675 113.675C123.225 112.125 124 110.233 124 108C124 105.767 123.225 103.875 121.675 102.325C120.125 100.775 118.233 100 116 100C113.767 100 111.875 100.775 110.325 102.325C108.775 103.875 108 105.767 108 108C108 110.233 108.775 112.125 110.325 113.675C111.875 115.225 113.767 116 116 116Z"/>
+					<TextBlock x:Name="NotificationText" Grid.Column="1"
+							   FontFamily="Segoe UI" FontSize="16" FontWeight="400"
+							   TextTrimming="CharacterEllipsis"
+							   Foreground="White" VerticalAlignment="Center"/>
+				</Grid>
+				<Button x:Name="NotificationCloseButton"
+						Classes="linkButton"
+						HorizontalAlignment="Right" VerticalAlignment="Center"
+						Margin="0,0,20,0" Cursor="Hand">
+					<Path Width="14" Height="14" Stretch="Uniform" Fill="#B2BEBCEA"
+						  Data="M470.4 115L469 113.6L474.6 108L469 102.4L470.4 101L476 106.6L481.6 101L483 102.4L477.4 108L483 113.6L481.6 115L476 109.4L470.4 115Z"/>
+				</Button>
+			</Grid>
+
+			<!-- Notifications side panel -->
+			<Grid x:Name="NotificationsOverlay"
+				  Grid.Row="0" Grid.RowSpan="2"
+				  Background="Transparent"
+				  x:CompileBindings="False"
+				  DataContext="{Binding ElementName=HomeView, Path=DataContext}"
+				  IsVisible="{Binding IsNotificationsOpen}"
+				  PointerPressed="OnNotificationsOverlayPointerPressed">
+				<Panel x:Name="NotificationsPanel"
+					   Width="472"
+					   HorizontalAlignment="Right"
+					   VerticalAlignment="Stretch"
+					   Margin="0,24,24,24">
+					<Panel.Styles>
+						<Style Selector="Button.notifAction">
+							<Setter Property="Background" Value="Transparent"/>
+							<Setter Property="BorderThickness" Value="0"/>
+							<Setter Property="Padding" Value="0"/>
+							<Setter Property="Cursor" Value="Hand"/>
+							<Setter Property="ClipToBounds" Value="False"/>
+						</Style>
+						<Style Selector="Button.notifAction /template/ ContentPresenter#PART_ContentPresenter">
+							<Setter Property="Background" Value="Transparent"/>
+						</Style>
+						<Style Selector="Path.notifActionBg">
+							<Setter Property="IsVisible" Value="False"/>
+						</Style>
+						<Style Selector="Button.notifAction:pointerover Path.notifActionBg">
+							<Setter Property="IsVisible" Value="True"/>
+						</Style>
+
+						<Style Selector="Button.notifRedBtn">
+							<Setter Property="ClipToBounds" Value="False"/>
+						</Style>
+						<Style Selector="Path.redBtnBg">
+							<Setter Property="IsVisible" Value="False"/>
+						</Style>
+						<Style Selector="Button.notifRedBtn:pointerover Path.redBtnBg">
+							<Setter Property="IsVisible" Value="True"/>
+						</Style>
+
+						<Style Selector="Border.notifCard">
+							<Setter Property="Background" Value="#26FFFFFF"/>
+						</Style>
+						<Style Selector="Border.notifCard:pointerover">
+							<Setter Property="Background" Value="#4D6357FF"/>
+						</Style>
+
+						<Style Selector="Button.notifDeleteBtn">
+							<Setter Property="IsVisible" Value="False"/>
+							<Setter Property="ClipToBounds" Value="False"/>
+						</Style>
+						<Style Selector="Border.notifCard:pointerover Button.notifDeleteBtn">
+							<Setter Property="IsVisible" Value="True"/>
+						</Style>
+						<Style Selector="Border.notifReadCard:pointerover Button.notifDeleteBtn">
+							<Setter Property="IsVisible" Value="True"/>
+						</Style>
+						<Style Selector="Path.deleteBtnBg">
+							<Setter Property="IsVisible" Value="False"/>
+						</Style>
+						<Style Selector="Button.notifDeleteBtn:pointerover Path.deleteBtnBg">
+							<Setter Property="IsVisible" Value="True"/>
+						</Style>
+
+						<Style Selector="Border.notifReadCard">
+							<Setter Property="Background" Value="#0DFFFFFF"/>
+						</Style>
+						<Style Selector="Border.notifReadCard:pointerover">
+							<Setter Property="Background" Value="#4D6357FF"/>
+						</Style>
+						<Style Selector="Button.notifGrayBtn">
+							<Setter Property="IsVisible" Value="False"/>
+							<Setter Property="ClipToBounds" Value="False"/>
+						</Style>
+						<Style Selector="Border.notifReadCard:pointerover Button.notifGrayBtn">
+							<Setter Property="IsVisible" Value="True"/>
+						</Style>
+						<Style Selector="Path.grayBtnBg">
+							<Setter Property="IsVisible" Value="False"/>
+						</Style>
+						<Style Selector="Button.notifGrayBtn:pointerover Path.grayBtnBg">
+							<Setter Property="IsVisible" Value="True"/>
+						</Style>
+					</Panel.Styles>
+
+					<Panel.Effect>
+						<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="20" Color="#6357FF" Opacity="0.3"/>
+					</Panel.Effect>
+
+					<!-- Notched-corner black chrome (adapts to panel size) -->
+					<Grid>
+						<Rectangle Fill="Black" Margin="16,0"/>
+						<Rectangle Fill="Black" HorizontalAlignment="Left" Width="16" Margin="0,16"/>
+						<Rectangle Fill="Black" HorizontalAlignment="Right" Width="16" Margin="0,16"/>
+						<Path Fill="Black" HorizontalAlignment="Left" VerticalAlignment="Top" Width="16" Height="16" Data="M0 16L16 0L16 16Z"/>
+						<Path Fill="Black" HorizontalAlignment="Right" VerticalAlignment="Top" Width="16" Height="16" Data="M0 0L16 16L0 16Z"/>
+						<Path Fill="Black" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="16" Height="16" Data="M16 16L0 0L16 0Z"/>
+						<Path Fill="Black" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="16" Height="16" Data="M16 0L0 16L0 0Z"/>
+					</Grid>
+
+					<Grid RowDefinitions="Auto,Auto,*" Margin="16,0">
+						<Grid Grid.Row="0" ColumnDefinitions="*,Auto" VerticalAlignment="Top">
+							<TextBlock Grid.Column="0"
+									   Text="{DynamicResource Notifications_Title}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontWeight="250"
+									   FontStyle="Normal"
+									   FontSize="28"
+									   LineHeight="28"
+									   LetterSpacing="0"
+									   Foreground="#FFFFFF"
+									   Margin="8,22,0,0"
+									   VerticalAlignment="Top"/>
+							<StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="30"
+										Margin="0,27,13,0" VerticalAlignment="Top">
+								<Button Classes="notifAction" Command="{Binding DeleteAllNotificationsCommand}" ToolTip.Tip="{DynamicResource Notifications_DeleteAllTooltip}" ToolTip.Placement="Bottom" ToolTip.ShowDelay="0" ToolTip.VerticalOffset="10">
+									<Grid Width="16" Height="18" ClipToBounds="False">
+										<Path Classes="notifActionBg"
+											  Width="48" Height="48"
+											  HorizontalAlignment="Center" VerticalAlignment="Center"
+											  Stretch="Uniform" Fill="#4D6357FF"
+											  Data="M41.1429 6.85714H48V41.1429H41.1429V48H6.85714V41.1429H0V6.85714H6.85714V0H41.1429V6.85714Z"/>
+										<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Delete-Small.svg"
+																	 Width="16" Height="18"/>
+									</Grid>
+								</Button>
+								<Button Classes="notifAction"
+										Command="{Binding MarkAllNotificationsReadCommand}"
+										ToolTip.Tip="{DynamicResource Notifications_ReadAllTooltip}" ToolTip.Placement="Bottom" ToolTip.ShowDelay="0" ToolTip.VerticalOffset="10">
+									<Grid Width="22" Height="15" ClipToBounds="False">
+										<Path Classes="notifActionBg"
+											  Width="48" Height="48"
+											  HorizontalAlignment="Center" VerticalAlignment="Center"
+											  Stretch="Uniform" Fill="#4D6357FF"
+											  Data="M41.1429 6.85714H48V41.1429H41.1429V48H6.85714V41.1429H0V6.85714H6.85714V0H41.1429V6.85714Z"/>
+										<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Visibility-Small.svg"
+																	 Width="22" Height="15"/>
+									</Grid>
+								</Button>
+								<Button Classes="notifAction"
+										Command="{Binding CloseNotificationsCommand}">
+									<Grid Width="14" Height="14" ClipToBounds="False">
+										<Path Classes="notifActionBg"
+											  Width="48" Height="48"
+											  HorizontalAlignment="Center" VerticalAlignment="Center"
+											  Stretch="Uniform" Fill="#4D6357FF"
+											  Data="M41.1429 6.85714H48V41.1429H41.1429V48H6.85714V41.1429H0V6.85714H6.85714V0H41.1429V6.85714Z"/>
+										<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Close-Small.svg"
+																	 Width="14" Height="14"/>
+									</Grid>
+								</Button>
+							</StackPanel>
+						</Grid>
+
+						<Rectangle Grid.Row="1" Height="1" Fill="White" Opacity="0.1"
+								   StrokeDashArray="2,2" Margin="0,27,0,16"/>
+
+						<!-- pgScrollViewer, like every other visible bar: without the class this was
+						     the one raw Fluent scrollbar left in the app, and pressing its thumb
+						     expanded it into the theme's wide grey default (QA 2026-08-31 —
+						     "клік на скрол втрачає стиль"). AllowAutoHide=False keeps the 4px bar
+						     from materialising only under the pointer, same as the Home grid. -->
+						<ScrollViewer Grid.Row="2" Classes="pgScrollViewer"
+									  HorizontalScrollBarVisibility="Disabled"
+									  AllowAutoHide="False"
+									  Margin="0,0,0,16"
+									  IsVisible="{Binding !HasNoNotifications}">
+							<!-- One entry per calendar day (Today / Yesterday / date), each with its own
+							     divider; the items ItemsControl below is the pre-grouping list unchanged. -->
+							<ItemsControl ItemsSource="{Binding NotificationGroups}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel Spacing="4"/>
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+							<DataTemplate>
+							<StackPanel Spacing="4">
+								<Grid Margin="0,0,0,8" ColumnDefinitions="*,Auto,*">
+									<Line Grid.Column="0" Stretch="Fill" StartPoint="0,0" EndPoint="1,0"
+										  Stroke="White" StrokeThickness="1" Opacity="0.1"
+										  StrokeDashArray="2,2"
+										  Height="1" VerticalAlignment="Center"/>
+									<TextBlock Grid.Column="1" Text="{Binding Header}" Margin="12,0"
+											   FontFamily="Inter" FontWeight="400" FontStyle="Normal" FontSize="14"
+											   LineHeight="20" LetterSpacing="0.25"
+											   TextAlignment="Center"
+											   Foreground="#80BEBCEA"
+											   VerticalAlignment="Center"/>
+									<Line Grid.Column="2" Stretch="Fill" StartPoint="0,0" EndPoint="1,0"
+										  Stroke="White" StrokeThickness="1" Opacity="0.1"
+										  StrokeDashArray="2,2"
+										  Height="1" VerticalAlignment="Center"/>
+								</Grid>
+								<ItemsControl ItemsSource="{Binding Items}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<StackPanel Spacing="4"/>
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+
+										<Border Classes.notifCard="{Binding !IsRead}"
+												Classes.notifReadCard="{Binding IsRead}"
+												Height="82">
+											<Grid>
+												<Grid ColumnDefinitions="Auto,*">
+													<Grid Grid.Column="0" Width="56" Height="56" Margin="12,0,0,0" VerticalAlignment="Center">
+														<Path Fill="#33BEBCEA" Stretch="Fill"
+															  Data="{StaticResource CutCornerFrameGeometry}"/>
+														<Path Width="{Binding IconWidth}" Height="{Binding IconHeight}"
+															  Stretch="Uniform" Fill="#B2BEBCEA"
+															  HorizontalAlignment="Center" VerticalAlignment="Center"
+															  Data="{Binding IconData}"
+															  IsVisible="{Binding HasIconData}"/>
+														<commonControls:SvgImageView SourceUri="{Binding IconUri}"
+																					 Width="{Binding IconWidth}" Height="{Binding IconHeight}"
+																					 HorizontalAlignment="Center" VerticalAlignment="Center"
+																					 IsVisible="{Binding HasIconUri}"/>
+													</Grid>
+													<StackPanel Grid.Column="1" Margin="14,12,80,0" VerticalAlignment="Top">
+														<!-- Ellipsis on both lines (PR #118 m1): the subtitle can carry free user text
+														     (the Contact Us topic, up to 100 chars) and the fixed-height card gives it
+														     ~278px — without trimming the line ran under the hover delete button. -->
+														<TextBlock Text="{Binding Title}"
+																   FontFamily="Segoe UI" FontWeight="400" FontStyle="Normal" FontSize="16"
+																   LineHeight="24" LetterSpacing="0"
+																   TextTrimming="CharacterEllipsis"
+																   Foreground="#FFFFFF"/>
+														<TextBlock Text="{Binding Subtitle}"
+																   FontFamily="Segoe UI" FontWeight="400" FontStyle="Normal" FontSize="14"
+																   LineHeight="20" LetterSpacing="0"
+																   TextTrimming="CharacterEllipsis"
+																   Foreground="#B2BEBCEA"/>
+													</StackPanel>
+												</Grid>
+												<TextBlock Text="{Binding Time}"
+														   FontFamily="Inter" FontWeight="400" FontSize="14" LineHeight="20" LetterSpacing="0.25"
+														   Foreground="#B2BEBCEA"
+														   HorizontalAlignment="Right" VerticalAlignment="Top"
+														   Margin="0,14,12,0"/>
+												<Grid Width="64" Height="32"
+													  HorizontalAlignment="Right" VerticalAlignment="Bottom"
+													  Margin="0,0,12,12">
+													<Button Classes="notifDeleteBtn"
+															Command="{Binding DeleteCommand}"
+															HorizontalAlignment="Left" VerticalAlignment="Center"
+															Padding="0" BorderThickness="0" Background="Transparent" Cursor="Hand"
+															Margin="9,0,0,0">
+														<Grid Width="14" Height="15" ClipToBounds="False">
+															<Path Classes="deleteBtnBg" Width="32" Height="32"
+																  HorizontalAlignment="Center" VerticalAlignment="Center"
+																  Stretch="Uniform" Fill="#4D6357FF"
+																  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+															<Path Stretch="Uniform" Fill="#6357FF"
+																  Data="M11.834 23.5C11.3757 23.5 10.9833 23.3368 10.6569 23.0104C10.3305 22.684 10.1673 22.2917 10.1673 21.8333V11H9.33398V9.33333H13.5007V8.5H18.5007V9.33333H22.6673V11H21.834V21.8333C21.834 22.2917 21.6708 22.684 21.3444 23.0104C21.018 23.3368 20.6257 23.5 20.1673 23.5H11.834ZM20.1673 11H11.834V21.8333H20.1673V11ZM13.5007 20.1667H15.1673V12.6667H13.5007V20.1667ZM16.834 20.1667H18.5007V12.6667H16.834V20.1667Z"/>
+														</Grid>
+													</Button>
+													<Button Classes="notifRedBtn"
+															IsVisible="{Binding !IsRead}"
+															Command="{Binding MarkAsReadCommand}"
+															HorizontalAlignment="Right" VerticalAlignment="Center"
+															Padding="0" BorderThickness="0" CornerRadius="0" Cursor="Hand"
+															Background="Transparent"
+															Margin="0,0,11,0">
+														<Grid Width="10" Height="10" ClipToBounds="False">
+															<Path Classes="redBtnBg" Width="32" Height="32"
+																  HorizontalAlignment="Center" VerticalAlignment="Center"
+																  Stretch="Uniform" Fill="#4DFF383C"
+																  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+															<Rectangle Fill="#FF383C"/>
+														</Grid>
+													</Button>
+													<Button Classes="notifGrayBtn"
+															Command="{Binding MarkAsUnreadCommand}"
+															HorizontalAlignment="Right" VerticalAlignment="Center"
+															Padding="0" BorderThickness="0" CornerRadius="0" Cursor="Hand"
+															Background="Transparent"
+															Margin="0,0,11,0">
+														<Grid Width="10" Height="10" ClipToBounds="False">
+															<Path Classes="grayBtnBg" Width="32" Height="32"
+																  HorizontalAlignment="Center" VerticalAlignment="Center"
+																  Stretch="Uniform" Fill="#4D6357FF"
+																  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+															<Rectangle Fill="#B2BEBCEA"/>
+														</Grid>
+													</Button>
+												</Grid>
+											</Grid>
+										</Border>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+							</StackPanel>
+							</DataTemplate>
+							</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</ScrollViewer>
+
+						<!-- Empty state -->
+						<StackPanel Grid.Row="0" Grid.RowSpan="3" IsVisible="{Binding HasNoNotifications}"
+									HorizontalAlignment="Center" VerticalAlignment="Center"
+									Spacing="8">
+							<Canvas Width="74" Height="74" HorizontalAlignment="Center">
+								<Path Canvas.Left="0" Canvas.Top="0" Fill="#14FFFFFF"
+									  Data="M63.429 10.571H74V63.429H63.429V74H10.571V63.429H0V10.571H10.571V0H63.429V10.571Z"/>
+								<Path Canvas.Left="23.666" Canvas.Top="20.333" Width="26.667" Height="33.333"
+									  Stretch="Uniform" Fill="#80BEBCEA"
+									  Data="M206.666 371.666V368.333H209.999V356.666C209.999 354.361 210.694 352.312 212.083 350.521C213.472 348.729 215.277 347.555 217.499 347V345.833C217.499 345.139 217.742 344.548 218.229 344.062C218.715 343.576 219.305 343.333 219.999 343.333C220.694 343.333 221.284 343.576 221.77 344.062C222.256 344.548 222.499 345.139 222.499 345.833V347C224.722 347.555 226.527 348.729 227.916 350.521C229.305 352.312 229.999 354.361 229.999 356.666V368.333H233.333V371.666H206.666ZM219.999 376.666C219.083 376.666 218.298 376.34 217.645 375.687C216.992 375.034 216.666 374.25 216.666 373.333H223.333C223.333 374.25 223.006 375.034 222.354 375.687C221.701 376.34 220.916 376.666 219.999 376.666ZM213.333 368.333H226.666V356.666C226.666 354.833 226.013 353.264 224.708 351.958C223.402 350.652 221.833 350 219.999 350C218.166 350 216.597 350.652 215.291 351.958C213.985 353.264 213.333 354.833 213.333 356.666V368.333Z"/>
+								<Path Canvas.Left="50.334" Canvas.Top="14.333" Width="9.333" Height="9.333"
+									  Stretch="Uniform" Fill="#4DBEBCEA"
+									  Data="M234.267 346.666L233.334 345.733L237.067 342L233.334 338.266L234.267 337.333L238.001 341.066L241.734 337.333L242.667 338.266L238.934 342L242.667 345.733L241.734 346.666L238.001 342.933L234.267 346.666Z"/>
+							</Canvas>
+							<TextBlock Text="{DynamicResource Notifications_Empty_Title}"
+									   FontFamily="Segoe UI"
+									   FontWeight="600"
+									   FontStyle="Normal"
+									   FontSize="16"
+									   LineHeight="24"
+									   LetterSpacing="0"
+									   TextAlignment="Center"
+									   Foreground="#B2BEBCEA"
+									   HorizontalAlignment="Center"/>
+							<TextBlock Text="{DynamicResource Notifications_Empty_Subtitle}"
+									   FontFamily="Segoe UI"
+									   FontWeight="400"
+									   FontStyle="Normal"
+									   FontSize="14"
+									   LineHeight="20"
+									   LetterSpacing="0"
+									   TextAlignment="Center"
+									   Foreground="#B2BEBCEA"
+									   HorizontalAlignment="Center"
+									   TextWrapping="Wrap" MaxWidth="320"/>
+						</StackPanel>
+					</Grid>
+				</Panel>
+			</Grid>
+			</Grid>
+		</commonLayouts:BackgroundLayoutView.LayoutContent>
+	</commonLayouts:BackgroundLayoutView>
+
+	<!-- Window-level dialog overlay: tints + dialogs sit above the blurred BackgroundLayoutHost -->
+	<Grid x:Name="DialogOverlay"
+		  IsVisible="False"
+		  Background="#BF0D0737"
+		  x:CompileBindings="False"
+		  DataContext="{Binding ElementName=HomeView, Path=DataContext}">
+
+		<!-- Logout confirmation dialog -->
+		<Panel x:Name="LogoutDialogPanel"
+			   IsVisible="False"
+			   Width="620" Height="220"
+			   HorizontalAlignment="Center" VerticalAlignment="Center">
+			<Panel.Effect>
+				<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="80" Color="#6357FF" Opacity="0.3"/>
+			</Panel.Effect>
+
+			<Canvas Width="620" Height="220">
+				<Path Fill="#E6000000" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+				<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="110.792" Fill="#E6000000"/>
+				<Path Fill="#E6000000" Data="M22.591 206.598L22.591 154.677L0 132.099H42V220H36L22.591 206.598Z"/>
+				<Rectangle Canvas.Left="42" Canvas.Top="0" Width="536" Height="220" Fill="#E6000000"/>
+				<Path Fill="#E6000000" Data="M584 0L584 50L620 86L620 0Z"/>
+				<Path Fill="#E6000000" Data="M578 95.367L578 54L620 95.357Z"/>
+				<Rectangle Canvas.Left="578" Canvas.Top="95.367" Width="42" Height="103.318" Fill="#E6000000"/>
+				<Path Fill="#E6000000" Data="M620 198.686L598.354 220H578L578.001 198.686H620Z"/>
+			</Canvas>
+
+			<Grid ColumnDefinitions="42,*,42">
+				<Grid Grid.Column="1" Margin="4,36,0,32" RowDefinitions="Auto,*,Auto">
+					<StackPanel Grid.Row="0" Spacing="8">
+						<TextBlock Text="{DynamicResource HomeView_LogoutConfirm_Title}"
+								   Foreground="White"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontStyle="Normal"
+								   FontSize="28"
+								   LineHeight="28"
+								   LetterSpacing="0"/>
+						<TextBlock Text="{DynamicResource HomeView_LogoutConfirm_Body}"
+								   Foreground="#B2BEBCEA"
+								   FontFamily="Segoe UI"
+								   FontWeight="400"
+								   FontStyle="Normal"
+								   FontSize="16"
+								   LineHeight="24"
+								   LetterSpacing="0"
+								   TextWrapping="Wrap"/>
+					</StackPanel>
+
+					<StackPanel Grid.Row="2" Orientation="Horizontal"
+								HorizontalAlignment="Right" Spacing="12">
+						<!-- MinWidth + padding, not the per-language width constant this used to
+							 carry: the button sizes from its localized caption. -->
+						<Button Classes="secondaryButton"
+								MinWidth="104" Height="39" Padding="16,0"
+								Cursor="Hand"
+								Command="{Binding CancelLogoutCommand}">
+							<TextBlock Text="{DynamicResource Button_Cancel}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontWeight="250"
+									   FontStyle="Normal"
+									   FontSize="18"
+									   LetterSpacing="0"/>
+						</Button>
+						<Button Classes="primaryButton"
+								MinWidth="104" Height="40" Padding="16,0"
+								Cursor="Hand"
+								Command="{Binding ConfirmLogoutCommand}">
+							<TextBlock Text="{DynamicResource HomeView_LogoutConfirm_Confirm}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontWeight="250"
+									   FontStyle="Normal"
+									   FontSize="18"
+									   LetterSpacing="0"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+
+				<Button Grid.Column="2"
+						Classes="closeButton"
+						HorizontalAlignment="Stretch" VerticalAlignment="Top"
+						Height="86"
+						Background="Transparent" BorderThickness="0" Padding="0"
+						Cursor="Hand"
+						Command="{Binding CancelLogoutCommand}">
+					<Button.Template>
+						<ControlTemplate>
+							<Canvas Width="42" Height="86">
+								<Path x:Name="PART_Bg"
+									  Fill="Transparent"
+									  Data="M6 0L6 50L42 86L42 0Z"/>
+								<Path x:Name="PART_Icon"
+									  Fill="#B2BEBCEA"
+									  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+							</Canvas>
+						</ControlTemplate>
+					</Button.Template>
+				</Button>
+			</Grid>
+		</Panel>
+
+		<!-- Contact Us dialog (620x524) — frame canvas transcribed from the design SVG; the
+		     bevel family matches the logout dialog above, only the heights differ. -->
+		<Panel x:Name="ContactUsDialogPanel"
+			   IsVisible="False"
+			   Width="620" Height="524"
+			   HorizontalAlignment="Center" VerticalAlignment="Center">
+			<Panel.Effect>
+				<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="80" Color="#6357FF" Opacity="0.3"/>
+			</Panel.Effect>
+			<Panel.Styles>
+				<!-- The sending mockup blurs the form under the dark overlay (feGaussianBlur 2). -->
+				<Style Selector="Grid.contactUsContent.sending">
+					<Setter Property="Effect">
+						<BlurEffect Radius="4"/>
+					</Setter>
+				</Style>
+			</Panel.Styles>
+
+			<Canvas Width="620" Height="524">
+				<Path Fill="#E6000000" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+				<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="414.792" Fill="#E6000000"/>
+				<Path Fill="#E6000000" Data="M22.591 510.598L22.591 458.677L0 436.099H42V524H36L22.591 510.598Z"/>
+				<Rectangle Canvas.Left="42" Canvas.Top="0" Width="536" Height="524" Fill="#E6000000"/>
+				<Path Fill="#E6000000" Data="M584 0L584 50L620 86L620 0Z"/>
+				<Path Fill="#E6000000" Data="M578 95.367L578 54L620 95.357Z"/>
+				<Rectangle Canvas.Left="578" Canvas.Top="95.367" Width="42" Height="407.318" Fill="#E6000000"/>
+				<Path Fill="#E6000000" Data="M620 502.686L598.354 524H578L578.001 502.686H620Z"/>
+			</Canvas>
+
+			<Grid ColumnDefinitions="42,*,42">
+				<Grid Grid.Column="1" Margin="0,36,0,32" RowDefinitions="Auto,*,Auto"
+					  Classes="contactUsContent"
+					  Classes.sending="{Binding IsContactUsSending}">
+					<StackPanel Grid.Row="0">
+						<TextBlock Text="{DynamicResource ContactUs_Title}"
+								   Foreground="White"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontStyle="Normal"
+								   FontSize="28"
+								   LineHeight="28"
+								   LetterSpacing="0"/>
+
+						<!-- Email -->
+						<Border Classes="pgInputHost" Classes.filled="{Binding ContactUsEmailFilled}"
+								Height="55" Margin="0,28,0,0"
+								BorderThickness="1" Background="Transparent">
+							<Grid ColumnDefinitions="Auto,*">
+								<Path Grid.Column="0" Width="20" Height="16" Stretch="Uniform"
+									  Fill="#80BEBCEA" VerticalAlignment="Center" Margin="18,0,0,0"
+									  Data="M2 16C1.45 16 0.979167 15.8042 0.5875 15.4125C0.195833 15.0208 0 14.55 0 14V2C0 1.45 0.195833 0.979167 0.5875 0.5875C0.979167 0.195833 1.45 0 2 0H18C18.55 0 19.0208 0.195833 19.4125 0.5875C19.8042 0.979167 20 1.45 20 2V14C20 14.55 19.8042 15.0208 19.4125 15.4125C19.0208 15.8042 18.55 16 18 16H2ZM10 9L2 4V14H18V4L10 9ZM10 7L18 2H2L10 7ZM2 4V2V14V4Z"/>
+								<TextBox Grid.Column="1"
+										 Text="{Binding ContactUsEmail, Mode=TwoWay}"
+										 Background="Transparent"
+										 BorderThickness="0"
+										 Foreground="White"
+										 PlaceholderForeground="#B2BEBCEA"
+										 CaretBrush="#B2BEBCEA"
+										 PlaceholderText="{DynamicResource ContactUs_Field_Email}"
+										 FontFamily="{DynamicResource BaseAppFont}"
+										 FontSize="16"
+										 LineHeight="24"
+										 LetterSpacing="0"
+										 Padding="14,0,16,0"
+										 VerticalContentAlignment="Center"/>
+							</Grid>
+						</Border>
+
+						<!-- Topic -->
+						<Border Classes="pgInputHost" Classes.filled="{Binding ContactUsTopicFilled}"
+								Height="55" Margin="0,24,0,0"
+								BorderThickness="1" Background="Transparent">
+							<Grid ColumnDefinitions="Auto,*">
+								<Path Grid.Column="0" Width="14" Height="18" Stretch="Uniform"
+									  Fill="#80BEBCEA" VerticalAlignment="Center" Margin="20,0,0,0"
+									  Data="M0 18V2C0 1.45 0.195833 0.979167 0.5875 0.5875C0.979167 0.195833 1.45 0 2 0H12C12.55 0 13.0208 0.195833 13.4125 0.5875C13.8042 0.979167 14 1.45 14 2V18L7 15L0 18ZM2 14.95L7 12.8L12 14.95V2H2V14.95Z"/>
+								<TextBox Grid.Column="1"
+										 Text="{Binding ContactUsTopic, Mode=TwoWay}"
+										 MaxLength="100"
+										 Background="Transparent"
+										 BorderThickness="0"
+										 Foreground="White"
+										 PlaceholderForeground="#B2BEBCEA"
+										 CaretBrush="#B2BEBCEA"
+										 PlaceholderText="{DynamicResource ContactUs_Field_Topic}"
+										 FontFamily="{DynamicResource BaseAppFont}"
+										 FontSize="16"
+										 LineHeight="24"
+										 LetterSpacing="0"
+										 Padding="12,0,16,0"
+										 VerticalContentAlignment="Center"/>
+							</Grid>
+						</Border>
+						<TextBlock Text="{Binding ContactUsTopicCounter}"
+								   HorizontalAlignment="Right"
+								   Margin="0,8,0,0"
+								   Foreground="#B2BEBCEA"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="12"/>
+
+						<!-- Message -->
+						<Border Classes="pgInputHost" Classes.filled="{Binding ContactUsMessageFilled}"
+								Height="127" Margin="0,16,0,0"
+								BorderThickness="1" Background="Transparent">
+							<Grid ColumnDefinitions="Auto,*">
+								<Path Grid.Column="0" Width="18" Height="18" Stretch="Uniform"
+									  Fill="#80BEBCEA" VerticalAlignment="Top" Margin="19,18,0,0"
+									  Data="M2 16H11V11H16V2H2V16ZM2 18C1.45 18 0.979167 17.8042 0.5875 17.4125C0.195833 17.0208 0 16.55 0 16V2C0 1.45 0.195833 0.979167 0.5875 0.5875C0.979167 0.195833 1.45 0 2 0H16C16.55 0 17.0208 0.195833 17.4125 0.5875C17.8042 0.979167 18 1.45 18 2V12L12 18H2ZM4 11V9H9V11H4ZM4 7V5H14V7H4Z"/>
+								<TextBox Grid.Column="1"
+										 Classes="pgScrollViewer"
+										 Text="{Binding ContactUsMessage, Mode=TwoWay}"
+										 MaxLength="2000"
+										 AcceptsReturn="True"
+										 TextWrapping="Wrap"
+										 ScrollViewer.VerticalScrollBarVisibility="Auto"
+										 ScrollViewer.AllowAutoHide="False"
+										 Background="Transparent"
+										 BorderThickness="0"
+										 Foreground="White"
+										 PlaceholderForeground="#B2BEBCEA"
+										 CaretBrush="#B2BEBCEA"
+										 PlaceholderText="{DynamicResource ContactUs_Field_Message}"
+										 FontFamily="{DynamicResource BaseAppFont}"
+										 FontSize="16"
+										 LineHeight="24"
+										 LetterSpacing="0"
+										 Padding="13,15,16,15"
+										 VerticalContentAlignment="Top"/>
+							</Grid>
+						</Border>
+						<TextBlock Text="{Binding ContactUsMessageCounter}"
+								   HorizontalAlignment="Right"
+								   Margin="0,8,0,0"
+								   Foreground="#B2BEBCEA"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="12"/>
+
+						<!-- Send failure: the dialog stays open, so the reason has to be visible. The
+						     wording is now per-error (ContactUsErrors) and can be a rate-limit
+						     instruction, so the emphasis must not be colour-only (CLAUDE.md) - hence
+						     SemiBold alongside the red. No Width: the block wraps, and the uk strings
+						     are 30-50% longer. Bottom margin: the message renders at the bottom of a
+						     filled content row, right above the CANCEL/SEND row (QA 2026-08-31 —
+						     "майже налазить на кнопки"); a hidden block contributes no margin, so the
+						     error-free layout is unchanged. -->
+						<TextBlock Text="{Binding ContactUsError}"
+								   IsVisible="{Binding HasContactUsError}"
+								   Margin="0,8,0,12"
+								   Foreground="#FF383C"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="14"
+								   FontWeight="SemiBold"
+								   LineHeight="20"
+								   TextWrapping="Wrap"/>
+					</StackPanel>
+
+					<StackPanel Grid.Row="2" Orientation="Horizontal"
+								HorizontalAlignment="Right" Spacing="12">
+						<Button Classes="secondaryButton"
+								MinWidth="104" Height="39" Padding="16,0"
+								Cursor="Hand"
+								Command="{Binding CancelContactUsCommand}">
+							<TextBlock Text="{DynamicResource Button_Cancel}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontWeight="250"
+									   FontStyle="Normal"
+									   FontSize="18"
+									   LineHeight="18"
+									   LetterSpacing="0"/>
+						</Button>
+						<Button Classes="primaryButton"
+								MinWidth="92" Height="40" Padding="16,0"
+								Cursor="Hand"
+								IsEnabled="{Binding CanSendContactUs}"
+								Command="{Binding SendContactUsCommand}">
+							<TextBlock Text="{DynamicResource ContactUs_Send}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontWeight="250"
+									   FontStyle="Normal"
+									   FontSize="18"
+									   LineHeight="18"
+									   LetterSpacing="0"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+
+				<Button Grid.Column="2"
+						Classes="closeButton"
+						HorizontalAlignment="Stretch" VerticalAlignment="Top"
+						Height="86"
+						Background="Transparent" BorderThickness="0" Padding="0"
+						Cursor="Hand"
+						Command="{Binding CancelContactUsCommand}">
+					<Button.Template>
+						<ControlTemplate>
+							<Canvas Width="42" Height="86">
+								<Path x:Name="PART_Bg"
+									  Fill="Transparent"
+									  Data="M6 0L6 50L42 86L42 0Z"/>
+								<Path x:Name="PART_Icon"
+									  Fill="#B2BEBCEA"
+									  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+							</Canvas>
+						</ControlTemplate>
+					</Button.Template>
+				</Button>
+			</Grid>
+
+			<!-- Sending state (no backend yet): a 70% black scrim over the body and the
+			     4-frame pixel loader from the mockup, cycling for 2 s before the dialog
+			     closes. The scrim's Border has a background, so it also swallows clicks on
+			     the form and buttons beneath; the ✕ lives in the frame column and stays out
+			     of the scrim. -->
+			<Grid ColumnDefinitions="42,*,42" IsVisible="{Binding IsContactUsSending}">
+				<Border Grid.Column="1" Background="#B3000000"/>
+				<Panel Grid.Column="1" Width="72" Height="72"
+					   HorizontalAlignment="Center" VerticalAlignment="Center">
+					<Canvas Width="72" Height="72" IsVisible="{Binding ContactUsSpinnerFrame0}">
+						<Rectangle Canvas.Left="0" Canvas.Top="0" Width="24" Height="24" Fill="#6357FF"/>
+						<Rectangle Canvas.Left="0" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="24" Canvas.Top="24" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="24" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF"/>
+						<Rectangle Canvas.Left="48" Canvas.Top="0" Width="24" Height="24" Fill="#6357FF"/>
+					</Canvas>
+					<Canvas Width="72" Height="72" IsVisible="{Binding ContactUsSpinnerFrame1}">
+						<Rectangle Canvas.Left="0" Canvas.Top="0" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="24" Canvas.Top="0" Width="24" Height="24" Fill="#6357FF"/>
+						<Rectangle Canvas.Left="24" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="48" Canvas.Top="24" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="48" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF"/>
+					</Canvas>
+					<Canvas Width="72" Height="72" IsVisible="{Binding ContactUsSpinnerFrame2}">
+						<Rectangle Canvas.Left="0" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF"/>
+						<Rectangle Canvas.Left="24" Canvas.Top="0" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="24" Canvas.Top="24" Width="24" Height="24" Fill="#6357FF"/>
+						<Rectangle Canvas.Left="48" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+					</Canvas>
+					<Canvas Width="72" Height="72" IsVisible="{Binding ContactUsSpinnerFrame3}">
+						<Rectangle Canvas.Left="0" Canvas.Top="24" Width="24" Height="24" Fill="#6357FF"/>
+						<Rectangle Canvas.Left="0" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="48" Canvas.Top="0" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+						<Rectangle Canvas.Left="48" Canvas.Top="48" Width="24" Height="24" Fill="#6357FF" Opacity="0.5"/>
+					</Canvas>
+				</Panel>
+			</Grid>
+		</Panel>
+
+		<!-- Delete confirmation dialog -->
+		<Panel x:Name="DeleteDialogPanel"
+			   IsVisible="False"
+			   Width="620" Height="196"
+			   HorizontalAlignment="Center" VerticalAlignment="Center">
+			<Panel.Effect>
+				<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="80" Color="#6357FF" Opacity="0.3"/>
+			</Panel.Effect>
+
+			<Canvas Width="620" Height="196">
+				<Path Fill="#B3000000" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+				<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="86.7923" Fill="#B3000000"/>
+				<Path Fill="#B3000000" Data="M22.591 182.598L22.591 130.677L0 108.099H42V196H36L22.591 182.598Z"/>
+				<Rectangle Canvas.Left="42" Canvas.Top="0" Width="536" Height="196" Fill="#B3000000"/>
+				<Path Fill="#B3000000" Data="M584 0L584 50L620 86L620 0Z"/>
+				<Path Fill="#B3000000" Data="M578 95.367L578 54L620 95.357Z"/>
+				<Rectangle Canvas.Left="578" Canvas.Top="95.367" Width="42" Height="79.3182" Fill="#B3000000"/>
+				<Path Fill="#B3000000" Data="M620 174.686L598.354 196H578L578.001 174.686H620Z"/>
+			</Canvas>
+
+			<Grid ColumnDefinitions="42,*,42">
+				<Grid Grid.Column="1" Margin="4,36,0,32" RowDefinitions="Auto,*,Auto">
+					<StackPanel Grid.Row="0" Spacing="8">
+						<TextBlock Text="{DynamicResource DeleteDevice_Title}"
+								   Foreground="White"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="28"/>
+						<TextBlock Text="{DynamicResource DeleteDevice_Body}"
+								   Foreground="#BEBCEA" Opacity="0.7"
+								   FontFamily="Segoe UI"
+								   FontSize="16"
+								   FontStyle="Normal"
+								   TextWrapping="Wrap"/>
+					</StackPanel>
+
+					<StackPanel Grid.Row="2" Orientation="Horizontal"
+								HorizontalAlignment="Right" Spacing="12">
+						<Button Classes="cancelDelete"
+								Command="{Binding CancelDeleteCommand}">
+							<!-- Button_Cancel is the shared key every dialog's cancel uses; only the
+							     destructive action needs a device-specific string. -->
+							<TextBlock Text="{DynamicResource Button_Cancel}"
+									   Foreground="White"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"/>
+						</Button>
+						<Button Classes="confirmDelete"
+								Command="{Binding ConfirmDeleteCommand}">
+							<TextBlock Text="{DynamicResource DeleteDevice_Confirm}"
+									   Foreground="White"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+
+				<Button Grid.Column="2"
+						Classes="closeButton"
+						HorizontalAlignment="Stretch" VerticalAlignment="Top"
+						Height="86"
+						Background="Transparent" BorderThickness="0" Padding="0"
+						Cursor="Hand"
+						Command="{Binding CancelDeleteCommand}">
+					<Button.Template>
+						<ControlTemplate>
+							<Canvas Width="42" Height="86">
+								<Path x:Name="PART_Bg"
+									  Fill="Transparent"
+									  Data="M6 0L6 50L42 86L42 0Z"/>
+								<Path x:Name="PART_Icon"
+									  Fill="#B2BEBCEA"
+									  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+							</Canvas>
+						</ControlTemplate>
+					</Button.Template>
+				</Button>
+			</Grid>
+		</Panel>
+
+		<!-- Create Macro dialog (DeviceDetailsViewModel-driven) -->
+		<Panel x:Name="CreateMacroDialogPanel"
+			   IsVisible="False"
+			   Width="800" Height="572"
+			   HorizontalAlignment="Center" VerticalAlignment="Center"
+			   DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}">
+			<Panel.Effect>
+				<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="80" Color="#6357FF" Opacity="0.35"/>
+			</Panel.Effect>
+
+			<Canvas Width="800" Height="572">
+				<Path Fill="Black" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+				<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="462.792" Fill="Black"/>
+				<Path Fill="Black" Data="M22.591 558.598L22.591 506.677L0 484.099H42V572H36L22.591 558.598Z"/>
+				<Rectangle Canvas.Left="42" Canvas.Top="0" Width="716" Height="572" Fill="Black"/>
+				<Path Fill="Black" Data="M764 0L764 50L800 86L800 0Z"/>
+				<Path Fill="Black" Data="M758 95.367L758 54L800 95.357Z"/>
+				<Rectangle Canvas.Left="758" Canvas.Top="95.367" Width="42" Height="455.318" Fill="Black"/>
+				<Path Fill="Black" Data="M800 550.686L778.354 572H758L758.001 550.686H800Z"/>
+			</Canvas>
+
+			<Grid ColumnDefinitions="42,*,42">
+
+				<Grid Grid.Column="1" Margin="0,32,0,32" RowDefinitions="Auto,Auto,Auto,*">
+
+					<TextBlock Grid.Row="0"
+							   Text="{Binding MacroDialogTitle}"
+							   Foreground="#FFFFFF"
+							   FontFamily="{DynamicResource AppPixelFont}"
+							   FontSize="28"
+							   LineHeight="28"
+							   LetterSpacing="0"
+							   Margin="0,0,0,32" />
+
+					<StackPanel Grid.Row="1">
+						<Button
+								x:Name="MacroRecordButton"
+								Classes.primaryButton="{Binding !IsRecording}"
+								Classes.secondaryButton="{Binding IsRecording}"
+								Width="338" Height="40"
+								HorizontalAlignment="Left"
+								Cursor="Hand"
+								Margin="0,0,0,16"
+								Command="{Binding ToggleRecordingCommand}">
+							<StackPanel Orientation="Horizontal" Spacing="11"
+										HorizontalAlignment="Center" VerticalAlignment="Center">
+								<Path Width="21" Height="20" Stretch="Uniform" Fill="#FFFFFF"
+									  Data="M75.45 25.95C74.8333 25.1167 74.3542 24.1958 74.0125 23.1875C73.6708 22.1792 73.5 21.1167 73.5 20C73.5 18.8833 73.6667 17.825 74 16.825C74.3333 15.825 74.8083 14.9083 75.425 14.075L76.875 15.5C76.4417 16.1333 76.1042 16.8292 75.8625 17.5875C75.6208 18.3458 75.5 19.15 75.5 20C75.5 20.85 75.6208 21.6583 75.8625 22.425C76.1042 23.1917 76.4417 23.8917 76.875 24.525L75.45 25.95ZM83.5 30C82.3833 30 81.325 29.8333 80.325 29.5C79.325 29.1667 78.4083 28.6917 77.575 28.075L79 26.625C79.6333 27.0583 80.3292 27.3958 81.0875 27.6375C81.8458 27.8792 82.65 28 83.5 28C84.35 28 85.1542 27.8792 85.9125 27.6375C86.6708 27.3958 87.3667 27.0583 88 26.625L89.425 28.075C88.5917 28.6917 87.675 29.1667 86.675 29.5C85.675 29.8333 84.6167 30 83.5 30ZM91.55 25.95L90.125 24.525C90.5583 23.8917 90.8958 23.1917 91.1375 22.425C91.3792 21.6583 91.5 20.85 91.5 20C91.5 19.15 91.3792 18.3458 91.1375 17.5875C90.8958 16.8292 90.5583 16.1333 90.125 15.5L91.575 14.075C92.1917 14.9083 92.6667 15.825 93 16.825C93.3333 17.825 93.5 18.8833 93.5 20C93.5 21.1167 93.3292 22.1792 92.9875 23.1875C92.6458 24.1958 92.1667 25.1167 91.55 25.95ZM78.975 13.375L77.55 11.95C78.3833 11.3333 79.3042 10.8542 80.3125 10.5125C81.3208 10.1708 82.3833 10 83.5 10C84.6333 10 85.7 10.1708 86.7 10.5125C87.7 10.8542 88.6167 11.3333 89.45 11.95L88.025 13.375C87.3917 12.9417 86.6917 12.6042 85.925 12.3625C85.1583 12.1208 84.35 12 83.5 12C82.65 12 81.8417 12.1208 81.075 12.3625C80.3083 12.6042 79.6083 12.9417 78.975 13.375ZM83.5 25C82.1167 25 80.9375 24.5125 79.9625 23.5375C78.9875 22.5625 78.5 21.3833 78.5 20C78.5 18.6167 78.9875 17.4375 79.9625 16.4625C80.9375 15.4875 82.1167 15 83.5 15C84.8833 15 86.0625 15.4875 87.0375 16.4625C88.0125 17.4375 88.5 18.6167 88.5 20C88.5 21.3833 88.0125 22.5625 87.0375 23.5375C86.0625 24.5125 84.8833 25 83.5 25Z" />
+								<TextBlock Text="{Binding RecordButtonLabel}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource AppPixelFont}"
+										   FontSize="18"
+										   LetterSpacing="0"
+										   VerticalAlignment="Center" />
+							</StackPanel>
+						</Button>
+						<!-- Recorded-steps summary: count on the left, CLEAR link (enabled Reset style) on the right. -->
+						<Grid Width="338" HorizontalAlignment="Left" ColumnDefinitions="*,Auto"
+							  Margin="0,0,0,16" VerticalAlignment="Center"
+							  IsVisible="{Binding HasRecordedSteps}">
+							<TextBlock Grid.Column="0"
+									   Text="{Binding RecordedStepsCountLabel}"
+									   Foreground="#8584A4"
+									   FontFamily="{DynamicResource BaseAppFont}"
+									   FontSize="18"
+									   VerticalAlignment="Center" />
+							<Button Grid.Column="1"
+									Classes="pgLinkButton"
+									VerticalAlignment="Center"
+									Command="{Binding ClearRecordedStepsCommand}">
+								<TextBlock Text="{DynamicResource Macros_ClearRecording}"
+										   Foreground="#6357FF"
+										   FontFamily="{DynamicResource AppPixelFont}"
+										   FontSize="18" />
+							</Button>
+						</Grid>
+					</StackPanel>
+
+					<StackPanel Grid.Row="2"
+								Width="338"
+								HorizontalAlignment="Left"
+								Margin="0,0,0,24"
+								IsVisible="{Binding !HasRecordedSteps}">
+						<Path Width="15" Height="33"
+							  Stretch="Uniform"
+							  Fill="#4DBEBCEA"
+							  HorizontalAlignment="Center"
+							  Margin="0,16,0,16"
+							  Data="M169.707 55.2929C169.317 54.9024 168.683 54.9024 168.293 55.2929L161.929 61.6569C161.538 62.0474 161.538 62.6805 161.929 63.0711C162.319 63.4616 162.953 63.4616 163.343 63.0711L169 57.4142L174.657 63.0711C175.047 63.4616 175.681 63.4616 176.071 63.0711C176.462 62.6805 176.462 62.0474 176.071 61.6569L169.707 55.2929ZM169 56H168V58H169H170V56H169ZM169 62H168V66H169H170V62H169ZM169 70H168V74H169H170V70H169ZM169 78H168V82H169H170V78H169ZM169 86H168V88H169H170V86H169Z" />
+						<TextBlock Text="{DynamicResource Macros_RecordHint}"
+								   Foreground="#B2BEBCEA"
+								   FontFamily="Segoe UI"
+								   FontSize="12"
+								   LineHeight="16"
+								   TextWrapping="Wrap"
+								   TextAlignment="Center"
+								   HorizontalAlignment="Center" />
+					</StackPanel>
+
+					<!-- Buffer-full notice: recording auto-stops at the device's macro-event
+					     limit. Colour is paired with bold weight (emphasis is never colour-only). -->
+					<TextBlock Grid.Row="2"
+							   Text="{Binding RecordLimitLabel}"
+							   IsVisible="{Binding IsRecordLimitReached}"
+							   Foreground="#FFB4A0"
+							   FontFamily="Segoe UI"
+							   FontSize="12"
+							   FontWeight="SemiBold"
+							   LineHeight="16"
+							   Width="338"
+							   Margin="0,0,0,24"
+							   TextWrapping="Wrap"
+							   TextAlignment="Center"
+							   HorizontalAlignment="Left"
+							   VerticalAlignment="Top" />
+
+					<!-- Recorded steps — appears once capture starts. Extracted to its own control. -->
+					<detailSections:MacroRecorderStepsView Grid.Row="3"
+						Width="338"
+						HorizontalAlignment="Left"
+						Margin="0,8,0,0"
+						IsVisible="{Binding HasRecordedSteps}" />
+
+				</Grid>
+
+				<StackPanel Grid.Column="1"
+							HorizontalAlignment="Right"
+							VerticalAlignment="Top"
+							Width="338"
+							Margin="0,92,0,24"
+							Spacing="24">
+
+					<!-- Macros name -->
+					<Border Classes="pgInputHost" Height="56"
+							BorderThickness="1"
+							Background="Transparent">
+						<TextBox Text="{Binding NewMacroName, Mode=TwoWay}"
+								 Background="Transparent"
+								 BorderThickness="0"
+								 Foreground="#B2BEBCEA"
+								 PlaceholderForeground="#B2BEBCEA"
+								 CaretBrush="#B2BEBCEA"
+								 PlaceholderText="{DynamicResource Macros_Field_Name}"
+								 FontFamily="{DynamicResource BaseAppFont}"
+								 FontSize="16"
+								 LineHeight="24"
+								 LetterSpacing="0"
+								 Padding="16,0"
+								 VerticalContentAlignment="Center" />
+					</Border>
+
+					<!-- Number of Repetitions -->
+					<Border Classes="pgInputHost" Height="56"
+							BorderThickness="1"
+							Background="Transparent">
+						<TextBox Text="{Binding NewMacroRepetitions, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								 TextChanged="OnRepetitionsTextChanged"
+								 Background="Transparent"
+								 BorderThickness="0"
+								 Foreground="#B2BEBCEA"
+								 PlaceholderForeground="#B2BEBCEA"
+								 CaretBrush="#B2BEBCEA"
+								 PlaceholderText="{DynamicResource Macros_Field_Repetitions}"
+								 FontFamily="{DynamicResource BaseAppFont}"
+								 FontSize="16"
+								 LineHeight="24"
+								 LetterSpacing="0"
+								 Padding="16,0"
+								 VerticalContentAlignment="Center" />
+					</Border>
+
+					<StackPanel Width="338" Spacing="4">
+
+						<CheckBox Classes="pgCheckbox" IsChecked="{Binding NewMacroAutoRecordDelays, Mode=TwoWay}"
+								  Padding="12,0,0,0"
+								  Cursor="Hand"
+								  VerticalContentAlignment="Center">
+							<TextBlock Text="{DynamicResource Macros_AutoDelays}"
+									   Foreground="#B2BEBCEA"
+									   FontFamily="{DynamicResource BaseAppFont}"
+									   FontSize="14"
+									   LineHeight="20"
+									   LetterSpacing="0"
+									   TextAlignment="Center" />
+						</CheckBox>
+
+						<!-- Repeat until button is released -->
+						<CheckBox Classes="pgCheckbox" IsChecked="{Binding NewMacroRepeatUntilReleased, Mode=TwoWay}"
+								  Padding="12,0,0,0"
+								  Cursor="Hand"
+								  VerticalContentAlignment="Center">
+							<TextBlock Text="{DynamicResource Macros_RepeatUntilReleased}"
+									   Foreground="#B2BEBCEA"
+									   FontFamily="{DynamicResource BaseAppFont}"
+									   FontSize="14"
+									   LineHeight="20"
+									   LetterSpacing="0"
+									   TextAlignment="Center" />
+						</CheckBox>
+
+					</StackPanel>
+
+					<Border Width="338"
+							Background="#1AF4C802"
+							Padding="8,8,8,12">
+						<StackPanel Spacing="14">
+
+							<StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+								<Path Width="20" Height="18"
+									  Stretch="Uniform"
+									  Fill="#F4C802"
+									  Data="M12.832 25.5003L21.9987 9.66699L31.1654 25.5003H12.832ZM15.707 23.8337H28.2904L21.9987 13.0003L15.707 23.8337ZM22.5924 22.7607C22.7522 22.601 22.832 22.4031 22.832 22.167C22.832 21.9309 22.7522 21.733 22.5924 21.5732C22.4327 21.4135 22.2348 21.3337 21.9987 21.3337C21.7626 21.3337 21.5647 21.4135 21.4049 21.5732C21.2452 21.733 21.1654 21.9309 21.1654 22.167C21.1654 22.4031 21.2452 22.601 21.4049 22.7607C21.5647 22.9205 21.7626 23.0003 21.9987 23.0003C22.2348 23.0003 22.4327 22.9205 22.5924 22.7607ZM21.1654 20.5003H22.832V16.3337H21.1654V20.5003Z" />
+								<TextBlock Text="{DynamicResource Macros_Attention}"
+										   Foreground="#F4C802"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="14"
+										   LineHeight="20"
+										   LetterSpacing="0"
+										   VerticalAlignment="Center" />
+							</StackPanel>
+
+							<TextBlock Text="{DynamicResource Macros_AttentionBody}"
+									   Foreground="#B2BEBCEA"
+									   FontFamily="{DynamicResource BaseAppFont}"
+									   FontSize="14"
+									   LineHeight="20"
+									   LetterSpacing="0"
+									   TextWrapping="Wrap"
+									   Margin="4,0,0,0" />
+
+						</StackPanel>
+					</Border>
+
+					<StackPanel Orientation="Horizontal"
+								HorizontalAlignment="Right"
+								Spacing="12"
+								Margin="0,8,0,32">
+						<Button Classes="secondaryButton"
+								Height="40"
+								Cursor="Hand"
+								Command="{Binding CancelCreateMacroCommand}">
+							<TextBlock Text="{DynamicResource Button_Cancel}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontWeight="Light"
+									   FontSize="18"
+									   LetterSpacing="0"
+									   Margin="16,0"/>
+						</Button>
+						<Button Classes="primaryButton"
+								Height="40"
+								Cursor="Hand"
+								IsEnabled="{Binding NewMacroName, Converter={x:Static avConverters:StringConverters.IsNotNullOrEmpty}}"
+								Command="{Binding SaveCreateMacroCommand}">
+							<TextBlock Text="{Binding MacroDialogActionLabel}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontWeight="Light"
+									   FontSize="18"
+									   LetterSpacing="0"
+									   Margin="16,0"/>
+						</Button>
+					</StackPanel>
+
+				</StackPanel>
+
+				<!-- Top-right close X -->
+				<Button Grid.Column="2"
+						Classes="closeButton"
+						HorizontalAlignment="Stretch" VerticalAlignment="Top"
+						Height="86"
+						Background="Transparent" BorderThickness="0" Padding="0"
+						Cursor="Hand"
+						Command="{Binding CancelCreateMacroCommand}">
+					<Button.Template>
+						<ControlTemplate>
+							<Canvas Width="42" Height="86">
+								<Path x:Name="PART_Bg"
+									  Fill="Transparent"
+									  Data="M6 0L6 50L42 86L42 0Z"/>
+								<Path x:Name="PART_Icon"
+									  Fill="#B2BEBCEA"
+									  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+							</Canvas>
+						</ControlTemplate>
+					</Button.Template>
+				</Button>
+			</Grid>
+		</Panel>
+
+		<!-- Delete Macro confirmation (DeviceDetailsViewModel-driven) -->
+		<Panel x:Name="DeleteMacroDialogPanel"
+			   IsVisible="False"
+			   Width="620" Height="196"
+			   HorizontalAlignment="Center" VerticalAlignment="Center"
+			   DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}">
+			<Panel.Effect>
+				<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="80" Color="#6357FF" Opacity="0.3"/>
+			</Panel.Effect>
+
+			<Canvas Width="620" Height="196">
+				<Path Fill="#B3000000" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+				<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="86.7923" Fill="#B3000000"/>
+				<Path Fill="#B3000000" Data="M22.591 182.598L22.591 130.677L0 108.099H42V196H36L22.591 182.598Z"/>
+				<Rectangle Canvas.Left="42" Canvas.Top="0" Width="536" Height="196" Fill="#B3000000"/>
+				<Path Fill="#B3000000" Data="M584 0L584 50L620 86L620 0Z"/>
+				<Path Fill="#B3000000" Data="M578 95.367L578 54L620 95.357Z"/>
+				<Rectangle Canvas.Left="578" Canvas.Top="95.367" Width="42" Height="79.3182" Fill="#B3000000"/>
+				<Path Fill="#B3000000" Data="M620 174.686L598.354 196H578L578.001 174.686H620Z"/>
+			</Canvas>
+
+			<Grid ColumnDefinitions="42,*,42">
+				<Grid Grid.Column="1" Margin="4,36,0,32" RowDefinitions="Auto,*,Auto">
+					<StackPanel Grid.Row="0" Spacing="8">
+						<TextBlock Text="{DynamicResource Macros_Delete_Title}"
+								   Foreground="White"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="28"/>
+						<TextBlock Text="{Binding MacroDeleteMessage}"
+								   Foreground="#BEBCEA" Opacity="0.7"
+								   FontFamily="Segoe UI"
+								   FontSize="16"
+								   TextWrapping="Wrap" />
+					</StackPanel>
+
+					<StackPanel Grid.Row="2" Orientation="Horizontal"
+								HorizontalAlignment="Right" Spacing="12">
+						<Button Classes="cancelDelete"
+								Command="{Binding CancelDeleteMacroCommand}">
+							<TextBlock Text="{DynamicResource Button_Cancel}"
+									   Foreground="White"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"/>
+						</Button>
+						<Button Classes="confirmDelete"
+								Command="{Binding ConfirmDeleteMacroCommand}">
+							<TextBlock Text="{DynamicResource Macros_Delete_Confirm}"
+									   Foreground="White"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"/>
+						</Button>
+					</StackPanel>
+				</Grid>
+
+				<Button Grid.Column="2"
+						Classes="closeButton"
+						HorizontalAlignment="Stretch" VerticalAlignment="Top"
+						Height="86"
+						Background="Transparent" BorderThickness="0" Padding="0"
+						Cursor="Hand"
+						Command="{Binding CancelDeleteMacroCommand}">
+					<Button.Template>
+						<ControlTemplate>
+							<Canvas Width="42" Height="86">
+								<Path x:Name="PART_Bg"
+									  Fill="Transparent"
+									  Data="M6 0L6 50L42 86L42 0Z"/>
+								<Path x:Name="PART_Icon"
+									  Fill="#B2BEBCEA"
+									  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+							</Canvas>
+						</ControlTemplate>
+					</Button.Template>
+				</Button>
+			</Grid>
+		</Panel>
+
+
+		<presetDialogs:NewPresetDialog x:Name="NewPresetDialogPanel"
+		                                IsVisible="False"
+		                                DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}" />
+
+		<dialogs:ConfirmDialog x:Name="ResetPresetDialogPanel"
+		                       IsVisible="False"
+		                       DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}"
+		                       Title="{DynamicResource ResetPreset_Title}"
+		                       Body="{DynamicResource ResetPreset_Body}"
+		                       ConfirmText="{DynamicResource ResetPreset_Confirm}"
+		                       ConfirmCommand="{Binding ConfirmResetPresetCommand}"
+		                       CancelCommand="{Binding CancelResetPresetCommand}" />
+
+		<dialogs:ConfirmDialog x:Name="DeletePresetDialogPanel"
+		                       IsVisible="False"
+		                       DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}"
+		                       Title="{DynamicResource DeletePreset_Title}"
+		                       Body="{DynamicResource DeletePreset_Body}"
+		                       ConfirmText="{DynamicResource DeletePreset_Confirm}"
+		                       ConfirmCommand="{Binding ConfirmDeletePresetCommand}"
+		                       CancelCommand="{Binding CancelDeletePresetCommand}" />
+
+		<!-- Destructive variant of the shared dialog: red confirm, no bespoke chrome. -->
+		<dialogs:ConfirmDialog x:Name="DeleteDpiPointDialogPanel"
+		                       IsVisible="False"
+		                       IsDestructive="True"
+		                       DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}"
+		                       Title="{DynamicResource DeleteDpiPoint_Title}"
+		                       Body="{DynamicResource DeleteDpiPoint_Body}"
+		                       ConfirmText="{DynamicResource DeleteDpiPoint_Confirm}"
+		                       ConfirmCommand="{Binding ConfirmDeleteDpiPointCommand}"
+		                       CancelCommand="{Binding CancelDeleteDpiPointCommand}" />
+
+		<dialogs:ConfirmDialog x:Name="ResetExtendedKeysDialogPanel"
+		                       IsVisible="False"
+		                       DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}"
+		                       Title="{DynamicResource ExtendedKeys_Defaults_Title}"
+		                       Body="{DynamicResource ExtendedKeys_Defaults_Body}"
+		                       ConfirmText="{DynamicResource ExtendedKeys_Defaults_Confirm}"
+		                       ConfirmCommand="{Binding ConfirmResetExtendedKeysCommand}"
+		                       CancelCommand="{Binding CancelResetExtendedKeysCommand}" />
+
+		<presetDialogs:SavePresetDialog x:Name="SavePresetDialogPanel"
+		                                IsVisible="False"
+		                                DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}" />
+
+		<presetDialogs:UnsavedChangesDialog x:Name="UnsavedChangesDialogPanel"
+		                                    IsVisible="False"
+		                                    DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}" />
+
+		<presetDialogs:KeyAssignmentDialog x:Name="KeyAssignmentDialogPanel"
+		                                   IsVisible="False"
+		                                   DataContext="{Binding ElementName=DeviceDetailsView, Path=DataContext}" />
+
+	</Grid>
+
+	</Grid>
+	</LayoutTransformControl>
+</Window>

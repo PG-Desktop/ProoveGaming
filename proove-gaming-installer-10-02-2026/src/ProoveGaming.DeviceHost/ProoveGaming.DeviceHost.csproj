@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(WindowsTargetFramework)</TargetFrameworks>
+    <!-- Every restore must emit the win-x64 target into project.assets.json: the Installer's
+         Release payload publish (RuntimeIdentifier=win-x64) races the solution-level no-RID
+         restore under `dotnet test` on the slnx, and a stomped assets file without this RID
+         fails that publish with NETSDK1047 (CI run 32534283275). -->
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>dotnet-CoreDaemon-944dd797-5de3-408d-8d9b-d601001a56d2</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- SmartInfiniteBatteryMonitor's pure helpers (ResolveTrackedDevices / ComputePush) are
+         internal and pinned by SmartInfiniteBatteryMonitorTests. -->
+    <InternalsVisibleTo Include="ProoveGaming.Infrastructure.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Compiled into the assembly, not shipped as files: an install carries no settings file to
+         read or edit. Change them here in the repository. The Worker SDK would otherwise copy
+         appsettings*.json to the output and the publish folder. Read by EmbeddedAppSettings. -->
+    <Content Remove="appsettings*.json" />
+    <None Remove="appsettings*.json" />
+    <EmbeddedResource Include="appsettings.json" LogicalName="ProoveGaming.DeviceHost.appsettings.json" />
+    <EmbeddedResource Include="appsettings.Development.json" LogicalName="ProoveGaming.DeviceHost.appsettings.Development.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.12" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="10.0.0" />
+    <PackageReference Include="Serilog.Settings.Configuration" Version="10.0.1" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <ProjectReference Include="..\ProoveGaming.GrpcDependencies\ProoveGaming.GrpcDependencies.csproj" />
+    <ProjectReference Include="..\ProoveGaming.Infrastructure\ProoveGaming.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

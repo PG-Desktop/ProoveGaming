@@ -1,0 +1,588 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:String x:Key="Window_Title">Proove Gaming</sys:String>
+    <sys:String x:Key="Header_Title">Welcome to Proove Gaming App</sys:String>
+    <sys:String x:Key="Body_Description">Your gaming space is ready. Track activities, test features, and explore the app from this main page.</sys:String>
+    <sys:String x:Key="Label_Language">Language</sys:String>
+    <sys:String x:Key="Label_Settings">Settings</sys:String>
+    <sys:String x:Key="Setting_MinimizeToTray">Minimize to tray</sys:String>
+    <sys:String x:Key="Button_LightTheme">Light Theme</sys:String>
+    <sys:String x:Key="Button_DarkTheme">Dark Theme</sys:String>
+    <sys:String x:Key="Button_Continue">Continue</sys:String>
+    <sys:String x:Key="Button_Back">BACK</sys:String>
+    <sys:String x:Key="Button_Next">NEXT</sys:String>
+    <sys:String x:Key="Tray_Show">Open</sys:String>
+    <sys:String x:Key="Tray_Exit">Exit</sys:String>
+
+    <sys:String x:Key="WelcomeView_Tab_SignIn">SIGN IN</sys:String>
+    <sys:String x:Key="WelcomeView_Tab_SignUp">SIGN UP</sys:String>
+    <sys:String x:Key="WelcomeView_Placeholder_Email">Email</sys:String>
+    <sys:String x:Key="WelcomeView_Placeholder_Password">Password</sys:String>
+    <sys:String x:Key="WelcomeView_RememberMe">Remember me</sys:String>
+    <sys:String x:Key="WelcomeView_ForgotPassword">FORGOT PASSWORD</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Title">RESET PASSWORD</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Description">Enter the email you used to sign up. We'll send you a link to reset your password.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Submit">SEND RESET LINK</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_BackToSignIn">BACK TO SIGN IN</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Error_NotFound">We couldn't find an account with that email.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Error_Mail">Couldn't send the email. Please try again.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Error_Generic">Something went wrong. Please try again.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Sent_Title">Check your email</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Sent_Description">We've sent a password reset link to your email address. Open your inbox and follow the link to set a new password. The link expires in 15 minutes.</sys:String>
+    <sys:String x:Key="WelcomeView_Notification_ResetLinkSent">Password reset link sent successfully</sys:String>
+    <sys:String x:Key="WelcomeView_Button_SignIn">SIGN IN</sys:String>
+    <sys:String x:Key="WelcomeView_Button_SignUp">SIGN UP</sys:String>
+    <sys:String x:Key="WelcomeView_Button_EnterAsGuest">ENTER AS GUEST</sys:String>
+    <sys:String x:Key="WelcomeView_Terms_Agree">I agree to the </sys:String>
+    <sys:String x:Key="WelcomeView_Terms_TermsOfService">Terms of Service</sys:String>
+    <sys:String x:Key="WelcomeView_Terms_Comma">, </sys:String>
+    <sys:String x:Key="WelcomeView_Terms_PrivacyPolicy">Privacy Policy</sys:String>
+    <sys:String x:Key="WelcomeView_Terms_And"> and </sys:String>
+    <sys:String x:Key="WelcomeView_Terms_License">License Agreement</sys:String>
+    <sys:String x:Key="WelcomeView_Marketing">I agree to receive marketing newsletters</sys:String>
+    <sys:String x:Key="WelcomeView_Error_Email">Please enter a valid email address.</sys:String>
+    <sys:String x:Key="WelcomeView_Error_EmailAlreadyExists">This email is already registered. Try signing in instead.</sys:String>
+
+    <!-- Spec error_code → user message -->
+    <sys:String x:Key="Auth_Error_EmailRequired">Please enter your email address.</sys:String>
+    <sys:String x:Key="Auth_Error_InvalidEmail">Please enter a valid email address.</sys:String>
+    <sys:String x:Key="Auth_Error_EmailAlreadyExists">This email is already registered. Try signing in instead.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordRequired">Please enter a password.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordTooShort">Password must be at least 8 characters.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordNoUppercase">Password must include at least one uppercase letter.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordNoNumber">Password must include at least one number.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordHasSpaces">Password cannot contain spaces.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameRequired">Please enter a nickname.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameTooShort">Nickname must be at least 3 characters.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameTooLong">Nickname must be 20 characters or fewer.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameHasSpaces">Nickname cannot contain spaces.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameInvalidCharacters">Use only Latin letters, numbers, and underscores.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameAlreadyExists">This nickname is already taken.</sys:String>
+    <sys:String x:Key="Auth_Error_TermsRequired">Please accept the terms to continue.</sys:String>
+    <sys:String x:Key="WelcomeView_Error_SignIn">Incorrect email or password.</sys:String>
+    <sys:String x:Key="WelcomeView_Error_Password">Password does not meet the requirements.</sys:String>
+    <sys:String x:Key="WelcomeView_Error_Terms">Please accept the terms to continue.</sys:String>
+    <sys:String x:Key="WelcomeView_PasswordHint">Must be at least 8 characters, include uppercase and number. Latin only, no spaces.</sys:String>
+    <sys:String x:Key="WelcomeView_Attempts_Left">Incorrect email or password. You have {0} attempts left.</sys:String>
+    <sys:String x:Key="WelcomeView_Attempts_Locked">Too many incorrect password attempts. Try again in {0}:{1}</sys:String>
+
+    <sys:String x:Key="AgreementTermsView_Title_PrivacyPolicy">Privacy Policy</sys:String>
+    <sys:String x:Key="AgreementTermsView_Title_TermsOfService">Terms of Service</sys:String>
+    <sys:String x:Key="AgreementTermsView_Title_LicenseAgreement">License Agreement</sys:String>
+
+    <sys:String x:Key="ChooseNicknameView_Title">Enter Your Nickname</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Subtitle">Create your own nickname or choose one of the recommended by Proove Gaming</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Placeholder">Nickname</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Or">Recommended nicknames</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Error_Nickname">Please enter a nickname.</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Success_Nickname">You've picked a great nickname!</sys:String>
+
+    <sys:String x:Key="Button_Cancel">CANCEL</sys:String>
+    <sys:String x:Key="Button_Confirm">CONFIRM</sys:String>
+
+    <sys:String x:Key="HomeView_LogoutConfirm_Title">Logout?</sys:String>
+    <sys:String x:Key="HomeView_LogoutConfirm_Body">You&#8217;ll be signed out of your account on this device.
+You can sign back in anytime.</sys:String>
+    <sys:String x:Key="HomeView_LogoutConfirm_Confirm">LOGOUT</sys:String>
+
+    <sys:String x:Key="HomeView_Tab_Devices">DEVICES</sys:String>
+    <sys:String x:Key="HomeView_Tab_Games">GAMES</sys:String>
+    <sys:String x:Key="HomeView_Tab_Statistics">STATISTICS</sys:String>
+    <sys:String x:Key="HomeView_ProfileMenu_Profile">Profile</sys:String>
+    <sys:String x:Key="HomeView_ProfileMenu_LogOut">Log out</sys:String>
+    <sys:String x:Key="HomeView_Menu_ContactUs">Contact Us</sys:String>
+    <sys:String x:Key="HomeView_Menu_Information">Information</sys:String>
+    <sys:String x:Key="HomeView_GuestMenu_Title">Guest mode</sys:String>
+    <sys:String x:Key="HomeView_GuestMenu_SignUp">Sign Up</sys:String>
+    <sys:String x:Key="HomeView_Greeting_Default">Hello, User</sys:String>
+    <sys:String x:Key="HomeView_Greeting_Format">Hello, {0}</sys:String>
+    <sys:String x:Key="HomeView_AddDeviceCard_Title">CONNECT YOUR FIRST DEVICE</sys:String>
+    <sys:String x:Key="HomeView_CardMenu_SwitchProfile">Switch Profile</sys:String>
+    <sys:String x:Key="HomeView_CardMenu_OpenSettings">Open Settings</sys:String>
+    <sys:String x:Key="HomeView_CardMenu_Delete">Delete</sys:String>
+    <sys:String x:Key="DeviceType_WiredMouse">Wired Mouse</sys:String>
+    <sys:String x:Key="DeviceType_WirelessMouse">Wireless Mouse</sys:String>
+    <sys:String x:Key="DeviceType_WiredKeyboard">Wired Keyboard</sys:String>
+    <sys:String x:Key="DeviceType_WirelessKeyboard">Wireless Keyboard</sys:String>
+    <sys:String x:Key="DeviceType_WirelessHeadset">Wireless Headset</sys:String>
+
+    <sys:String x:Key="SettingsView_Title">Settings</sys:String>
+    <sys:String x:Key="SettingsView_LanguageLabel">Application Language</sys:String>
+
+    <sys:String x:Key="InformationView_Title">Information</sys:String>
+    <sys:String x:Key="InformationView_Tab_PrivacyPolicy">PRIVACY POLICY</sys:String>
+    <sys:String x:Key="InformationView_Tab_TermsOfService">TERMS OF SERVICE</sys:String>
+    <sys:String x:Key="InformationView_Tab_LicenseAgreement">LICENSE AGREEMENT</sys:String>
+
+    <sys:String x:Key="ProfileView_Title">Profile</sys:String>
+    <sys:String x:Key="ProfileView_Joined_Format">Joined: {0}</sys:String>
+    <sys:String x:Key="ProfileView_Nav_Account">ACCOUNT</sys:String>
+    <sys:String x:Key="ProfileView_Nav_Security">SECURITY</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_FirstName">First Name</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_LastName">Last Name</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_DateOfBirth">Date of Birth</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_Phone">Phone Number</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_Country">Country</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Title">Nickname</sys:String>
+    <sys:String x:Key="ProfileView_Security_ChangePassword">Change password</sys:String>
+    <sys:String x:Key="ProfileView_Security_DeleteAccount">DELETE ACCOUNT</sys:String>
+    <sys:String x:Key="ProfileView_ChangePassword_Title">Change password</sys:String>
+    <sys:String x:Key="ProfileView_ChangePassword_Subtitle">We'll email you a link to set a new password. Confirm the address below and we'll send it.</sys:String>
+    <sys:String x:Key="ProfileView_ChangePassword_Send">SEND RESET LINK</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Title">Delete account</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Subtitle">This action is permanent — your profile, avatar and all data will be removed and cannot be restored. Enter your password to confirm.</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_PasswordPlaceholder">Current password</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Confirm">DELETE</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Error_InvalidPassword">Incorrect password.</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Error_PasswordRequired">Enter your current password.</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Error_Generic">Couldn't delete the account. Please try again.</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Subtitle">Create your own nickname or choose one of the recommended by Proove Gaming</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Placeholder">Nickname</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Recommended">Recommended nicknames</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Error_Generic">Couldn't update your nickname. Please try again.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_NicknameUpdated">Your nickname updated successfully</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarUpdated">Avatar updated successfully</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarTooLarge">Image is too large. Maximum size is 2 MB.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarLoadFailed">Couldn't load the selected image.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarUploadFailed">Couldn't upload the avatar. Please try again.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarInvalidType">Image format is not supported.</sys:String>
+    <sys:String x:Key="ProfileView_FilePicker_Title">Choose avatar image</sys:String>
+    <sys:String x:Key="ProfileView_FilePicker_Images">Images</sys:String>
+    <sys:String x:Key="ProfileView_EditEmail_Title">Change email</sys:String>
+    <sys:String x:Key="ProfileView_EditEmail_Subtitle">Your email is used to sign in.
+Enter a new address to update your account.</sys:String>
+    <sys:String x:Key="ProfileView_EditEmail_Placeholder">Email address</sys:String>
+    <sys:String x:Key="ProfileView_Notification_EmailUpdated">Email updated successfully</sys:String>
+
+    <!-- Date picker (shared DatePickerView control). Values are stored already uppercased —
+         the control renders them verbatim so each language keeps control of its own casing. -->
+    <sys:String x:Key="DatePicker_DayShort_Su">SU</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Mo">MO</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Tu">TU</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_We">WE</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Th">TH</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Fr">FR</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Sa">SA</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_1">JAN</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_2">FEB</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_3">MAR</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_4">APR</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_5">MAY</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_6">JUN</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_7">JUL</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_8">AUG</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_9">SEP</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_10">OCT</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_11">NOV</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_12">DEC</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_1">JANUARY</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_2">FEBRUARY</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_3">MARCH</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_4">APRIL</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_5">MAY</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_6">JUNE</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_7">JULY</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_8">AUGUST</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_9">SEPTEMBER</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_10">OCTOBER</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_11">NOVEMBER</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_12">DECEMBER</sys:String>
+
+    <sys:String x:Key="KeyAssignments_Category_Macros">Macros</sys:String>
+    <!-- Device Details nav labels -->
+    <sys:String x:Key="DeviceDetails_Nav_Presets">PRESETS</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_RgbLighting">RGB LIGHTING</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Buttons">BUTTONS</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Macros">MACROS</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Dpi">DPI</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Settings">SETTINGS</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_KeyAssign">KEY ASSIGNMENTS</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Audio">AUDIO</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Actuation">ACTUATION</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_ExtendedKeys">EXTENDED KEYS</sys:String>
+
+    <sys:String x:Key="DeviceDetails_Nav_Firmware">FIRMWARE</sys:String>
+    <sys:String x:Key="DeviceDetails_Firmware_CurrentVersionFormat">Current Version: {0}</sys:String>
+    <sys:String x:Key="DeviceDetails_Firmware_UpToDate">Device firmware is up to date and running the latest stable version.</sys:String>
+    <sys:String x:Key="DeviceDetails_Firmware_CheckForUpdates">CHECK FOR UPDATES</sys:String>
+
+    <!-- Device Details section labels (used from C#) -->
+    <sys:String x:Key="DeviceDetails_Section_ButtonSettings">BUTTON SETTINGS</sys:String>
+    <sys:String x:Key="DeviceDetails_Section_KeyAssignment">KEY ASSIGNMENT</sys:String>
+    <sys:String x:Key="DeviceDetails_Header_SelectMouseButton">Select a mouse button</sys:String>
+    <sys:String x:Key="DeviceDetails_Header_KeyAssignment">Key assignment</sys:String>
+    <sys:String x:Key="DeviceDetails_KeyAssignment_ReadFailed">Could not read the current layout from the keyboard. The keys below show factory defaults, which may not match the keyboard. Reconnect it and reopen this page.</sys:String>
+    <sys:String x:Key="DeviceDetails_Macros_UploadFailed">Could not write the macro library to the keyboard, so the key was not bound. Reconnect the keyboard and try again; if it keeps failing, this keyboard's firmware may not store macros.</sys:String>
+    <sys:String x:Key="DeviceDetails_BluetoothMode_Title">BLUETOOTH MODE</sys:String>
+    <sys:String x:Key="DeviceDetails_BluetoothMode_Message">Device settings are unavailable while connected via Bluetooth. Connect your device using&#x0A;a wireless dongle or USB cable to make changes.</sys:String>
+
+    <!-- RGB Lighting section -->
+    <sys:String x:Key="DeviceDetails_Rgb_LightingEffect">Lighting Effect</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_RandomLighting">RANDOM LIGHTING</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_Static">Static</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_Breathing">Breathing</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_RainbowBreathing">Rainbow Breathing</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_ColorCycle">Color Cycle</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_NeonFlowing">Neon Flowing</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_Wave">Wave</sys:String>
+
+    <!-- RGB Color Picker -->
+    <sys:String x:Key="DeviceDetails_Picker_Color">Color</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Gradient">Gradient</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_PopularColors">Popular colors</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Brightness">Brightness</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Speed">Speed</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Cancel">CANCEL</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Apply">APPLY</sys:String>
+
+    <!-- Buttons section -->
+    <sys:String x:Key="DeviceDetails_Buttons_SearchPlaceholder">Search</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Default">Default</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Reset">RESET</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_Standard">Standard</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_Recommended">Recommended</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_Macroses">Macroses</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_System">System</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_NotSupported">Button remapping is not available for this device.</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_LeftClick">Left Click</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_RightClick">Right Click</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_WheelClick">Wheel Click</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Forward">Forward</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_MouseBack">Back</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_MyPc">My PC</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Desktop">Desktop</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Search">Search</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Player">Player</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_PlayPause">Play/Pause</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Next">Next</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Back">Back</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Stop">Stop</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Mute">Mute</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_VolumeUp">Volume Up</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_VolumeDown">Volume Down</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Home">Home</sys:String>
+
+    <!-- Hotspot labels and descriptions -->
+    <sys:String x:Key="DeviceDetails_Hotspot_LeftClick_Label">Left Click</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_LeftClick_Desc">Primary button</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_RightClick_Label">Right Click</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_RightClick_Desc">Secondary button</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_ScrollClick_Label">Wheel Click</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_ScrollClick_Desc">Wheel button</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideForward_Label">Side Forward</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideForward_Desc">Side button forward</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideBack_Label">Side Back</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideBack_Desc">Side button back</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_PollingSwitch_Label">Polling Rate</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_PollingSwitch_Desc">Polling rate cycle button</sys:String>
+
+    <!-- Device details — preset buttons -->
+    <sys:String x:Key="DeviceDetails_SavePreset">SAVE PRESET</sys:String>
+    <sys:String x:Key="DeviceDetails_NewPreset">NEW PRESET</sys:String>
+
+    <!-- New Preset dialog -->
+    <sys:String x:Key="NewPreset_Title">New Preset</sys:String>
+    <sys:String x:Key="NewPreset_Subtitle">Current device settings will be saved to this preset.</sys:String>
+    <sys:String x:Key="NewPreset_NamePlaceholder">Preset name</sys:String>
+    <sys:String x:Key="NewPreset_DescriptionPlaceholder">Description</sys:String>
+    <sys:String x:Key="NewPreset_DeviceSelectorLabel">Games and Apps</sys:String>
+    <sys:String x:Key="NewPreset_DeviceSelectorHint">Choose the game or app that best fits this preset</sys:String>
+    <sys:String x:Key="NewPreset_SetDefaultTitle">Set as Default</sys:String>
+    <sys:String x:Key="NewPreset_SetDefaultDescription">This preset will be used when no game-specific preset is active</sys:String>
+
+    <!-- Presets section -->
+    <sys:String x:Key="PresetsDropdown_Caption">Current preset</sys:String>
+    <sys:String x:Key="Presets_Header_TotalFormat">Total: {0}</sys:String>
+    <sys:String x:Key="Presets_Header_ItemsLabel">GAMES</sys:String>
+    <sys:String x:Key="Presets_EmptyHint">No presets yet. Click NEW PRESET to save the current device settings.</sys:String>
+    <sys:String x:Key="Presets_DefaultBadge">Default</sys:String>
+    <sys:String x:Key="Presets_Item_App">Desktop</sys:String>
+    <sys:String x:Key="Presets_Menu_Edit">Edit</sys:String>
+    <sys:String x:Key="Presets_Menu_Duplicate">Duplicate</sys:String>
+    <sys:String x:Key="Presets_Menu_Restore">Reset</sys:String>
+    <sys:String x:Key="Presets_Menu_Delete">Delete</sys:String>
+    <sys:String x:Key="NewPreset_Cancel">CANCEL</sys:String>
+    <sys:String x:Key="NewPreset_Confirm">CONFIRM</sys:String>
+
+    <!-- Edit Preset dialog reuses the New Preset popup with these labels -->
+    <sys:String x:Key="EditPreset_Title">Edit Preset</sys:String>
+    <sys:String x:Key="EditPreset_Subtitle">Update the preset details and assignment.</sys:String>
+    <sys:String x:Key="EditPreset_Save">SAVE</sys:String>
+
+    <!-- Duplicate Preset dialog reuses the New Preset popup with these labels -->
+    <sys:String x:Key="DuplicatePreset_Title">Duplicate Preset</sys:String>
+    <sys:String x:Key="DuplicatePreset_Subtitle">A new preset will be created using the selected preset settings.</sys:String>
+    <sys:String x:Key="DuplicatePreset_Confirm">DUPLICATE</sys:String>
+    <sys:String x:Key="DuplicatePreset_NameFormat">{0} Copy</sys:String>
+
+    <!-- Save Preset dialog -->
+    <sys:String x:Key="SavePreset_Title">Save Preset</sys:String>
+    <sys:String x:Key="SavePreset_Subtitle">Select a preset to overwrite with the current device settings.</sys:String>
+    <sys:String x:Key="SavePreset_SearchPlaceholder">Search</sys:String>
+    <sys:String x:Key="SavePreset_Confirm">SAVE</sys:String>
+
+    <!-- Device card connection tooltip (hover over the card's connection indicator) -->
+    <sys:String x:Key="Card_Connection_Cable">Connected via cable</sys:String>
+    <sys:String x:Key="Card_Connection_Dongle">Connected via dongle</sys:String>
+    <sys:String x:Key="Card_Connection_Bluetooth">Connected via Bluetooth</sys:String>
+    <sys:String x:Key="Card_Connection_None">Not connected</sys:String>
+    <sys:String x:Key="Card_Connection_BatteryLevel">Battery level {0}%</sys:String>
+
+    <!-- Disconnected-card status label (uppercase per the design; the pixel font has no
+         text transform, so the casing lives in the value). -->
+    <sys:String x:Key="Card_NoConnection">NO CONNECTION</sys:String>
+
+    <!-- Reset Preset confirmation dialog -->
+    <sys:String x:Key="ResetPreset_Title">Reset Preset?</sys:String>
+    <sys:String x:Key="ResetPreset_Body">All changes made to the current preset will be discarded.
+Do you want to restore the default settings?</sys:String>
+    <sys:String x:Key="ResetPreset_Confirm">RESET</sys:String>
+
+    <!-- Delete Device confirmation dialog (home view card 3-dot menu -> Delete) -->
+    <sys:String x:Key="DeleteDevice_Title">DELETE DEVICE</sys:String>
+    <sys:String x:Key="DeleteDevice_Body">This device will be removed from your list. You can reconnect it anytime.</sys:String>
+    <sys:String x:Key="DeleteDevice_Confirm">DELETE</sys:String>
+
+    <!-- Delete Preset confirmation dialog -->
+    <sys:String x:Key="DeletePreset_Title">Delete Preset?</sys:String>
+    <sys:String x:Key="DeletePreset_Body">This preset and all of its saved settings will be permanently deleted.
+This action cannot be undone.</sys:String>
+    <sys:String x:Key="DeletePreset_Confirm">DELETE</sys:String>
+    <sys:String x:Key="DeleteDpiPoint_Title">Delete DPI point?</sys:String>
+    <sys:String x:Key="DeleteDpiPoint_Body">Are you sure you want to delete this DPI point? This action cannot be undone.</sys:String>
+    <sys:String x:Key="DeleteDpiPoint_Confirm">DELETE</sys:String>
+
+    <!-- Unsaved Changes confirmation dialog (shown when the user tries to leave DeviceDetails with a dirty preset) -->
+    <sys:String x:Key="UnsavedChanges_Title">Save changes to the current preset?</sys:String>
+    <sys:String x:Key="UnsavedChanges_Body">Current device settings have been modified.
+Do you want to save the changes before leaving?</sys:String>
+    <sys:String x:Key="UnsavedChanges_Body_Switching">Current device settings have been modified.
+Do you want to save the changes before switching presets?</sys:String>
+    <sys:String x:Key="UnsavedChanges_Discard">DON'T SAVE</sys:String>
+    <sys:String x:Key="UnsavedChanges_Save">SAVE</sys:String>
+
+    <!-- Auto-created preset name (created on device connect when the presets list is empty). -->
+    <sys:String x:Key="Presets_DefaultName">Default</sys:String>
+
+    <!-- DPI section -->
+    <sys:String x:Key="DeviceDetails_Dpi_Title">DPI Settings</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Recommendations">RECOMMENDATIONS</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_PollingRate">Polling Rate</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_PollingRate_Subtitle">Higher values provide smoother cursor movement.</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_LiftOffDistance">Lift-off Distance</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_LiftOffDistance_Subtitle">Adjusts the height at which tracking stops when the mouse is lifted.</sys:String>
+    <!-- No leading "+": the glyph is its own element in the view, aligned to the radio-circle
+         column, so it cannot drift with a longer translation. -->
+    <sys:String x:Key="DeviceDetails_Dpi_AddPoint">ADD POINT</sys:String>
+    <!-- One string per point rather than a "{0}" ordinal built in code: the suffix is
+         language-specific (st/nd/rd/th here, gender-agreeing endings in uk), and CLAUDE.md keeps
+         that out of the view models. The set is bounded — both mice cap the stage table at 8 —
+         and DeviceDetails_Dpi_PointFormat below is the fallback if a catalog ever declares more. -->
+    <sys:String x:Key="DeviceDetails_Dpi_Point_1">1st point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_2">2nd point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_3">3rd point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_4">4th point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_5">5th point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_6">6th point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_7">7th point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_8">8th point</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_PointFormat">Point {0}</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_StepFormat">Step: {0} dpi</sys:String>
+
+    <sys:String x:Key="DeviceDetails_Audio_OutputVolume">Output Volume</sys:String>
+    <sys:String x:Key="DeviceDetails_Audio_OutputVolume_Subtitle">Sets the playback level for this headset.</sys:String>
+    <sys:String x:Key="DeviceDetails_Audio_MicrophoneVolume">Microphone Volume</sys:String>
+    <sys:String x:Key="DeviceDetails_Audio_MicrophoneVolume_Subtitle">Sets the recording level for this headset's microphone.</sys:String>
+
+    <sys:String x:Key="DeviceDetails_Settings_DefaultSettings">DEFAULT SETTINGS</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ScrollOneScreen">Scroll One Screen at a Time</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ScrollLines">Scroll Lines</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ScrollLines_Subtitle">Scroll 1–100 lines at a time.</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_DoubleClickSpeed">Double-Click Speed</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_DoubleClickSpeed_Subtitle">Adjust how fast double-clicking must be performed.</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_SleepTimer">Sleep Timer</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_SleepTimer_Subtitle">Automatically turns off lighting after inactivity.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Loading">Reading actuation settings from the keyboard…</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_WriteFailed">The keyboard did not accept the last actuation change — the sliders show what it actually holds. Try again; if it keeps failing, this keyboard's firmware may not support adjusting actuation.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Press">Initial Actuation Point</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Press_Subtitle">Travel needed to register a press — lower = lighter.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Release">Release Point</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Release_Subtitle">Release depth — a larger value releases sooner.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_RapidTrigger">Rapid Trigger (RT)</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_RapidTrigger_Subtitle">Re-arms a key on micro-reversals for faster repeats.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_QuickPress">Quick Press</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_QuickRelease">Quick Release</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_ModeAllKeys">ALL KEYS</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_ModePerKey">PER-KEY</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_AllKeysNote">Changes apply to every key on the keyboard.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_SelectKeysHint">Click a key on the keyboard to adjust it.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Selected_Format">Selected: {0}</sys:String>
+    <sys:String x:Key="ExtendedKeys_Loading">Reading extended keys from the keyboard…</sys:String>
+    <sys:String x:Key="ExtendedKeys_WriteFailed">The keyboard did not accept the last extended-key change — the list shows what it actually holds. Try again; if it keeps failing, this keyboard's firmware may not support extended keys.</sys:String>
+    <sys:String x:Key="ExtendedKeys_AddHeading">Add extended key</sys:String>
+    <sys:String x:Key="ExtendedKeys_ConfiguredHeading">Configured Extended Keys</sys:String>
+    <sys:String x:Key="ExtendedKeys_Empty">No extended keys configured yet. Pick a mode above to add one.</sys:String>
+    <sys:String x:Key="ExtendedKeys_StorageFull">The keyboard's extended-key storage is full. Remove a record to add another.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_RapidSnap">Rapid Snap (RS)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_RapidSnap_Description">When two keys are pressed together, the deeper-pressed key triggers.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Socd">Instant Release (SOCD)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Socd_Description">When two keys are pressed together, the configured key triggers based on priority.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_ModTap">Mod-Tap (MT)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_ModTap_Description">Distinguish tap and hold on one key to trigger different actions.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Toggle">Toggle (TGL)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Toggle_Description">Tap to toggle continuous trigger on or off; hold for normal trigger behaviour.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_RapidSnap">RS</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_Socd">SOCD</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_ModTap">MT</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_Toggle">TGL</sys:String>
+    <sys:String x:Key="ExtendedKeys_Key1">Key 1</sys:String>
+    <sys:String x:Key="ExtendedKeys_Key2">Key 2</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_PriorityHeading">Priority Settings</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_PriorityDescription">Choose which key triggers when both keys are pressed past their actuation point.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_LastInput">Last Input Priority</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_LastInput_Tip">When both keys pass the actuation point, the last pressed key overrides the first.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_MutualCancel">Mutual Cancel</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_MutualCancel_Tip">When both keys pass the actuation point, neither key triggers.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_Absolute">Absolute Priority</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_Absolute_Tip_Format">{0} always overrides the other key, whichever was pressed first.</sys:String>
+    <sys:String x:Key="ExtendedKeys_PickHint_Format">Click a key on the keyboard to set {0}.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ConfirmHint">Both keys are set — press Confirm, or click a key chip to change it.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ClearKey">Clear this key</sys:String>
+    <sys:String x:Key="ExtendedKeys_PhysicalKey">Physical key</sys:String>
+    <sys:String x:Key="ExtendedKeys_Hold">Hold</sys:String>
+    <sys:String x:Key="ExtendedKeys_Tap">Tap</sys:String>
+    <sys:String x:Key="ExtendedKeys_TimeMs">Time (ms)</sys:String>
+    <sys:String x:Key="ExtendedKeys_TimeMs_Format">{0} ms</sys:String>
+    <sys:String x:Key="ExtendedKeys_ModTap_TimeHint_Format">Hold time ≥ {0} ms counts as hold; otherwise tap.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ToggledKey">Toggled key</sys:String>
+    <sys:String x:Key="ExtendedKeys_Toggled">Toggled</sys:String>
+    <sys:String x:Key="ExtendedKeys_Toggle_TimeHint_Format">Hold ≥ {0} ms triggers normally; a shorter tap toggles the key on/off.</sys:String>
+    <sys:String x:Key="ExtendedKeys_OutputsHint">Click an output chip to choose the key it sends.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ConfirmHint_Single">Everything is set — press Confirm, or click a chip to change it.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_PhysicalKeySet">Clear the physical key chip first to pick a different key.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ClearPhysicalKey">Clear the physical key</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_SameKey">Pick two different keys.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_Fn">The FN key cannot be part of an extended key.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_AlreadyUsed">This key already belongs to an extended key. Remove that record first.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_Blocked">This key is used by an advanced-key setting this app does not manage. Choose another key.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_Remapped">This key is remapped. Reset its assignment on Key Assignments first.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_MacroBound">This key plays a macro. Unassign the macro first.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Blocked_Format">{0} is part of an extended key ({1}). Edit it on the Extended Keys page.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Blocked_ProbePending">Still reading this keyboard's extended keys. Try this key again in a moment.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Tooltip_Format">{0} · {1}</sys:String>
+    <sys:String x:Key="ExtendedKeys_Delete">Remove extended key</sys:String>
+    <sys:String x:Key="ExtendedKeys_Defaults_Title">Reset Extended Keys?</sys:String>
+    <sys:String x:Key="ExtendedKeys_Defaults_Body">Every extended key configured on this keyboard will be removed. The keys go back to their normal behaviour.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Defaults_Confirm">RESET</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ButtonDebounce">Button Debounce</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ButtonDebounce_Subtitle">Reduces unintentional double-clicks. Lower = faster response.</sys:String>
+<sys:String x:Key="DeviceDetails_Settings_LiftOffDistance">Lift-Off Distance</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_LiftOffDistance_Subtitle">Distance at which the sensor stops tracking when lifted off the surface.</sys:String>
+
+    <!-- Macros -->
+    <sys:String x:Key="Macros_Tab_Macros">MACROS</sys:String>
+    <sys:String x:Key="Macros_Tab_Commands">COMMANDS</sys:String>
+    <sys:String x:Key="Macros_NewMacro">NEW MACRO</sys:String>
+    <sys:String x:Key="Macros_SearchPlaceholder">Search Macros</sys:String>
+    <sys:String x:Key="Macros_Unassign">Unassign macro</sys:String>
+    <sys:String x:Key="Macros_Menu_Edit">Edit</sys:String>
+    <sys:String x:Key="Macros_Menu_Remove">Remove</sys:String>
+    <sys:String x:Key="Macros_Dialog_CreateTitle">Create Macros</sys:String>
+    <sys:String x:Key="Macros_Dialog_EditTitle">Edit Macro</sys:String>
+    <sys:String x:Key="Macros_Dialog_Create">CREATE</sys:String>
+    <sys:String x:Key="Macros_Dialog_Save">SAVE</sys:String>
+    <sys:String x:Key="Macros_StartRecording">START RECORDING</sys:String>
+    <sys:String x:Key="Macros_StopRecording">STOP RECORDING</sys:String>
+    <sys:String x:Key="Macros_RecordHint">Click "Start recording" to begin</sys:String>
+    <sys:String x:Key="Macros_RecordedCount">Strings: {0}</sys:String>
+    <sys:String x:Key="Macros_ClearRecording">CLEAR</sys:String>
+    <sys:String x:Key="Macros_LimitReached">Maximum of {0} steps reached — recording stopped</sys:String>
+    <sys:String x:Key="Macros_Field_Name">Macros name</sys:String>
+    <sys:String x:Key="Macros_Field_Repetitions">Number of Repetitions</sys:String>
+    <sys:String x:Key="Macros_AutoDelays">Automatically record delays</sys:String>
+    <sys:String x:Key="Macros_RepeatUntilReleased">Repeat until button is released</sys:String>
+    <sys:String x:Key="Macros_Attention">ATTENTION!</sys:String>
+    <sys:String x:Key="Macros_AttentionBody">The buttons of some devices (MSP80 Pro) currently have functions that differ from the default settings.</sys:String>
+    <sys:String x:Key="Macros_Delete_Title">DELETE MACRO</sys:String>
+    <sys:String x:Key="Macros_Delete_Body">"{0}" will be deleted and unassigned from any button.</sys:String>
+    <sys:String x:Key="Macros_Delete_Confirm">DELETE</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeDown">Volume Down</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeUp">Volume Up</sys:String>
+    <sys:String x:Key="Macros_Command_Back">Back</sys:String>
+    <sys:String x:Key="Macros_Command_BrightnessDown">Brightness Down</sys:String>
+    <sys:String x:Key="Macros_Command_BrightnessUp">Brightness Up</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeMute">Volume Mute</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeToggle">Volume Toggle</sys:String>
+    <sys:String x:Key="Macros_Command_BrowserBack">Browser Back</sys:String>
+
+    <!-- Key Assignment Dialog -->
+    <sys:String x:Key="KeyDialog_Title_Format">{0} button</sys:String>
+    <sys:String x:Key="KeyDialog_Tab_Keys">KEYS</sys:String>
+    <sys:String x:Key="KeyDialog_Tab_System">SYSTEM</sys:String>
+    <sys:String x:Key="KeyDialog_Tab_Macros">MACROS</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_Keys">To assign a key, press it on your physical keyboard or select it on the virtual keyboard below.</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_System">Choose a system action to assign to this button.</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_Macros">Choose a macro to assign to this button.</sys:String>
+    <sys:String x:Key="KeyDialog_PickTitle_Format">Choose the {0} key</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_Pick">Press the key on your physical keyboard or select it on the virtual keyboard below.</sys:String>
+    <sys:String x:Key="KeyDialog_RemapToast_Format">{0} key successfully remapped to {1}</sys:String>
+    <sys:String x:Key="KeyDialog_ResetToast_Format">{0} key restored to its default</sys:String>
+
+    <!-- Contact Us dialog -->
+    <sys:String x:Key="ContactUs_Title">Contact us</sys:String>
+    <sys:String x:Key="ContactUs_Field_Email">Email</sys:String>
+    <sys:String x:Key="ContactUs_Field_Topic">Topic</sys:String>
+    <sys:String x:Key="ContactUs_Field_Message">Message</sys:String>
+    <sys:String x:Key="ContactUs_Send">SEND</sys:String>
+    <!-- "Sent": only when the backend acknowledged the message (2xx success envelope). -->
+    <sys:String x:Key="ContactUs_DeliveredTitle">Message sent</sys:String>
+    <sys:String x:Key="ContactUs_DeliveredToast">Your message has been sent</sys:String>
+    <sys:String x:Key="ContactUs_SendFailed">Failed to send the message. Please try again.</sys:String>
+
+    <!-- API error surfacing (docs/plans/improve-api-error-surfacing) -->
+    <sys:String x:Key="ContactUs_Error_RateLimited">You've just sent a message. Please wait about a minute before sending another one.</sys:String>
+    <sys:String x:Key="ContactUs_Error_DailyLimit">You've reached the limit of 5 messages per day. Please try again tomorrow.</sys:String>
+    <sys:String x:Key="ContactUs_Error_Duplicate">You've already sent this message. Change the topic or message, or wait about 10 minutes.</sys:String>
+    <sys:String x:Key="ContactUs_Error_MailError">We couldn't deliver your message. Please try again in a moment.</sys:String>
+    <sys:String x:Key="ContactUs_Error_InvalidEmail">Please enter a valid email address.</sys:String>
+    <sys:String x:Key="ContactUs_Error_TopicLength">Topic must be between 3 and 100 characters.</sys:String>
+    <sys:String x:Key="ContactUs_Error_MessageLength">Message must be between 10 and 2000 characters.</sys:String>
+    <sys:String x:Key="Api_Error_TooManyRequests">Too many requests. Please wait a moment and try again.</sys:String>
+    <sys:String x:Key="Api_Error_Network">Network error. Please check your connection and try again.</sys:String>
+    <sys:String x:Key="Api_Error_Timeout">The server took too long to respond. Please try again.</sys:String>
+    <sys:String x:Key="Api_Error_Generic">Something went wrong. Please try again.</sys:String>
+    <sys:String x:Key="ProfileView_UpdateProfile_Error_Generic">Couldn't update your profile. Please try again.</sys:String>
+    <sys:String x:Key="Auth_Error_RegistrationFailed">Couldn't complete registration. Please try again.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_ProfileSaveFailed">Couldn't save your profile changes. Please try again.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarRequired">Couldn't upload the avatar. Please try again.</sys:String>
+    <sys:String x:Key="KeyDialog_RemapToast_Undo">UNDO</sys:String>
+    <sys:String x:Key="Macros_UnassignToast_Format">{0} macro unassigned from {1} key</sys:String>
+    <sys:String x:Key="KeyDialog_Command_PlayPause">Play / Pause</sys:String>
+    <sys:String x:Key="KeyDialog_Command_NextTrack">Next Track</sys:String>
+    <sys:String x:Key="KeyDialog_Command_PrevTrack">Previous Track</sys:String>
+
+    <sys:String x:Key="Notifications_Title">Notifications</sys:String>
+    <sys:String x:Key="Notifications_DeleteAllTooltip">Delete all</sys:String>
+    <sys:String x:Key="Notifications_ReadAllTooltip">Read all</sys:String>
+    <sys:String x:Key="Notifications_Today">Today</sys:String>
+    <sys:String x:Key="Notifications_Yesterday">Yesterday</sys:String>
+    <sys:String x:Key="Notifications_Empty_Title">All clear</sys:String>
+    <sys:String x:Key="Notifications_Empty_Subtitle">No new notifications right now.</sys:String>
+    <sys:String x:Key="Notification_NewDeviceConnected">New device connected</sys:String>
+    <sys:String x:Key="Notification_DeviceConnected">Device connected</sys:String>
+    <sys:String x:Key="Notification_DeviceDisconnected">Device disconnected</sys:String>
+    <sys:String x:Key="Notification_LowBattery">Low battery</sys:String>
+
+    <!-- Guest session expiry warning (docs/plans/add-guest-session-expiry-warning) -->
+    <sys:String x:Key="Notification_GuestSessionExpiringTitle">Guest session ending soon</sys:String>
+    <sys:String x:Key="Notification_GuestSessionExpiringBody_Format">Ends in about {0} h. Your guest devices, presets, macros and settings will be deleted — register an account to keep them.</sys:String>
+
+    <!-- Global session-token expiry (docs/plans/add-global-token-expiry) -->
+    <sys:String x:Key="Session_ExpiredTitle">Session expired</sys:String>
+    <sys:String x:Key="Session_ExpiredToast">Your session has expired. Please sign in again.</sys:String>
+
+    <!-- App update check (docs/plans/contact-us-and-update-check) -->
+    <sys:String x:Key="AppUpdate_AvailableTitle">Update available</sys:String>
+    <sys:String x:Key="AppUpdate_AvailableBody_Format">Version {0} is available — get it at proovegaming.com</sys:String>
+</ResourceDictionary>

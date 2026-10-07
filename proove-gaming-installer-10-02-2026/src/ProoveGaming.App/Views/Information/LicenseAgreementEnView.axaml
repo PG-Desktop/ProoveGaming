@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.App.Views.Information.LicenseAgreementEnView">
+	<TextBlock Classes="legalDocRoot">
+		<Run Classes="legalDocTitle" Text="End User License and Sublicense Agreement" />
+		<LineBreak />
+		<Run Classes="legalDocDate" Text="Proove Gaming Application — Effective Date: 28.08.2026" />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" FontStyle="Italic" Text="BE FIRST COMPANY LIMITED is registered at FLAT/RM 602, 6/F, KAI YUE COMMERCIAL BUILDING, NO.2C, ARGYLE STREET, MONGKOK, KL, HONG KONG. Business Registration Certificate No. 71957264-000-06-26-2, valid from 11 June 2026 to 10 June 2027." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="This End User License and Sublicense Agreement (&quot;Agreement&quot;) is a legal agreement between you (&quot;Licensee&quot; or &quot;you&quot;) and BE FIRST COMPANY LIMITED (&quot;Proove Gaming&quot;, &quot;Licensor&quot;, and, with respect to the PROOVE GAMING trademark, also &quot;Sublicensor&quot;, &quot;we&quot;, &quot;us&quot;), governing your use of the Proove Gaming software application (&quot;Software&quot;). By installing or using the Software, you accept the terms of this Agreement. If you do not accept these terms, do not install or use the Software. The Software is owned by the Licensor. However, the right to the PROOVE GAMING trademark belongs to the Licensor on the basis of a license agreement entered into between the Licensor (in this capacity, the Sublicensor) and the owner of the aforementioned trademark, Tymur Mustafaiev (hereinafter, the &quot;Trademark Owner&quot;), under which the Trademark Owner granted the Sublicensor the right to use the PROOVE GAMING trademark and to grant sublicenses for its use to third parties. Accordingly, the right granted to the Licensee under this Agreement with respect to the use of the PROOVE GAMING trademark is a sublicense granted by the Sublicensor, derived from the rights granted to the Sublicensor by the Trademark Owner under the aforementioned license agreement, and limited to the scope and duration of the rights granted to the Sublicensor." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="1. Grant of License and Sublicense" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="Subject to your compliance with this Agreement, the Licensor grants you a limited, non-exclusive, non-transferable, non-sublicensable, and revocable license to install and use one copy of the Software on devices you own or control, solely for operating and configuring genuine peripheral devices under the PROOVE GAMING trademark:" />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="In addition, the Sublicensor (the same entity as the Licensor, which, under a license agreement with the Trademark Owner, has the right to use the PROOVE GAMING trademark and to grant sublicenses for its use) grants you a limited, non-exclusive, non-transferable, non-sublicensable, and revocable right to use the PROOVE GAMING trademark solely in connection with the operation and identification of the devices referred to below. This right is a sublicense derived from the rights granted to the Sublicensor by the Trademark Owner, limited to the scope and duration of such rights, and automatically terminates upon the expiration or termination of the license agreement between the Sublicensor and the Trademark Owner." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="Such devices include: mice, keyboards, and headsets for your personal or internal business use. All rights not expressly granted are reserved by the Licensor." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="2. Scope of Use and Restrictions" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="You may not: (a) copy, modify, adapt, translate, or create derivative works based on the Software; (b) reverse engineer, decompile, or disassemble the Software, except where such restriction is prohibited by applicable law; (c) rent, lease, sell, sublicense, distribute, or otherwise transfer the Software to any third party; (d) remove, alter, or obscure any proprietary notices on the Software; (e) use the Software to operate counterfeit, cloned, or unauthorized hardware presented as genuine PROOVE GAMING Devices; or (f) use the Software in any manner that violates applicable law." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="Any violation of the restrictions set out in this Section constitutes a material breach of this Agreement and may result in immediate termination of your license, in addition to any other remedies available to the Licensor at law or in equity." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="3. Ownership" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Software is licensed, not sold. The Licensor and its licensors retain all rights, title, and interest in and to the Software, including all intellectual property rights therein. The PROOVE GAMING trademark belongs to the Trademark Owner, and the Sublicensor uses and disposes of it (including granting sublicenses for its use) solely on the basis of, and within the limits of, the license agreement entered into with the Trademark Owner. This Agreement does not grant you any independent rights to any trademarks, trade names, or logos, including &quot;Proove Gaming&quot;, other than the limited sublicense expressly granted by the Sublicensor in Section 1 of this Agreement." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="4. Device Compatibility" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Software is designed and licensed for use exclusively with genuine PROOVE GAMING-branded Devices. The Licensor does not warrant that the Software will function correctly, safely, or at all with third-party, modified, or counterfeit hardware, and disclaims any liability for issues arising from such use." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="5. Updates" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Licensor may, at its sole discretion, provide updates, patches, or new versions of the Software, which may be installed automatically or with your consent, as required by applicable law. Use of updates is governed by this Agreement unless accompanied by separate license terms." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="6. Third-Party Components" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Software may contain third-party or open-source software components that are licensed to you subject to their own applicable terms. Such third-party terms, to the extent they conflict with this Agreement with respect to the relevant component, will govern the use of that component." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="A list of material third-party components and their respective licenses will, where applicable, be made available within the Software or upon request sent to " /><InlineUIContainer BaselineAlignment="Baseline"><Button Classes="legalDocEmailLink" Content="support@proovegaming.com" Click="OnEmailLinkClicked"/></InlineUIContainer><Run Classes="legalDocText" Text="." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="7. Term and Termination" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="This Agreement remains in effect until terminated. Your rights under this Agreement will terminate automatically without notice if you fail to comply with any of its terms. Upon termination, you must cease all use of the Software and delete it from all devices. The Sections relating to ownership, disclaimer of warranties, limitation of liability, and governing law will survive termination." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="8. Disclaimer of Warranties" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="THE SOFTWARE IS PROVIDED &quot;AS IS,&quot; WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NON-INFRINGEMENT. THE LICENSOR DOES NOT WARRANT THAT THE SOFTWARE WILL BE UNINTERRUPTED OR ERROR-FREE." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="9. Limitation of Liability" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE LICENSOR SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING OUT OF OR RELATED TO THE USE OR INABILITY TO USE THE SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. THE LICENSOR'S TOTAL LIABILITY UNDER THIS AGREEMENT SHALL NOT EXCEED THE AMOUNT, IF ANY, PAID FOR THE RELATED DEVICE." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="10. Export Compliance" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="You agree to comply with all applicable export control and economic sanctions laws and regulations in connection with your use of the Software, and you represent that you are not located in, or a resident of, any country subject to a comprehensive embargo, and that you are not on any restricted party list." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="11. Governing Law" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="This Agreement is governed by the laws of Hong Kong, without regard to its conflict of laws principles. Any dispute arising under this Agreement shall be subject to the exclusive jurisdiction of the courts of Hong Kong, subject to any mandatory consumer protection rights available in your country of residence." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="12. Entire Agreement" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="This Agreement, together with the Terms of Service and the Privacy Policy, constitutes the entire agreement between you and the Licensor regarding the Software and supersedes all prior or contemporaneous agreements concerning its subject matter. If any provision is held unenforceable, the remaining provisions will remain in full force and effect." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="13. Support and Maintenance" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Licensor may, but is not obligated to, provide technical support, maintenance, or updates for the Software. Any such support is provided at the Licensor's discretion and may be modified or discontinued at any time." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="14. Assignment" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="You may not assign or transfer this Agreement or any rights granted under it without the Licensor's prior written consent. The Licensor may freely assign this Agreement in connection with a merger, acquisition, or sale of assets." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="15. Notices" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Licensor may provide you with notices through the Software, the email address associated with your account, or by posting on our website. Notices to the Licensor should be sent to " /><InlineUIContainer BaselineAlignment="Baseline"><Button Classes="legalDocEmailLink" Content="support@proovegaming.com" Click="OnEmailLinkClicked"/></InlineUIContainer><Run Classes="legalDocText" Text="." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="16. Contact Information" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="For questions regarding this Agreement, please contact us at: " /><InlineUIContainer BaselineAlignment="Baseline"><Button Classes="legalDocEmailLink" Content="support@proovegaming.com" Click="OnEmailLinkClicked"/></InlineUIContainer><Run Classes="legalDocText" Text="." />
+	</TextBlock>
+</UserControl>

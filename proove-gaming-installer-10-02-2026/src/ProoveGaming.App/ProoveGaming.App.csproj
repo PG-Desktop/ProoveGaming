@@ -1,0 +1,83 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFrameworks>net10.0-windows10.0.17763.0;net10.0</TargetFrameworks>
+		<!-- Keeps the win-x64 target in every restore's assets file so the Installer's Release
+		     payload publish (-r win-x64) cannot lose it to a concurrent solution-level no-RID
+		     restore (same NETSDK1047 race as DeviceHost, CI run 32534283275). -->
+		<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+		<EnableWindowsTargeting>true</EnableWindowsTargeting>
+		<Nullable>enable</Nullable>
+		<AssemblyName>ProoveGaming.App</AssemblyName>
+		<!-- Compared against the update manifest's "version" by UpdateCheckService; bump
+		     manually when publishing a build the manifest will advertise (release tags stay
+		     date-based). -->
+		<Version>1.0.0</Version>
+		<RootNamespace>ProoveGaming.App</RootNamespace>
+		<ApplicationManifest>app.manifest</ApplicationManifest>
+		<ApplicationIcon>Assets\PG_Favicon_128x128.ico</ApplicationIcon>
+		<AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+	<!-- User secrets are a developer convenience: a shipped build must not read a per-user file that
+	     could redirect the API base URL (docs/plans/fix-repository-audit-findings, S6). -->
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<UserSecretsId>6a0cd803-37cc-4717-b904-6d35415df561</UserSecretsId>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Folder Include="Models\" />
+		<AvaloniaResource Include="Assets\**" />
+		<AvaloniaResource Include="Templates\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="12.1.3" />
+		<PackageReference Include="Avalonia.Desktop" Version="12.1.3" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="12.1.3" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="12.1.3" />
+		<!-- Debug only: AttachDeveloperTools is #if DEBUG, so a Release build has no use for it and must not ship it. -->
+		<PackageReference Include="AvaloniaUI.DiagnosticsSupport" Version="2.2.3" Condition="'$(Configuration)' == 'Debug'" />
+		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+		<PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.12" Condition="'$(Configuration)' == 'Debug'" />
+		<!-- DPAPI for the saved sign-in token (docs/plans/fix-repository-audit-findings, S7). -->
+		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.12" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.12" />
+		<!-- App log file (docs/plans/fix-repository-audit-findings, A3); versions match the DeviceHost. -->
+		<PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
+		<PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+		<PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
+		<PackageReference Include="Svg.Controls.Skia.Avalonia" Version="12.0.0.17" />
+		<PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
+	</ItemGroup>
+
+	<ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0-windows10.0.17763.0'))">
+		<PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.1.3" />
+		<!-- Not used directly. Microsoft.Toolkit.Uwp.Notifications depends on System.Drawing.Common 4.7.0,
+		     which has a published advisory (CVE-2021-24112); this pin lifts the transitive version. Remove it
+		     only together with the toolkit. -->
+		<PackageReference Include="System.Drawing.Common" Version="10.0.12" />
+	</ItemGroup>
+	
+
+	<ItemGroup>
+		<!-- Compiled into the assembly, not shipped as a file: an install carries no settings file to
+		     read or edit. Change it here in the repository. Read by ConfigurationManager. -->
+		<EmbeddedResource Include="appsettings.json" LogicalName="ProoveGaming.App.appsettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\ProoveGaming.Common\ProoveGaming.Common.csproj" />
+		<ProjectReference Include="..\ProoveGaming.GrpcDependencies\ProoveGaming.GrpcDependencies.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="ProoveGaming.App.Tests" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,27 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <x:String x:Key="Window_Title">Proove Gaming Uninstaller</x:String>
+
+  <x:String x:Key="Step1_Title">Ready to Uninstall?</x:String>
+  <x:String x:Key="Step1_Subtitle">Are you sure you want to uninstall Proove Gaming?</x:String>
+	<x:String x:Key="Label_DeleteUserProfilesAndSettings">Delete user profiles and settings</x:String>
+  <x:String x:Key="Button_Cancel">CANCEL</x:String>
+  <x:String x:Key="Button_Uninstall">UNINSTALL</x:String>
+
+  <x:String x:Key="Step2_Title">Uninstalling Proove Gaming</x:String>
+  <x:String x:Key="Step2_Subtitle">Deleting files...</x:String>
+  <x:String x:Key="Step2_Subtitle_StoppingService">Stopping Device Host service...</x:String>
+  <x:String x:Key="Step2_Subtitle_RemovingService">Removing Device Host service...</x:String>
+  <x:String x:Key="Step2_Subtitle_RemovingFiles">Deleting files...</x:String>
+
+  <x:String x:Key="Step3_Title_Success">Deinstallation Complete</x:String>
+	<x:String x:Key="Step3_Subtitle_Success">Proove Gaming has been removed from your computer.</x:String>
+  <x:String x:Key="Complete_Message_Prefix">Click</x:String>
+  <x:String x:Key="Complete_Message_Action">Finish</x:String>
+  <x:String x:Key="Complete_Message_Suffix">to exit.</x:String>
+  <x:String x:Key="Step3_Title_Failed">Uninstallation Finished with Issues</x:String>
+  <x:String x:Key="Step3_Subtitle_Failed">Some files could not be removed immediately and may be deleted after reboot.</x:String>
+  <x:String x:Key="Step3_Title_Refused">Nothing Was Removed</x:String>
+  <x:String x:Key="Step3_Subtitle_Refused">This folder could not be confirmed as a Proove Gaming installation, so nothing was deleted. Reinstall Proove Gaming, then uninstall it again. Details are in proove-uninstall.log in the temporary folder.</x:String>
+  <x:String x:Key="Button_Finish">FINISH</x:String>
+</ResourceDictionary>

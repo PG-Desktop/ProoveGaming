@@ -1,0 +1,456 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 xmlns:common="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:RgbEffectSettingsViewModel"
+			 x:Class="ProoveGaming.App.Controls.RgbColorPickerControl"
+			 Design.Width="300"
+			 Design.Height="200">
+
+	<UserControl.Styles>
+
+		<Style Selector="Button.rgbColorSwatchButton">
+			<Setter Property="Width" Value="38" />
+			<Setter Property="Height" Value="38" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button.rgbColorSwatchButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button.rgbColorSwatchButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button.rgbColorSwatchButton:pointerover:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+
+		<!-- Border.rgbHexInputHost is shared with the DPI section's custom-value box and lives in
+		     App.axaml. The popup's own HEX FIELD below stays local: this control is its only
+		     user, and unlike the host border it carries its own outline. -->
+
+		<Style Selector="Border.rgbColorPickerPopup">
+			<Setter Property="Width" Value="384" />
+			<Setter Property="Height" Value="482" />
+			<Setter Property="Background" Value="#000000" />
+			<Setter Property="BorderBrush" Value="#1FBEBCEA" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Padding" Value="16" />
+		</Style>
+
+		<!-- The popup's editable HEX field. Every state re-states BorderBrush/BorderThickness
+		     because the Fluent theme repaints PART_BorderElement on :pointerover and :focus —
+		     setting only Background there would let the theme swap the border out from under it. -->
+		<Style Selector="TextBox.rgbPickerHexInput">
+			<Setter Property="Height" Value="39" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CaretBrush" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="TextBox.rgbPickerHexInput:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+		<Style Selector="TextBox.rgbPickerHexInput:focus /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+		<Style Selector="TextBox.rgbPickerHexInput:focus:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+
+		<Style Selector="Button.rgbPresetButton">
+			<Setter Property="Width" Value="46" />
+			<Setter Property="Height" Value="46" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Padding" Value="2" />
+			<Setter Property="Margin" Value="0,0,6,6" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton:pointerover">
+			<Setter Property="Padding" Value="6" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton:pressed">
+			<Setter Property="Padding" Value="6" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton.selected /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton.selected:pointerover">
+			<Setter Property="Padding" Value="6" />
+		</Style>
+		<Style Selector="Button.rgbPresetButton.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#80BEBCEA" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+
+		<Style Selector="Button.rgbPickerCancelButton">
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Padding" Value="16,0" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="Background" Value="#1A6357FF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<!-- Foreground is re-stated on hover on purpose. Fluent styles PART_ContentPresenter on
+		     :pointerover and sets Foreground from a theme resource, so a hover rule that only sets
+		     Background lets the theme repaint the label — and that resource resolves differently
+		     under an OS light theme than a dark one, which is why the label changed colour on
+		     hover only in light mode. -->
+		<Style Selector="Button.rgbPickerCancelButton:pointerover">
+			<Setter Property="Background" Value="#2A2660" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="Button.rgbPickerCancelButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#2A2660" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+
+		<Style Selector="Button.rgbPickerApplyButton">
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Padding" Value="16,0" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="Background" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<!-- Same reason as the Cancel button's hover rule above. -->
+		<Style Selector="Button.rgbPickerApplyButton:pointerover">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="Button.rgbPickerApplyButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+
+	</UserControl.Styles>
+
+	<StackPanel Spacing="12">
+
+		<!-- Color row: swatch button + hex display + popup (hidden when HasColorPicker=false) -->
+		<StackPanel Spacing="8" IsVisible="{Binding HasColorPicker}">
+			<TextBlock Text="{DynamicResource DeviceDetails_Picker_Color}" Foreground="#FFFFFF" FontSize="16" />
+			<Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+				<Button Name="PickerAnchorButton"
+						Classes="rgbColorSwatchButton"
+						Command="{Binding OpenPickerCommand}">
+					<Grid>
+						<Border Width="28" Height="28"
+								Background="{Binding SelectedHexColor}"
+								IsVisible="{Binding !IsRainbow}"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center" />
+						<Border Width="28" Height="28"
+								IsVisible="{Binding IsRainbow}"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center">
+							<Border.Background>
+								<LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+									<GradientStop Color="#FF0000" Offset="0.0" />
+									<GradientStop Color="#FFFF00" Offset="0.17" />
+									<GradientStop Color="#00FF00" Offset="0.34" />
+									<GradientStop Color="#00FFFF" Offset="0.5" />
+									<GradientStop Color="#0000FF" Offset="0.67" />
+									<GradientStop Color="#FF00FF" Offset="0.84" />
+									<GradientStop Color="#FF0000" Offset="1.0" />
+								</LinearGradientBrush>
+							</Border.Background>
+						</Border>
+					</Grid>
+				</Button>
+
+				<Border Grid.Column="1" Classes="rgbHexInputHost">
+					<StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+						<!-- The "HEX" label is a wordmark SVG baked as fill="white", so it is tinted
+						     rather than faded — plain Opacity would grey it instead of tinting it.
+						     #70698B is #BEBCEA at 50% over this row's background. -->
+						<common:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/HEX.svg"
+											 TintColor="#70698B"
+											 Width="24" Height="24" Margin="4,0,0,0"
+											 IsVisible="{Binding !IsRainbow}" />
+						<TextBlock Text="{Binding SelectedHexColor}"
+								   Foreground="#FFFFFF"
+								   FontSize="16"
+								   IsVisible="{Binding !IsRainbow}" />
+						<TextBlock Text="{DynamicResource DeviceDetails_Picker_Gradient}"
+								   Foreground="#80BEBCEA"
+								   FontSize="16"
+								   Margin="12,0,0,0"
+								   IsVisible="{Binding IsRainbow}" />
+					</StackPanel>
+				</Border>
+
+				<Popup IsOpen="{Binding IsPickerOpen, Mode=TwoWay}"
+					   PlacementTarget="{Binding ElementName=PickerAnchorButton}"
+					   Placement="RightEdgeAlignedTop"
+					   HorizontalOffset="-40"
+					   VerticalOffset="-40"
+					   IsLightDismissEnabled="True">
+					<Panel Margin="40" Background="Transparent">
+						<Panel.Effect>
+							<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="40" Color="#6357FF" Opacity="0.3" />
+						</Panel.Effect>
+						<Border Name="PickerPopupBorder"
+								Classes="rgbColorPickerPopup"
+								SizeChanged="OnPickerPopupSizeChanged">
+						<Grid>
+							<StackPanel Spacing="8" VerticalAlignment="Top">
+
+							<!-- Saturation/value plane -->
+							<Border Height="162" BorderBrush="#4DBEBCEA" BorderThickness="1" HorizontalAlignment="Stretch">
+								<Grid Name="PickerColorPlane"
+									  PointerPressed="OnColorPlanePointerPressed"
+									  PointerMoved="OnColorPlanePointerMoved"
+									  Cursor="Hand">
+									<Image Name="PickerColorPlaneImage" Stretch="Fill" Loaded="OnColorPlaneImageLoaded" />
+									<Border Width="24" Height="24"
+											BorderBrush="#FFFFFF" BorderThickness="4"
+											Background="{Binding PickerHexColor}"
+											HorizontalAlignment="Left" VerticalAlignment="Top"
+											IsHitTestVisible="False">
+										<Border.Margin>
+											<MultiBinding Converter="{x:Static converters:PlanePointerMarginConverter.Instance}">
+												<Binding Path="PickerSaturation" />
+												<Binding Path="PickerValue" />
+												<Binding ElementName="PickerColorPlane" Path="Bounds.Width" />
+												<Binding ElementName="PickerColorPlane" Path="Bounds.Height" />
+											</MultiBinding>
+										</Border.Margin>
+									</Border>
+								</Grid>
+							</Border>
+
+							<!-- Hue strip -->
+							<Border Height="24" BorderBrush="#4DBEBCEA" BorderThickness="1" HorizontalAlignment="Stretch">
+								<Grid Name="PickerHueStrip"
+									  PointerPressed="OnHueStripPointerPressed"
+									  PointerMoved="OnHueStripPointerMoved"
+									  Cursor="Hand">
+									<Image Name="PickerHueStripImage" Stretch="Fill" Loaded="OnHueStripImageLoaded" />
+									<Border Width="24" Height="24"
+											BorderBrush="#FFFFFF" BorderThickness="4"
+											Background="{Binding PickerHueColor}"
+											HorizontalAlignment="Left" VerticalAlignment="Top"
+											IsHitTestVisible="False">
+										<Border.Margin>
+											<MultiBinding Converter="{x:Static converters:HuePointerMarginConverter.Instance}">
+												<Binding Path="PickerHueNormalized" />
+												<Binding ElementName="PickerHueStrip" Path="Bounds.Width" />
+											</MultiBinding>
+										</Border.Margin>
+									</Border>
+								</Grid>
+							</Border>
+
+							<!-- HEX text input -->
+							<TextBox Classes="rgbPickerHexInput"
+									 Text="{Binding PickerHexColor, Mode=TwoWay}">
+								<TextBox.InnerLeftContent>
+									<!-- Same grey "HEX" wordmark as the closed-state label (#70698B = #BEBCEA
+									     at 50%); the entered value in the input stays full-white. -->
+									<common:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/HEX.svg"
+														 TintColor="#70698B"
+														 Width="24" Height="24"
+														 VerticalAlignment="Center"
+														 Margin="16,0,0,0" />
+								</TextBox.InnerLeftContent>
+							</TextBox>
+
+							<!-- Preset color swatches -->
+							<!-- 8px top margin on top of the StackPanel's 8px Spacing = 16px before this label. -->
+							<TextBlock Text="{DynamicResource DeviceDetails_Picker_PopularColors}" Foreground="#FFFFFF" FontSize="16" Margin="0,8,0,0" />
+							<WrapPanel Margin="0,0,-16,-12">
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#EE2020}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#EE2020">
+										<Border Background="#EE2020" />
+									</Button>
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#FF7700}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#FF7700">
+										<Border Background="#FF7700" />
+									</Button>
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#FFCC00}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#FFCC00">
+										<Border Background="#FFCC00" />
+									</Button>
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#00FF3C}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#00FF3C">
+										<Border Background="#00FF3C" />
+									</Button>
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#00FFEE}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#00FFEE">
+										<Border Background="#00FFEE" />
+									</Button>
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#002FFF}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#002FFF">
+										<Border Background="#002FFF" />
+									</Button>
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#9000FF}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#9000FF">
+										<Border Background="#9000FF" />
+									</Button>
+									<Button Classes="rgbPresetButton"
+											Classes.selected="{Binding PickerSelectedSwatch, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=#FFFFFF}"
+											Command="{Binding SelectPresetColorCommand}" CommandParameter="#FFFFFF">
+										<Border Background="#FFFFFF" />
+									</Button>
+
+								<!-- Gradient (all colours) swatch — Breathing only; drives the device's
+								     rainbow/all-colours mode (colorSlot 7). -->
+								<Button Classes="rgbPresetButton"
+										IsVisible="{Binding SupportsRainbow}"
+										Classes.selected="{Binding PickerIsRainbow}"
+										Command="{Binding SelectGradientCommand}">
+									<Border>
+										<Border.Background>
+											<LinearGradientBrush StartPoint="0%,50%" EndPoint="100%,50%">
+												<GradientStop Color="#FF0000" Offset="0.0" />
+												<GradientStop Color="#FFFF00" Offset="0.17" />
+												<GradientStop Color="#00FF00" Offset="0.34" />
+												<GradientStop Color="#00FFFF" Offset="0.5" />
+												<GradientStop Color="#0000FF" Offset="0.67" />
+												<GradientStop Color="#FF00FF" Offset="0.84" />
+												<GradientStop Color="#FF0000" Offset="1.0" />
+											</LinearGradientBrush>
+										</Border.Background>
+									</Border>
+								</Button>
+							</WrapPanel>
+
+							</StackPanel>
+
+							<!-- Cancel / Apply — pinned to the popup bottom-right; the 16px inset is the popup Padding. -->
+							<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Spacing="12">
+								<Button Classes="rgbPickerCancelButton" Content="{DynamicResource DeviceDetails_Picker_Cancel}"
+										MinWidth="102"
+										Command="{Binding CancelPickerCommand}" />
+								<Button Classes="rgbPickerApplyButton" Content="{DynamicResource DeviceDetails_Picker_Apply}"
+										MinWidth="102"
+										Command="{Binding ApplyPickerCommand}" />
+							</StackPanel>
+
+						</Grid>
+							</Border>
+						</Panel>
+					</Popup>
+			</Grid>
+		</StackPanel>
+
+		<!-- Brightness slider -->
+		<StackPanel Spacing="4" IsVisible="{Binding HasBrightness}">
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock Grid.Column="0" Text="{DynamicResource DeviceDetails_Picker_Brightness}" Foreground="#FFFFFF" FontSize="16" />
+				<TextBlock Grid.Column="1" Text="{Binding Brightness, StringFormat={}{0:0}%}" Foreground="#FFFFFF" FontSize="16" />
+			</Grid>
+			<Grid Name="BrightnessSliderGrid" Height="32" ClipToBounds="False"
+				  PointerPressed="OnBrightnessSliderPointerPressed"
+				  PointerMoved="OnBrightnessSliderPointerMoved"
+				  Cursor="Hand">
+				<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+				<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Width>
+						<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+							<Binding Path="Brightness" />
+							<Binding ElementName="BrightnessSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Width>
+				</Rectangle>
+				<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Margin>
+						<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+							<Binding Path="Brightness" />
+							<Binding ElementName="BrightnessSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Margin>
+				</Rectangle>
+			</Grid>
+		</StackPanel>
+
+		<!-- Speed slider -->
+		<StackPanel Spacing="4" IsVisible="{Binding HasSpeed}">
+			<Grid ColumnDefinitions="*,Auto">
+				<TextBlock Grid.Column="0" Text="{DynamicResource DeviceDetails_Picker_Speed}" Foreground="#FFFFFF" FontSize="16" />
+				<TextBlock Grid.Column="1" Text="{Binding Speed, StringFormat={}{0:0}%}" Foreground="#FFFFFF" FontSize="16" />
+			</Grid>
+			<Grid Name="SpeedSliderGrid" Height="32" ClipToBounds="False"
+				  PointerPressed="OnSpeedSliderPointerPressed"
+				  PointerMoved="OnSpeedSliderPointerMoved"
+				  Cursor="Hand">
+				<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+				<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Width>
+						<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+							<Binding Path="Speed" />
+							<Binding ElementName="SpeedSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Width>
+				</Rectangle>
+				<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Margin>
+						<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+							<Binding Path="Speed" />
+							<Binding ElementName="SpeedSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Margin>
+				</Rectangle>
+			</Grid>
+		</StackPanel>
+
+	</StackPanel>
+
+</UserControl>

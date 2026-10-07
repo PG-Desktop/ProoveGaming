@@ -1,0 +1,181 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:controls="clr-namespace:ProoveGaming.App.Controls"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.ActuationSectionView"
+			 Design.Width="336"
+			 Design.Height="800">
+	<!-- Same hidden-bar scrolling shell as RgbLightingSectionView: the section is taller than the
+		 panel at small window heights, and without this the bottom RT sliders were simply clipped.
+		 Viewport is 12px wider than the content so hover glows are not cut at the right edge. -->
+	<Grid IsVisible="{Binding IsActuationSection}" ClipToBounds="False">
+	<ScrollViewer VerticalScrollBarVisibility="Hidden"
+				  HorizontalScrollBarVisibility="Disabled"
+				  HorizontalAlignment="Left"
+				  Width="348"
+				  ClipToBounds="False"
+				  Padding="0,8,0,0">
+	<!-- IsEnabled only, no bluetoothLocked dimming: every actuation board in the catalog is
+		 wired-only (SupportsActuation ⇒ Aress/T800/Cyrex), so the class was unreachable — and it
+		 would multiply with the AreActuationControlsEnabled/AreRtControlsEnabled 0.4 blocks below
+		 if a Bluetooth actuation board ever shipped (PR #124 m8). The sectionModeButton:disabled
+		 re-state for that future lives in App.axaml. -->
+	<StackPanel Margin="0" Spacing="8" Width="336" HorizontalAlignment="Left" ClipToBounds="False"
+				IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+		<!-- Shown only while the first device probe is in flight; the sliders below stay hidden
+			 until real values arrived, so the section never renders zeroed thumbs. -->
+		<TextBlock Text="{DynamicResource DeviceDetails_Actuation_Loading}"
+				   IsVisible="{Binding IsActuationProbePending}"
+				   Foreground="#B2BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20" TextWrapping="Wrap" />
+
+		<!-- Shown when the keyboard rejected the last write: the sliders have just been re-read
+			 from the device, and without this line that snap-back looks like a haunted slider. -->
+		<Border Classes="warningBanner"
+				IsVisible="{Binding ActuationWriteFailed}"
+				Margin="0,0,0,4">
+			<TextBlock Text="{DynamicResource DeviceDetails_Actuation_WriteFailed}" />
+		</Border>
+
+		<StackPanel Spacing="8" IsVisible="{Binding IsActuationSupported}">
+
+		<!-- All keys / Per-key mode selector. Hidden entirely when the DeviceHost predates
+			 per-key actuation — the section is then exactly the global editor it always was. -->
+		<StackPanel Spacing="8" IsVisible="{Binding IsActuationPerKeyAvailable}">
+			<Grid ColumnDefinitions="*,8,*">
+				<Button Grid.Column="0" Classes="sectionModeButton"
+						Classes.active="{Binding !ActuationPerKeyMode}"
+						Content="{DynamicResource DeviceDetails_Actuation_ModeAllKeys}"
+						Click="OnAllKeysModeClick" />
+				<Button Grid.Column="2" Classes="sectionModeButton"
+						Classes.active="{Binding ActuationPerKeyMode}"
+						Content="{DynamicResource DeviceDetails_Actuation_ModePerKey}"
+						Click="OnPerKeyModeClick" />
+			</Grid>
+
+			<TextBlock Text="{DynamicResource DeviceDetails_Actuation_AllKeysNote}"
+					   IsVisible="{Binding !ActuationPerKeyMode}"
+					   Foreground="#B2BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20" TextWrapping="Wrap" />
+
+			<StackPanel Spacing="4" IsVisible="{Binding ActuationPerKeyMode}">
+				<TextBlock Text="{DynamicResource DeviceDetails_Actuation_SelectKeysHint}"
+						   IsVisible="{Binding !HasActuationSelection}"
+						   Foreground="#B2BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20" TextWrapping="Wrap" />
+				<TextBlock Text="{Binding ActuationSelectedKeysLabel}"
+						   IsVisible="{Binding HasActuationSelection}"
+						   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20" TextWrapping="Wrap" />
+			</StackPanel>
+		</StackPanel>
+
+		<!-- Everything below is inert in Per-key mode until keys are selected — same disabled
+			 treatment as the RT block. -->
+		<StackPanel Spacing="8" IsEnabled="{Binding AreActuationControlsEnabled}">
+			<StackPanel.Styles>
+				<Style Selector="StackPanel:disabled">
+					<Setter Property="Opacity" Value="0.4" />
+				</Style>
+			</StackPanel.Styles>
+
+		<!-- Factory values from the device itself, applied through the same debounced write path. -->
+		<Button Classes="sectionActionButton"
+				Content="{DynamicResource DeviceDetails_Settings_DefaultSettings}"
+				Command="{Binding RestoreActuationDefaultsCommand}" />
+
+		<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+
+		<!-- Initial Actuation Point -->
+		<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+			<TextBlock Grid.Column="0"
+					   Text="{DynamicResource DeviceDetails_Actuation_Press}"
+					   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" FontWeight="SemiBold" LineHeight="22"
+					   VerticalAlignment="Center" />
+			<TextBlock Grid.Column="1"
+					   Text="{Binding ActuationPressDisplay}"
+					   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" LineHeight="22" VerticalAlignment="Center" />
+		</Grid>
+		<TextBlock Text="{DynamicResource DeviceDetails_Actuation_Press_Subtitle}"
+				   Foreground="#B2BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20" TextWrapping="Wrap" />
+		<controls:PercentSliderControl Percent="{Binding ActuationPressPct}"
+									   FractionChanged="OnPressFractionChanged" />
+
+		<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+
+		<!-- Release Point -->
+		<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+			<TextBlock Grid.Column="0"
+					   Text="{DynamicResource DeviceDetails_Actuation_Release}"
+					   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" FontWeight="SemiBold" LineHeight="22"
+					   VerticalAlignment="Center" />
+			<TextBlock Grid.Column="1"
+					   Text="{Binding ActuationReleaseDisplay}"
+					   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" LineHeight="22" VerticalAlignment="Center" />
+		</Grid>
+		<TextBlock Text="{DynamicResource DeviceDetails_Actuation_Release_Subtitle}"
+				   Foreground="#B2BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20" TextWrapping="Wrap" />
+		<controls:PercentSliderControl Percent="{Binding ActuationReleasePct}"
+									   FractionChanged="OnReleaseFractionChanged" />
+
+		<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+
+		<!-- Rapid Trigger toggle -->
+		<Grid ColumnDefinitions="*,Auto" Height="32" VerticalAlignment="Center">
+			<TextBlock Grid.Column="0"
+					   Text="{DynamicResource DeviceDetails_Actuation_RapidTrigger}"
+					   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" FontWeight="SemiBold" LineHeight="22"
+					   VerticalAlignment="Center" />
+			<controls:ToggleSwitchControl Grid.Column="1"
+										  IsChecked="{Binding ActuationRapidTrigger}"
+										  VerticalAlignment="Center" />
+		</Grid>
+		<TextBlock Text="{DynamicResource DeviceDetails_Actuation_RapidTrigger_Subtitle}"
+				   Foreground="#B2BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20" TextWrapping="Wrap" />
+
+		<!-- RT quick press / quick release — inert while RT is off -->
+		<StackPanel Spacing="8" IsEnabled="{Binding AreRtControlsEnabled}">
+			<StackPanel.Styles>
+				<Style Selector="StackPanel:disabled">
+					<Setter Property="Opacity" Value="0.4" />
+				</Style>
+			</StackPanel.Styles>
+
+			<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+
+			<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+				<TextBlock Grid.Column="0"
+						   Text="{DynamicResource DeviceDetails_Actuation_QuickPress}"
+						   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" FontWeight="SemiBold" LineHeight="22"
+						   VerticalAlignment="Center" />
+				<TextBlock Grid.Column="1"
+						   Text="{Binding ActuationQuickPressDisplay}"
+						   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" LineHeight="22" VerticalAlignment="Center" />
+			</Grid>
+			<controls:PercentSliderControl Percent="{Binding ActuationQuickPressPct}"
+										   FractionChanged="OnQuickPressFractionChanged" />
+
+			<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+
+			<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+				<TextBlock Grid.Column="0"
+						   Text="{DynamicResource DeviceDetails_Actuation_QuickRelease}"
+						   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" FontWeight="SemiBold" LineHeight="22"
+						   VerticalAlignment="Center" />
+				<TextBlock Grid.Column="1"
+						   Text="{Binding ActuationQuickReleaseDisplay}"
+						   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" LineHeight="22" VerticalAlignment="Center" />
+			</Grid>
+			<controls:PercentSliderControl Percent="{Binding ActuationQuickReleasePct}"
+										   FractionChanged="OnQuickReleaseFractionChanged" />
+		</StackPanel>
+
+		</StackPanel>
+
+		</StackPanel>
+
+	</StackPanel>
+	</ScrollViewer>
+	</Grid>
+</UserControl>

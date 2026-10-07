@@ -1,0 +1,66 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Style Selector="CheckBox.pgCheckbox">
+		<Setter Property="FontWeight" Value="Normal" />
+		<Setter Property="Foreground" Value="#B3BEBCEA" />
+		<Setter Property="Template">
+			<ControlTemplate>
+				<Grid ColumnDefinitions="Auto,8,*" VerticalAlignment="Center">
+					<Viewbox Grid.Column="0" Width="32" Height="32" VerticalAlignment="Center">
+						<Canvas Width="32" Height="32">
+							<Path x:Name="OuterFrame"
+								  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"
+								  Fill="#4D6357FF"
+								  IsVisible="False" />
+							<Rectangle x:Name="UncheckedBorder"
+									   Canvas.Left="9" Canvas.Top="9"
+									   Width="14" Height="14"
+									   Stroke="#4DBEBCEA"
+									   StrokeThickness="2"
+									   Fill="Transparent" />
+							<Rectangle x:Name="CheckedFill"
+									   Canvas.Left="8" Canvas.Top="8"
+									   Width="16" Height="16"
+									   Fill="#6357FF"
+									   IsVisible="False" />
+							<Path x:Name="CheckMark"
+								  Data="M14.3669 19.9999L10.5669 16.1999L11.5169 15.2499L14.3669 18.0999L20.4836 11.9833L21.4336 12.9333L14.3669 19.9999Z"
+								  Fill="White"
+								  IsVisible="False" />
+						</Canvas>
+					</Viewbox>
+					<ContentPresenter x:Name="PART_ContentPresenter"
+									  Grid.Column="2"
+									  Content="{TemplateBinding Content}"
+									  ContentTemplate="{TemplateBinding ContentTemplate}"
+									  VerticalAlignment="Center" />
+				</Grid>
+			</ControlTemplate>
+		</Setter>
+	</Style>
+
+	<Style Selector="CheckBox.pgOptionCheckBox">
+		<Setter Property="FontWeight" Value="Normal" />
+		<Setter Property="FontStyle" Value="Normal" />
+		<Setter Property="FontSize" Value="14" />
+		<Setter Property="Foreground" Value="#B3BEBCEA" />
+		<Setter Property="HorizontalAlignment" Value="Center" />
+		<Setter Property="HorizontalContentAlignment" Value="Left" />
+		<Setter Property="VerticalContentAlignment" Value="Center" />
+	</Style>
+	<Style Selector="CheckBox.pgCheckbox:pointerover">
+		<Setter Property="Foreground" Value="#B3BEBCEA" />
+	</Style>
+	<Style Selector="CheckBox.pgCheckbox:pointerover /template/ Path#OuterFrame">
+		<Setter Property="IsVisible" Value="True" />
+	</Style>
+	<Style Selector="CheckBox.pgCheckbox:checked /template/ Rectangle#UncheckedBorder">
+		<Setter Property="IsVisible" Value="False" />
+	</Style>
+	<Style Selector="CheckBox.pgCheckbox:checked /template/ Rectangle#CheckedFill">
+		<Setter Property="IsVisible" Value="True" />
+	</Style>
+	<Style Selector="CheckBox.pgCheckbox:checked /template/ Path#CheckMark">
+		<Setter Property="IsVisible" Value="True" />
+	</Style>
+</Styles>

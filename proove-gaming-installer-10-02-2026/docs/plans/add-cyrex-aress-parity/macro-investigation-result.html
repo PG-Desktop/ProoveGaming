@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cyrex / Aress macros — investigation result</title>
+<style>
+:root{
+  --bg:#fbfaf8; --surface:#fff; --text:#22201d; --muted:#6b6660; --rule:#e5e1db;
+  --accent:#8a4b2a; --accent-soft:#f5ede7; --code-bg:#f4f1ed; --ok:#2f6b3f; --bad:#a33224;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#171614; --surface:#1f1e1b; --text:#e8e4de; --muted:#a09a92; --rule:#332f2b;
+    --accent:#e0916a; --accent-soft:#2a2320; --code-bg:#26241f; --ok:#7bbd8c; --bad:#e8877a;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#171614; --surface:#1f1e1b; --text:#e8e4de; --muted:#a09a92; --rule:#332f2b;
+  --accent:#e0916a; --accent-soft:#2a2320; --code-bg:#26241f; --ok:#7bbd8c; --bad:#e8877a;
+}
+:root[data-theme="light"]{
+  --bg:#fbfaf8; --surface:#fff; --text:#22201d; --muted:#6b6660; --rule:#e5e1db;
+  --accent:#8a4b2a; --accent-soft:#f5ede7; --code-bg:#f4f1ed; --ok:#2f6b3f; --bad:#a33224;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--text);
+  font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:56rem;margin:0 auto;padding:3.5rem 1.5rem 6rem}
+h1,h2,h3{line-height:1.25;letter-spacing:-.011em}
+h1{font-size:2rem;margin:0 0 .4rem;font-weight:650}
+h2{
+  font-size:1.3rem;margin:3rem 0 .9rem;padding-top:1.4rem;
+  border-top:1px solid var(--rule);font-weight:640;
+}
+h1+p,h1+blockquote{margin-top:.2rem}
+h3{font-size:1.05rem;margin:2rem 0 .6rem;font-weight:640;color:var(--accent)}
+p{margin:0 0 1rem}
+a{color:var(--accent);text-underline-offset:2px}
+hr{display:none}
+code{
+  font-family:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  font-size:.86em;background:var(--code-bg);padding:.12em .38em;border-radius:4px;
+  white-space:nowrap;
+}
+pre{
+  background:var(--code-bg);border:1px solid var(--rule);border-radius:8px;
+  padding:1rem 1.1rem;overflow-x:auto;margin:0 0 1.3rem;
+}
+pre code{background:none;padding:0;font-size:.83rem;line-height:1.55;white-space:pre}
+blockquote{
+  margin:0 0 1.3rem;padding:.9rem 1.1rem;background:var(--accent-soft);
+  border-left:3px solid var(--accent);border-radius:0 6px 6px 0;
+}
+blockquote p{margin:0;color:var(--text)}
+.table-scroll{overflow-x:auto;margin:0 0 1.4rem;border:1px solid var(--rule);border-radius:8px}
+table{border-collapse:collapse;width:100%;font-size:.9rem;background:var(--surface)}
+th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--rule);vertical-align:top}
+th{
+  font-weight:620;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;
+  color:var(--muted);background:var(--bg);white-space:nowrap;
+}
+tbody tr:last-child td{border-bottom:none}
+td code{white-space:normal}
+ul,ol{margin:0 0 1.2rem;padding-left:1.4rem}
+li{margin:.35rem 0}
+li>ul,li>ol{margin:.35rem 0 .2rem}
+.status{
+  display:inline-block;margin:.2rem 0 1.1rem;padding:.3rem .7rem;border-radius:999px;
+  background:var(--bad);color:#fff;font-size:.78rem;font-weight:640;letter-spacing:.02em;
+}
+.meta{color:var(--muted);font-size:.88rem;margin:0 0 1.6rem}
+@media(max-width:640px){
+  .wrap{padding:2.2rem 1.1rem 4rem}
+  h1{font-size:1.6rem}
+  body{font-size:15px}
+}
+@media print{
+  body{background:#fff}
+  .wrap{max-width:none;padding:0}
+  h2{break-after:avoid}
+  .table-scroll,pre,blockquote{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+<h1 id="cyrex-aress-macros-investigation-result">Cyrex / Aress macros — investigation result</h1>
+<div class="status">Status: blocked in firmware, not in this codebase.</div>
+<p class="meta">Date: 2026-07-30 · Branch: <code>features/PG-391-cyrexaress</code> · Hardware: Cyrex, firmware <code>0x0002</code></p>
+<p>The host side is complete and every part of it is verified against the device. The keyboard acknowledges the macro-data write and stores nothing. This document records what was built, what each hardware round ruled out, the evidence, and what would unblock it.</p>
+<blockquote><p><strong>Scope of the measurement.</strong> Everything below was measured on the <strong>Cyrex</strong>. The Aress was connected earlier in the day and reports identical geometry (<code>matrix=75 slots (225 B) macro=1024 B keys=68</code>, firmware <code>0x0000</code>), but only an <em>empty</em> library was ever uploaded to it and the read-back diagnostic did not exist yet — so the Aress is <strong>untested</strong> for this failure. It shares the protocol, the service and the record encoding, so the same result is expected, but that is an expectation and not a measurement.</p></blockquote>
+<hr>
+<h2 id="1-verdict-in-one-paragraph">1. Verdict in one paragraph</h2>
+<p>Writing the macro library with command <code>0x2D</code> is acknowledged with status <code>0x55</code>, packet by packet, on the same interface and inside the same session that successfully rewrites the key matrix. Reading the same region back with <code>0x2C</code> — in a <strong>separate session</strong>, after the closing <code>0x11</code> — returns <strong>all zeros</strong>. The bytes we send are correct against the vendor&#x27;s own format specification, and the key record that points at them is byte-for-byte the specification&#x27;s worked example. The device simply does not keep macro data. This is the same behaviour Rampage shows for key-matrix writes: an acknowledgement on this protocol family is not evidence that anything was stored.</p>
+<hr>
+<h2 id="2-what-is-proven-working">2. What is proven working</h2>
+<p>Each row was measured on hardware, not assumed.</p>
+<div class="table-scroll"><table><thead><tr><th>Element</th><th>How it was established</th></tr></thead><tbody><tr><td>Vendor interface selection</td><td><code>\\?\hid#vid_28e9&amp;pid_3272&amp;mi_01&amp;col05…</code> (usage <code>0x20</code>, page <code>0xFF87</code>, 64/64 reports) — the same handle that key remapping uses successfully</td></tr><tr><td>Session bracketing <code>0x10</code> / <code>0x11</code></td><td>Every exchange in the logs completes; no <code>0x0F</code> &quot;no session&quot; status appeared</td></tr><tr><td>Additive checksum</td><td>Every command in these runs was accepted and answered; a malformed one would not be</td></tr><tr><td>Device Info <code>0x12</code></td><td><code>matrix=75 slots (225 B) macro=1024 B keys=68 transport=USB fw=0x0002 maxBri=4 maxSpd=4</code></td></tr><tr><td>Key matrix read <code>0x17</code></td><td><code>read key matrix: 75 slots of 75</code></td></tr><tr><td>Key matrix write <code>0x18</code></td><td><code>wrote the key matrix (5 packets, 225 bytes, 5/5 acked)</code> then <code>slot 17 verified as {0x60, 0x00, 0x00}</code></td></tr><tr><td>Slot number</td><td>Slot 17 held <code>{0x10, 0x00, 0x1A}</code> (<code>KEY_W</code>) before the write — the key the user clicked</td></tr><tr><td>Macro read command <code>0x2C</code></td><td>Replies well-formed with status <code>0x55</code>; it is a real, implemented command</td></tr><tr><td>Packed buffer contents</td><td>Decoded by hand against the vendor sheet — see §4</td></tr></tbody></table></div>
+<p><strong>Ordinary key remapping works on this exact board, over this exact interface and session.</strong> That is what makes the macro failure specific rather than a transport problem.</p>
+<h2 id="3-what-does-not-work">3. What does not work</h2>
+<p><code>0x2D</code> (设定宏信息 / &quot;set macro info&quot;) is acknowledged and discarded. The 1024 bytes of macro space the firmware advertises in Device Info stay zero.</p>
+<hr>
+<h2 id="4-the-evidence">4. The evidence</h2>
+<p>From the DeviceHost log, after the read-back diagnostic was added:</p>
+<pre><code>[CYREX] UploadMacros count=1
+[CYREX] device info: matrix=75 slots (225 B) macro=1024 B keys=68 transport=USB fw=0x0002
+[CYREX] packed library dataLen=30 bytes, device macro space=1024 bytes
+[CYREX] wrote the macro library (1 packets, 30 bytes)
+[CYREX] macro library read back DIFFERENT, first divergence at byte 0.
+        sent=AA551E00010000000A00040000000A00178150001701DC00178164001701
+        read=000000000000000000000000000000000000000000000000000000000000</code></pre>
+<p>The sent buffer is a macro that types <code>tt</code>. Decoded against 宏信息格式 (Macro Information Format):</p>
+<div class="table-scroll"><table><thead><tr><th>Bytes</th><th>Value</th><th>Meaning</th></tr></thead><tbody><tr><td>0–1</td><td><code>AA 55</code></td><td>In-use flag</td></tr><tr><td>2–3</td><td><code>1E 00</code></td><td>Total length = 30, header included</td></tr><tr><td>4–5</td><td><code>01 00</code></td><td>1 macro</td></tr><tr><td>6–7</td><td><code>00 00</code></td><td>Reserved</td></tr><tr><td>8–9</td><td><code>0A 00</code></td><td>Macro 0&#x27;s data starts at offset 10</td></tr><tr><td>10–11</td><td><code>04 00</code></td><td>4 actions (one keypress = press + release)</td></tr><tr><td>12–13</td><td><code>00 00</code></td><td>Reserved</td></tr><tr><td>14–17</td><td><code>0A 00 17 81</code></td><td>delay 10 ms, <code>KEY_T</code> (<code>0x17</code>), <strong>press</strong> (bit 7 set, kind <code>0x01</code>)</td></tr><tr><td>18–21</td><td><code>50 00 17 01</code></td><td>delay 80 ms, <code>KEY_T</code>, release</td></tr><tr><td>22–25</td><td><code>DC 00 17 81</code></td><td>delay 220 ms, <code>KEY_T</code>, press</td></tr><tr><td>26–29</td><td><code>64 00 17 01</code></td><td>delay 100 ms, <code>KEY_T</code>, release</td></tr></tbody></table></div>
+<p>Nothing in it deviates from the specification.</p>
+<p>And the key that should play it, written and verified in the same run:</p>
+<pre><code>[KEY CYREX] SetKeyMapping slot=17 record={0x60, 0x00, 0x00}
+[KEY CYREX] slot 17 {0x10, 0x00, 0x1A} -&gt; {0x60, 0x00, 0x00}, writing back 225 bytes
+[KEY CYREX] wrote the key matrix (5 packets, 225 bytes, 5/5 acked)
+[KEY CYREX] slot 17 verified as {0x60, 0x00, 0x00}</code></pre>
+<p><code>{0x60, 0x00, 0x00}</code> is verbatim the vendor sheet&#x27;s own worked example for &quot;make this key a normal macro key playing macro 0&quot;.</p>
+<hr>
+<h2 id="5-documents-used">5. Documents used</h2>
+<p>Grouped by the role each played, because they are not interchangeable.</p>
+<p><strong>The specification for this family</strong> — the authority, and the only vendor document that covers Cyrex/Aress. There is no Cyrex-specific macro reference in this repository; the workbook is family-wide (智慧无限 = Cyrex, Aress, Rampage) and that is the right level for it, since all three share the protocol.</p>
+<div class="table-scroll"><table><thead><tr><th>Document</th><th>Where</th><th>What it gave us</th></tr></thead><tbody><tr><td><strong>软件驱动协议 V3.1</strong>, 2025-10-28</td><td><code>docs/软件驱动协议-20251028-V3.1.xlsx</code>, translated in <code>docs/knowledge-base/smart-infinite-protocol/</code></td><td>Sheet 命令: <code>0x2C</code>/<code>0x2D</code> are read/write macro info. Sheet 按键信息格式: the <code>Keyboard_Key_Type</code> enum that corrected the macro type to <code>0x60</code>, its play modes, and <code>0x61</code> for repeat counts. Sheet 宏信息格式: the macro buffer layout and the action-type bit rule</td></tr></tbody></table></div>
+<p><strong>Prior measured work on this family</strong> — what was established on this hardware before this task.</p>
+<div class="table-scroll"><table><thead><tr><th>Document</th><th>Where</th><th>What it gave us</th></tr></thead><tbody><tr><td>Smart Infinite key-assignment plan</td><td><code>../add-smart-infinite-key-assignments/add-smart-infinite-key-assignments-plan.md</code></td><td>The framing as <em>measured</em> rather than as documented (report <code>0x06</code>, 64-byte packets, additive checksum), the Rampage acknowledge-and-discard precedent, and the hazard list</td></tr></tbody></table></div>
+<p><strong>Provenance of the code under test</strong> — these are Raster documents, and they are listed because the buffer we send to the Cyrex is produced by <code>RasterMacroEncoder</code>, reused deliberately rather than reimplemented. They are where its format came from; they are not a stand-in for Cyrex documentation and nothing about the Cyrex was inferred from them.</p>
+<div class="table-scroll"><table><thead><tr><th>Document</th><th>Where</th><th>What it gave us</th></tr></thead><tbody><tr><td>Vendor web-app protocol chunk (Raster)</td><td><code>docs/plans/raster-key-assignments/reference/vendor-webapp-protocol-chunk.js</code></td><td>The original packed-buffer writer <code>RasterMacroEncoder</code> was built from, and the press/release attribute values (<code>0x81</code> / <code>0x01</code>)</td></tr><tr><td>Macro definition table (Raster)</td><td><code>docs/plans/raster-key-assignments/reference/macro-definition-table.xlsx</code></td><td>Cross-check of the action encoding</td></tr></tbody></table></div>
+<blockquote><p><strong>These two groups agree, independently.</strong> The buffer layout and the <code>0x81</code>/<code>0x01</code> attribute bytes were derived from the Raster material long before the workbook was found, and the workbook&#x27;s 宏信息格式 sheet then described the identical structure — same <code>AA 55</code> flag, same length and count fields, same 2-byte offset table, same 4-byte actions, same bit-7 press rule. Two unrelated sources reaching the same format is why §4 can state the sent bytes are correct rather than merely plausible.</p></blockquote>
+<h3 id="caveat-on-the-workbook-which-cost-us-time">Caveat on the workbook, which cost us time</h3>
+<p>Its <strong>data formats</strong> match our hardware and are trustworthy — the key record, the macro buffer, and the action-type bits all verified. Its <strong>command numbering is a later revision than our firmware</strong>:</p>
+<ul><li>The sheet lists <code>0x1A</code> / <code>0x1B</code> for read/write of key matrix 1. Our boards answer on <code>0x17</code> / <code>0x18</code>.</li><li>The sheet calls <code>0x31</code> &quot;reset&quot;. On our boards <code>0x20</code> was measured as a <strong>full factory reset</strong>.</li></ul>
+<p>So a command number taken from this sheet is a lead to verify, never a fact. That distinction is now recorded at the top of the translation.</p>
+<hr>
+<h2 id="6-what-was-tried-and-what-each-round-ruled-out">6. What was tried, and what each round ruled out</h2>
+<div class="table-scroll"><table><thead><tr><th>#</th><th>Change</th><th>Result</th><th>Ruled out</th></tr></thead><tbody><tr><td>1</td><td>Key record <code>{0x50, 0x00, 0x00}</code> — <code>0x50</code> taken from a comment in <code>SmartInfiniteProtocol.KnownTypes</code> labelling <code>0x50</code>–<code>0x52</code> &quot;macro&quot;</td><td>Stored, verified, key silent</td><td>—</td></tr><tr><td>2</td><td><code>{0x50, 0x00, 0x01}</code> — hypothesis that <code>code2</code> is a repeat count and <code>0</code> meant &quot;zero plays&quot;</td><td>Stored, verified, key silent</td><td>The third byte is not the problem</td></tr><tr><td>3</td><td><code>{0x60, 0x00, 0x00}</code> — from the vendor enum, after finding the workbook</td><td>Stored, verified, key silent</td><td>The key record is not the problem</td></tr><tr><td>4</td><td>Read the library back with <code>0x2C</code>, in a separate session</td><td><strong>All zeros</strong></td><td>The macro <em>data</em> never reaches the device</td></tr></tbody></table></div>
+<p>Rounds 1 and 2 were wasted on the wrong byte. The cause was a comment written during #72 that had the vendor&#x27;s <code>Keyboard_Key_Type</code> enum inverted — it called <code>0x50</code>–<code>0x52</code> &quot;macro&quot; and <code>0x60</code>/<code>0x61</code> &quot;custom fn, text&quot;, when in fact:</p>
+<pre class="lang-c"><code>FUNC_TYPE            = 0X50,  // function key: layer switch, backlight, Bluetooth channel
+MACRO_AP_TYPE        = 0X60,  // single-play macro
+MACRO_AP_REPETI_TYPE = 0X61,  // repeat macro</code></pre>
+<p>The comment was never load-bearing — <code>KnownTypes</code> only sanity-checks table shape and accepts both ranges — so no test caught it, and it was then cited as if it were documentation. A key bound to <code>{0x50, 0x00, n}</code> is a well-formed record naming function <code>0</code>, which does not exist in the function enum, so the firmware accepts it, verifies it, and does nothing. The comments now name the enum&#x27;s own constants and a test pins <code>TypeMacro == 0x60 &amp;&amp; != 0x50</code> with the reason.</p>
+<h3 id="real-defects-found-and-fixed-along-the-way">Real defects found and fixed along the way</h3>
+<p>Both were genuine, both are fixed and tested, and neither is the cause of the silent key:</p>
+<ol><li><strong>Macro bindings were never persisted.</strong> The guard between the device write and the SQLite write compared <code>_keyLayoutGeneration</code>, which <code>LoadKeyLayoutForDevice</code> bumps even when the <em>same</em> device is reloaded (a card refresh or a preset apply does it). Landing in that window returned after the firmware had already been written, so device and database disagreed and the Macros page showed the key as unbound. Now guarded on device identity. Cyrex and Aress hit it far more than Raster because their key write is a 225-byte read-modify-write measured at ~420 ms.</li><li><strong>The Reset link was permanently greyed out</strong> on these boards, so a bound macro could be replaced but never removed. <code>SelectedKeyHasOverride</code> was computed from the Raster-only override map.</li></ol>
+<hr>
+<h2 id="7-why-it-is-not-working">7. Why it is not working</h2>
+<p>The firmware on this unit does not accept macro data on command <code>0x2D</code>, while acknowledging it.</p>
+<p>Two readings fit the evidence equally well, and nothing we can do from the host distinguishes them:</p>
+<ul><li><strong><code>0x2D</code> is not the macro-write command on this firmware build.</strong> The workbook is a later revision and is already known to disagree with these units on the key-matrix commands. If macro storage moved the same way, the real write command is a neighbour. Against this: <code>0x2C</code> reads plausibly and is documented as <code>0x2D</code>&#x27;s counterpart, so the pair is probably intact.</li><li><strong>Macro storage is not enabled in this build.</strong> Precedent: Rampage reports a key count of <code>0</code> and acknowledges-then-discards key-matrix writes, while configuration writes on the same handle persist byte for byte. That was established as a firmware limitation, not a driver defect. This is the same signature in a different subsystem — except that here the device <em>does</em> advertise 1024 bytes of macro space, which makes the discard harder to explain as intentional.</li></ul>
+<hr>
+<h2 id="8-what-is-needed-to-make-it-work">8. What is needed to make it work</h2>
+<p>Ordered by cost. The first is free and decides whether the second is worth its risk.</p>
+<ol><li><strong>Confirm the vendor&#x27;s own software can write a macro to this board.</strong> If it cannot, this is a firmware question for the vendor and there is nothing to fix here. If it can, capture the exchange (USB capture, or the vendor tool&#x27;s own log) and the command it uses is the answer. This single test resolves §7 either way.</li><li><strong>Ask the vendor two specific questions</strong>, quoting firmware <code>0x0002</code> and PID <code>0x3272</code>: lists <code>0x2C</code> / <code>0x2D</code> but its key-matrix numbering (<code>0x1A</code>/<code>0x1B</code>) does not match this firmware, which answers on <code>0x17</code>/<code>0x18</code>? (<code>0x14</code>/<code>0x15</code>), or a specific ordering relative to <code>0x10</code>/<code>0x11</code>?<ul><li>- Which command writes macro data on this build, given the driver protocol sheet dated 2025-10-28</li><li>- Is there an enable or commit step before or after the macro write — a flag in the function area</li></ul></li><li><strong>Only if 1 and 2 both fail: probe neighbouring commands.</strong> This carries real risk and must not be done blind: unplugged. after each, and never on a board that cannot be re-flashed.<ul><li>- <strong><code>0x20</code> is a full factory reset</strong> on these units. Never send it.</li><li>- <strong>A <code>0x31</code> profile round-trip (<code>0→1→0</code>) freezes the firmware</strong> until the board is physically</li><li>- Probing belongs in <code>src/ProoveGaming.Device.Testing</code>, one command per run, with a read-back</li></ul></li></ol>
+<hr>
+<h2 id="9-reproducing-the-diagnostic">9. Reproducing the diagnostic</h2>
+<ol><li>Start <code>ProoveGaming.DeviceHost</code> and the App, connect a Cyrex.</li><li>Macros page → record a macro → select a key → click the macro row.</li><li>In the DeviceHost log look for the line after <code>wrote the macro library</code>:</li></ol>
+<div class="table-scroll"><table><thead><tr><th>Line</th><th>Meaning</th></tr></thead><tbody><tr><td><code>macro library verified across a session boundary: N bytes read back identical</code></td><td>The data is on the device; the remaining problem is activation, not encoding</td></tr><tr><td><code>read back DIFFERENT … The region is entirely ZERO …</code></td><td>The current state: acked and discarded</td></tr><tr><td><code>read back DIFFERENT …</code> with non-zero bytes</td><td>The write lands, but not where or how intended; the reported byte index says where</td></tr><tr><td><code>could not read the macro library back</code></td><td><code>0x2C</code> is not the read command on this build, which also weakens the <code>0x2D</code> assumption</td></tr></tbody></table></div>
+<p>The verification is diagnostic only — it never fails the upload, because a disagreeing read can also mean the read command behaves differently than assumed.</p>
+<hr>
+<h2 id="10-state-of-the-code-and-the-one-open-decision">10. State of the code, and the one open decision</h2>
+<p>Everything in §2 is implemented, reviewed and covered by tests: <code>SmartInfiniteMacroService</code>, the factory dispatch, the corrected macro record, per-device macro scoping, the artwork-accurate key overlays for both boards, and the two defect fixes in §6. App 293 tests and Infrastructure 341 pass; the solution builds clean. None of it needs to be reverted — it is correct and will work unchanged the moment the firmware accepts the data.</p>
+<p><strong>The open decision is <code>SupportsMacros</code>.</strong> Both boards currently advertise it in <code>src/ProoveGaming.DeviceHost/appsettings.json</code>, which gives users a Macros page that accepts a macro and silently does nothing. Setting those two entries to <code>false</code> hides the page and returns both boards to honest behaviour; it is a one-line change per board and reversible the moment this is resolved. It has deliberately been left enabled so the diagnostic above stays reachable for testing.</p>
+<hr>
+<p><em>A standalone, self-contained HTML rendering of this document — no external assets, prints cleanly, follows the reader&#x27;s light/dark preference — is <a href="macro-investigation-result.html"><code>macro-investigation-result.html</code></a>, regenerated with <code>python md2html.py macro-investigation-result.md macro-investigation-result.html</code>.</em></p>
+</main>
+</body>
+</html>

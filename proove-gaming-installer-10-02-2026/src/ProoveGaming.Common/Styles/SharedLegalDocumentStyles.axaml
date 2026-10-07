@@ -1,0 +1,31 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<!-- Inline mailto link inside the generated legal-document TextBlocks (App
+	     Information/agreement pages and the installer agreement step). The -4 bottom
+	     margin shrinks the inline box to the 16px font's ascent so the link sits on the
+	     surrounding runs' baseline without growing the 24px line; descenders and the
+	     underline draw below the box. Font family/size inherit from the document root. -->
+	<Style Selector="Button.legalDocEmailLink">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderThickness" Value="0" />
+		<Setter Property="Padding" Value="0" />
+		<Setter Property="Margin" Value="0,0,0,-4" />
+		<Setter Property="MinHeight" Value="0" />
+		<Setter Property="MinWidth" Value="0" />
+		<Setter Property="CornerRadius" Value="0" />
+		<Setter Property="Cursor" Value="Hand" />
+		<Setter Property="Foreground" Value="#6357FF" />
+	</Style>
+	<!-- The Fluent Button template presents string content as an AccessText (a TextBlock
+	     subclass with its own style key), so both selectors are needed. -->
+	<Style Selector="Button.legalDocEmailLink TextBlock, Button.legalDocEmailLink AccessText">
+		<Setter Property="TextDecorations" Value="Underline" />
+	</Style>
+	<Style Selector="Button.legalDocEmailLink:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Foreground" Value="#786DFF" />
+	</Style>
+	<Style Selector="Button.legalDocEmailLink:pressed /template/ ContentPresenter#PART_ContentPresenter">
+		<Setter Property="Background" Value="Transparent" />
+	</Style>
+</Styles>

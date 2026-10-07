@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:commonControls="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.MacroRecorderStepsView">
+
+	<!-- Recorded macro steps — the scrollable list shown in the Create Macro dialog once
+	     capture starts. Extracted from MainWindow; DataContext is the DeviceDetailsViewModel. -->
+	<ScrollViewer Classes="pgScrollViewer"
+				  VerticalScrollBarVisibility="Auto"
+				  HorizontalScrollBarVisibility="Disabled">
+		<ItemsControl ItemsSource="{Binding RecordedSteps}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<StackPanel Spacing="4" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="viewmodels:RecordedStepViewModel">
+					<Border Classes="stepRow" Height="40" Padding="12,0">
+						<Border.Styles>
+							<Style Selector="Border.stepRow"><Setter Property="Background" Value="#0DFFFFFF" /></Style>
+							<Style Selector="Border.stepRow:pointerover"><Setter Property="Background" Value="#4D786DFF" /></Style>
+							<Style Selector="Border.stepRow:pointerover commonControls|SvgImageView.stepArrow"><Setter Property="Opacity" Value="0" /></Style>
+							<Style Selector="Border.stepRow Button.stepDelete"><Setter Property="Opacity" Value="0" /></Style>
+							<Style Selector="Border.stepRow:pointerover Button.stepDelete"><Setter Property="Opacity" Value="1" /></Style>
+							<!-- Delete icon gets its own hover area: the octagon frame from the device-details Back button -->
+							<Style Selector="Border.stepRow Button.stepDelete:pointerover /template/ ContentPresenter#PART_ContentPresenter"><Setter Property="Background" Value="Transparent" /></Style>
+							<Style Selector="Border.stepRow Path.deleteHoverFrame"><Setter Property="IsVisible" Value="False" /></Style>
+							<Style Selector="Border.stepRow Button.stepDelete:pointerover Path.deleteHoverFrame"><Setter Property="IsVisible" Value="True" /></Style>
+						</Border.Styles>
+						<Grid ColumnDefinitions="Auto,Auto,*,Auto" VerticalAlignment="Center">
+							<!-- Click number -->
+							<TextBlock Grid.Column="0" Text="{Binding IterationLabel}"
+								Foreground="#80BEBCEA" FontFamily="{DynamicResource BaseAppFont}"
+								FontSize="14" VerticalAlignment="Center" Margin="0,0,10,0" />
+							<!-- Type icon (tinted purple) -->
+							<commonControls:SvgImageView Grid.Column="1"
+								SourceUri="avares://ProoveGaming.Common/Assets/Icons/Keyboard.svg"
+								TintColor="#6357FF" Width="18" Height="18" Stretch="Uniform"
+								VerticalAlignment="Center" IsVisible="{Binding IsKeyboard}" />
+							<commonControls:SvgImageView Grid.Column="1"
+								SourceUri="avares://ProoveGaming.Common/Assets/Icons/Mouse.svg"
+								TintColor="#6357FF" Width="18" Height="18" Stretch="Uniform"
+								VerticalAlignment="Center" IsVisible="{Binding !IsKeyboard}" />
+							<!-- Action name + delay (ms right after the name) -->
+							<StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8"
+								VerticalAlignment="Center" Margin="12,0,0,0">
+								<TextBlock Text="{Binding Label}" Foreground="#FFFFFF"
+									FontFamily="{DynamicResource BaseAppFont}" FontSize="14" VerticalAlignment="Center" />
+								<TextBlock Text="{Binding DelayLabel}" Foreground="#80BEBCEA"
+									FontFamily="{DynamicResource BaseAppFont}" FontSize="12" VerticalAlignment="Center" />
+							</StackPanel>
+							<!-- Arrow (single Arrow-Up glyph, rotated 180° for press) — replaced by the delete icon on hover -->
+							<Panel Grid.Column="3" Width="28" VerticalAlignment="Center">
+								<commonControls:SvgImageView Classes="stepArrow"
+									SourceUri="avares://ProoveGaming.Common/Assets/Icons/Arrow-Up.svg"
+									Width="14" Height="14" Stretch="Uniform"
+									HorizontalAlignment="Center" VerticalAlignment="Center"
+									RenderTransform="rotate(180deg)"
+									IsVisible="{Binding IsPress}" />
+								<commonControls:SvgImageView Classes="stepArrow"
+									SourceUri="avares://ProoveGaming.Common/Assets/Icons/Arrow-Up.svg"
+									Width="14" Height="14" Stretch="Uniform"
+									HorizontalAlignment="Center" VerticalAlignment="Center"
+									IsVisible="{Binding !IsPress}" />
+								<Button Classes="stepDelete" Padding="0"
+									Background="Transparent" BorderThickness="0" Cursor="Hand"
+									HorizontalAlignment="Center" VerticalAlignment="Center"
+									Command="{Binding RemoveCommand}" CommandParameter="{Binding}">
+									<Panel Width="28" Height="28">
+										<Path Classes="deleteHoverFrame"
+											  Data="M24 4H28V24H24V28H4V24H0V4H4V0H24V4Z"
+											  Fill="#4D6357FF" />
+										<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Delete.svg"
+											TintColor="#6357FF" Width="16" Height="16" Stretch="Uniform"
+											HorizontalAlignment="Center" VerticalAlignment="Center" />
+									</Panel>
+								</Button>
+							</Panel>
+						</Grid>
+					</Border>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</ScrollViewer>
+</UserControl>

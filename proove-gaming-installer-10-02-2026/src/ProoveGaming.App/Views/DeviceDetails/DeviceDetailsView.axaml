@@ -1,0 +1,933 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 xmlns:detailSections="using:ProoveGaming.App.Views.DeviceDetailsSections"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 xmlns:controls="using:ProoveGaming.App.Controls"
+			 mc:Ignorable="d" d:DesignWidth="1392" d:DesignHeight="844"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Name="Root"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsView">
+
+	<UserControl.Resources>
+		<converters:NavSectionToIconOpacityConverter x:Key="NavSectionToIconOpacityConverter" />
+		<converters:NavSectionToIconTintConverter x:Key="NavSectionToIconTintConverter" />
+	</UserControl.Resources>
+
+	<UserControl.Styles>
+		<Style Selector="TextBlock.navLabel">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="Foreground" Value="#FFFFFF"/>
+			<Setter Property="FontSize" Value="12"/>
+			<Setter Property="LineHeight" Value="16" />
+			<Setter Property="LetterSpacing" Value="0"/>
+			<Setter Property="HorizontalAlignment" Value="Center"/>
+			<Setter Property="TextAlignment" Value="Center"/>
+			<!-- Two-word labels near the 120px button width (uk "ПРИЗНАЧЕННЯ КЛАВІШ" 132.7px,
+			     "СИЛА НАТИСКАННЯ" 113.3px at this font) wrap to two rows instead of clipping or
+			     running edge-to-edge — 112 deliberately sits below both. -->
+			<Setter Property="TextWrapping" Value="Wrap"/>
+			<Setter Property="MaxWidth" Value="112"/>
+		</Style>
+		<Style Selector="Button.navButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Path.navHoverFrame, Rectangle.navHoverFrame">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button.navButton:pointerover Path.navHoverFrame, Button.navButton:pointerover Rectangle.navHoverFrame">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- Remap toast: chrome-less buttons (UNDO link, close ✕) — the content is the visual. -->
+		<Style Selector="Button.remapToastButton">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+		</Style>
+		<Style Selector="Button.remapToastButton /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+	</UserControl.Styles>
+
+	<Grid RowDefinitions="Auto,*"
+		  Margin="0,0,0,0">
+		<Grid Grid.Row="0"
+			  ColumnDefinitions="*,Auto"
+			  Margin="0,0,0,20"
+			  VerticalAlignment="Center">
+			<StackPanel Grid.Column="0"
+						Orientation="Horizontal"
+						Spacing="16"
+						VerticalAlignment="Center">
+				<Button x:Name="BackButton"
+						Background="Transparent"
+						BorderThickness="0"
+						Padding="0"
+						Cursor="Hand"
+						VerticalAlignment="Center">
+					<Button.Styles>
+						<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+							<Setter Property="Background" Value="Transparent" />
+						</Style>
+						<Style Selector="Button:pointerover">
+							<Setter Property="Cursor" Value="Hand" />
+						</Style>
+						<Style Selector="Path#BackHoverFrame">
+							<Setter Property="IsVisible" Value="False" />
+						</Style>
+						<Style Selector="Button:pointerover Path#BackHoverFrame">
+							<Setter Property="IsVisible" Value="True" />
+						</Style>
+					</Button.Styles>
+					<Panel Width="56" Height="56">
+						<Path x:Name="BackHoverFrame"
+							  Data="{StaticResource CutCornerFrameGeometry}"
+							  Fill="#4D6357FF" />
+						<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Arrow-Left.svg"
+													 Width="32" Height="32"
+													 Stretch="Uniform" />
+					</Panel>
+				</Button>
+
+				<TextBlock Text="{Binding Device.DisplayName}"
+						   Foreground="#FFFFFF"
+						   FontSize="36"
+						   LineHeight="32"
+						   FontFamily="{DynamicResource AppPixelFont}"
+						   VerticalAlignment="Center" />
+			</StackPanel>
+
+			<!-- Preset controls lock in Bluetooth mode with the rest of the page: dropdown at half
+			     opacity, both buttons in their shared :disabled looks (primary/secondaryButton
+			     styles in App.axaml). The back button and title stay outside — leaving the page
+			     must always work. -->
+			<StackPanel Grid.Column="1"
+						Orientation="Horizontal"
+						Spacing="12"
+						VerticalAlignment="Center"
+						IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+				<!-- Current preset dropdown. Caption + selected preset name + chevron.
+				     Click opens a Popup listing all saved presets; picking one calls
+				     SelectPresetCommand which flips IsSelected and updates SelectedPreset. -->
+				<Grid VerticalAlignment="Center">
+					<Button x:Name="PresetsDropdownButton"
+							Width="300" Height="56"
+							Background="#1A6357FF"
+							BorderThickness="0"
+							Padding="0"
+							Cursor="Hand"
+							HorizontalContentAlignment="Stretch"
+							VerticalContentAlignment="Stretch"
+							Command="{Binding TogglePresetsDropdownCommand}">
+						<Button.Styles>
+							<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+								<Setter Property="Background" Value="#266357FF" />
+							</Style>
+							<Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+								<Setter Property="Background" Value="#336357FF" />
+							</Style>
+							<!-- Bluetooth-locked: design dims the whole dropdown to half opacity.
+							     The presenter re-state stops the theme's dark disabled background
+							     from replacing the purple fill (same trap as sectionActionButton). -->
+							<Style Selector="Button:disabled">
+								<Setter Property="Opacity" Value="0.5" />
+							</Style>
+							<Style Selector="Button:disabled /template/ ContentPresenter#PART_ContentPresenter">
+								<Setter Property="Background" Value="#1A6357FF" />
+							</Style>
+						</Button.Styles>
+
+						<Grid ColumnDefinitions="*,Auto" Margin="12,0,12,0">
+							<!-- Content anchored to bottom with a 6px inner gap: the icon's
+							     bottom edge sits 6px above the box's bottom edge (per design). -->
+							<StackPanel Grid.Column="0"
+										VerticalAlignment="Bottom"
+										Margin="0,0,0,6"
+										Spacing="4">
+								<TextBlock Text="{DynamicResource PresetsDropdown_Caption}"
+										   Foreground="#B2BEBCEA"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="12"
+										   LineHeight="16"
+										   LetterSpacing="0" />
+								<StackPanel Orientation="Horizontal" Spacing="8">
+									<Grid Width="24" Height="24" VerticalAlignment="Center">
+										<Rectangle Fill="#336357FF" />
+										<Canvas Width="14.67" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+											<Path Fill="#B2BEBCEA"
+												  Data="M0 12V10.667H14.667V12H0Z
+                                                        M2 10C1.634 10 1.320 9.869 1.059 9.608C0.799 9.347 0.668 9.033 0.668 8.667V1.333C0.668 0.967 0.799 0.653 1.059 0.392C1.320 0.131 1.634 0 2 0H12.667C13.033 0 13.348 0.131 13.608 0.392C13.869 0.653 14 0.967 14 1.333V8.667C14 9.033 13.869 9.347 13.608 9.608C13.348 9.869 13.033 10 12.667 10H2Z
+                                                        M2 8.667H12.667V1.333H2V8.667Z" />
+										</Canvas>
+									</Grid>
+									<TextBlock Text="{Binding SelectedPreset.Name}"
+											   Foreground="#FFFFFF"
+											   FontFamily="{DynamicResource BaseAppFont}"
+											   FontSize="16"
+											   LineHeight="20"
+											   LetterSpacing="0"
+											   VerticalAlignment="Center"
+											   TextTrimming="CharacterEllipsis" />
+								</StackPanel>
+							</StackPanel>
+
+							<Path Grid.Column="1"
+								  Width="12" Height="7.4"
+								  Stretch="Uniform"
+								  Fill="#B2BEBCEA"
+								  Data="M6 7.4L0 1.4L1.4 0L6 4.6L10.6 0L12 1.4L6 7.4Z"
+								  VerticalAlignment="Center" />
+						</Grid>
+					</Button>
+
+					<!-- Preset list popup: opens under the button, closes on light-dismiss
+					     or after a preset is picked (SelectPresetCommand sets IsOpen=false). -->
+					<Popup PlacementTarget="{Binding #PresetsDropdownButton}"
+						   Placement="BottomEdgeAlignedLeft"
+						   IsLightDismissEnabled="True"
+						   IsOpen="{Binding IsPresetsDropdownOpen, Mode=TwoWay}">
+						<Border Width="300"
+								Background="Black"
+								BorderBrush="#336357FF"
+								BorderThickness="1">
+							<ItemsControl ItemsSource="{Binding Presets}">
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Button Background="Transparent"
+												BorderThickness="0"
+												Padding="12,0"
+												Height="40"
+												HorizontalAlignment="Stretch"
+												HorizontalContentAlignment="Left"
+												Cursor="Hand"
+												Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).SelectPresetCommand}"
+												CommandParameter="{Binding}">
+											<Button.Styles>
+												<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+													<Setter Property="Background" Value="#1A6357FF" />
+												</Style>
+											</Button.Styles>
+											<TextBlock Text="{Binding Name}"
+													   Foreground="White"
+													   FontFamily="{DynamicResource BaseAppFont}"
+													   FontSize="16"
+													   VerticalAlignment="Center"
+													   TextTrimming="CharacterEllipsis" />
+										</Button>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</Border>
+					</Popup>
+				</Grid>
+
+				<!-- Vertical divider between the dropdown and the preset action buttons -->
+				<Rectangle Width="1" Height="56"
+						   Fill="#33BEBCEA"
+						   VerticalAlignment="Center" />
+
+				<Button Classes="secondaryButton"
+						Content="{DynamicResource DeviceDetails_SavePreset}"
+						Width="NaN"
+						Padding="20,0"
+						Height="40"
+						Cursor="Hand"
+						Command="{Binding SavePresetCommand}" />
+				<Button Classes="primaryButton"
+						Width="NaN"
+						Padding="20,0"
+						Height="40"
+						Cursor="Hand"
+						Command="{Binding OpenNewPresetCommand}">
+					<StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+						<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Add.svg"
+													 Width="18" Height="18"
+													 Stretch="Uniform" />
+						<TextBlock Text="{DynamicResource DeviceDetails_NewPreset}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="18"
+								   VerticalAlignment="Center" />
+					</StackPanel>
+				</Button>
+			</StackPanel>
+
+		</Grid>
+
+		<Grid Grid.Row="1" ColumnDefinitions="164,420,*">
+
+			<Panel Grid.Column="0">
+
+				<!-- Left-aligned like the keyboard nav below. Without this the 160-wide backdrop was
+				centred in the 164-wide column, pushing its right edge to 162 and making the
+				gap to the content panel 2px wider than the value that sets it. -->
+				<Panel IsVisible="{Binding IsStackNavLayout}"
+					   HorizontalAlignment="Left" VerticalAlignment="Top"
+					   Width="160"
+					   Height="{Binding ActionsMenuHeight}">
+					<Grid Width="160"
+						  Height="{Binding ActionsMenuHeight}"
+						  IsHitTestVisible="False"
+						  ColumnDefinitions="20,120,20"
+						  RowDefinitions="20,*,20">
+						<Path Grid.Row="0" Grid.Column="0" Data="M0 20 L20 0 L20 20 Z" Fill="#CC000000" />
+						<Rectangle Grid.Row="1" Grid.Column="0" Fill="#CC000000" />
+						<Path Grid.Row="2" Grid.Column="0" Data="M20 20 L0 0 L20 0 Z" Fill="#CC000000" />
+
+						<Rectangle Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Fill="#CC000000" />
+
+						<Path Grid.Row="0" Grid.Column="2" Data="M0 0 L20 20 H0 Z" Fill="#CC000000" />
+						<Rectangle Grid.Row="1" Grid.Column="2" Fill="#CC000000" />
+						<Path Grid.Row="2" Grid.Column="2" Data="M20 0 L0 20 L0 0 Z" Fill="#CC000000" />
+					</Grid>
+					<StackPanel Margin="20" Spacing="4">
+						<detailSections:NavSectionButton Section="Presets" IsActive="{Binding IsPresetsSection}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Layers.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_Presets}" />
+						<detailSections:NavSectionButton Section="RgbLighting" IsActive="{Binding IsRgbLightingSection}"
+														 IsVisible="{Binding IsRgbSupported}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Lightbulb 2.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_RgbLighting}" />
+						<detailSections:NavSectionButton Section="Buttons" IsActive="{Binding IsButtonsSection}"
+														 IsVisible="{Binding IsButtonsNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Circle Circle.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_Buttons}" />
+						<detailSections:NavSectionButton Section="Macros" IsActive="{Binding IsMacrosSection}"
+														 IsVisible="{Binding IsMacrosSupported}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Wand Stars.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_Macros}" />
+						<detailSections:NavSectionButton Section="Dpi" IsActive="{Binding IsDpiSection}"
+														 IsVisible="{Binding IsDpiNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Mouse.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_Dpi}" />
+						<detailSections:NavSectionButton Section="Settings" IsActive="{Binding IsSettingsSection}"
+														 IsVisible="{Binding IsSettingsNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Instant Mix.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_Settings}" />
+						<detailSections:NavSectionButton Section="Buttons" IsActive="{Binding IsButtonsSection}"
+														 IsVisible="{Binding IsKeyAssignmentNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Circle Circle.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_KeyAssign}" />
+						<detailSections:NavSectionButton Section="Audio" IsActive="{Binding IsAudioSection}"
+														 IsVisible="{Binding IsAudioNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Volume Up.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_Audio}" />
+						<detailSections:NavSectionButton Section="Firmware" IsActive="{Binding IsFirmwareSection}"
+														 IsVisible="{Binding IsFirmwareNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Autorenew-white.svg"
+														 Label="{DynamicResource DeviceDetails_Nav_Firmware}" />
+					</StackPanel>
+				</Panel>
+
+				<Panel IsVisible="{Binding IsKeyboardDevice}"
+					   HorizontalAlignment="Left" VerticalAlignment="Top"
+					   Width="160" Height="{Binding KeyboardActionsMenuHeight}">
+					<Grid Width="160"
+						  Height="{Binding KeyboardActionsMenuHeight}"
+						  IsHitTestVisible="False"
+						  ColumnDefinitions="20,120,20"
+						  RowDefinitions="20,*,20">
+						<Path Grid.Row="0" Grid.Column="0" Data="M0 20 L20 0 L20 20 Z" Fill="#CC000000" />
+						<Rectangle Grid.Row="1" Grid.Column="0" Fill="#CC000000" />
+						<Path Grid.Row="2" Grid.Column="0" Data="M20 20 L0 0 L20 0 Z" Fill="#CC000000" />
+
+						<Rectangle Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Fill="#CC000000" />
+
+						<Path Grid.Row="0" Grid.Column="2" Data="M0 0 L20 20 L0 20 Z" Fill="#CC000000" />
+						<Rectangle Grid.Row="1" Grid.Column="2" Fill="#CC000000" />
+						<Path Grid.Row="2" Grid.Column="2" Data="M20 0 L0 20 L0 0 Z" Fill="#CC000000" />
+					</Grid>
+					<StackPanel Margin="20,16" Spacing="8">
+						<detailSections:NavSectionButton Classes="rectStack" Section="Presets" IsActive="{Binding IsPresetsSection}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Layers.svg"
+														 IconWidth="20" IconHeight="20"
+														 Label="{DynamicResource DeviceDetails_Nav_Presets}" />
+						<detailSections:NavSectionButton Classes="rectStack" Section="RgbLighting" IsActive="{Binding IsRgbLightingSection}"
+														 IsVisible="{Binding IsRgbSupported}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Lightbulb 2.svg"
+														 IconWidth="20" IconHeight="20"
+														 Label="{DynamicResource DeviceDetails_Nav_RgbLighting}" />
+						<detailSections:NavSectionButton Classes="rectStack" Section="Buttons" IsActive="{Binding IsButtonsSection}"
+														 IsVisible="{Binding IsKeyAssignmentNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Key-Assignment.svg"
+														 IconWidth="20" IconHeight="14"
+														 Label="{DynamicResource DeviceDetails_Nav_KeyAssign}" />
+						<detailSections:NavSectionButton Classes="rectStack" Section="Macros" IsActive="{Binding IsMacrosSection}"
+														 IsVisible="{Binding IsMacrosSupported}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Wand Stars.svg"
+														 IconWidth="20" IconHeight="20"
+														 Label="{DynamicResource DeviceDetails_Nav_Macros}" />
+						<detailSections:NavSectionButton Classes="rectStack" Section="Actuation" IsActive="{Binding IsActuationSection}"
+														 IsVisible="{Binding IsActuationNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Instant Mix.svg"
+														 IconWidth="20" IconHeight="20"
+														 Label="{DynamicResource DeviceDetails_Nav_Actuation}" />
+						<detailSections:NavSectionButton Classes="rectStack" Section="ExtendedKeys" IsActive="{Binding IsExtendedKeysSection}"
+														 IsVisible="{Binding IsExtendedKeysNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Keyboard-Simple.svg"
+														 IconWidth="20" IconHeight="20"
+														 Label="{DynamicResource DeviceDetails_Nav_ExtendedKeys}" />
+						<detailSections:NavSectionButton Classes="rectStack" Section="Firmware" IsActive="{Binding IsFirmwareSection}"
+														 IsVisible="{Binding IsFirmwareNavVisible}"
+														 IconSource="avares://ProoveGaming.Common/Assets/Icons/Firmware.svg"
+														 IconWidth="16" IconHeight="22"
+														 Label="{DynamicResource DeviceDetails_Nav_Firmware}" />
+					</StackPanel>
+				</Panel>
+
+			</Panel>
+
+			<Panel Grid.Column="1" IsVisible="{Binding IsNotButtonsSection}">
+
+				<Panel IsVisible="{Binding IsStackNavLayout}"
+					   VerticalAlignment="Top" HorizontalAlignment="Left"
+					   Width="420" Height="756" Margin="0">
+					<Canvas Width="420" Height="756" IsHitTestVisible="False">
+						<Path Data="M20 20 L20 0 L42 0 L42 20 Z" Fill="#CC000000" />
+						<Path Data="M0 20 L20 0 L20 20 Z" Fill="#CC000000" />
+						<Rectangle Canvas.Left="0" Canvas.Top="20" Width="42" Height="694" Fill="#CC000000" />
+						<Rectangle Canvas.Left="42" Canvas.Top="0" Width="336" Height="714" Fill="#CC000000" />
+						<Path Data="M420 21.3145 L398.354 0 H378 L378.001 21.3145 H420 Z" Fill="#CC000000" />
+						<Rectangle Canvas.Left="378" Canvas.Top="21.3145" Width="42" Height="692.685" Fill="#CC000000" />
+						<Path Data="M21.3145 756 L0 734.354 L0 714 L21.3145 714 Z" Fill="#CC000000" />
+						<Rectangle Canvas.Left="21.315" Canvas.Top="714" Width="254.318" Height="42" Fill="#CC000000" />
+						<Path Data="M275.633 714 L317 714 L275.643 756 Z" Fill="#CC000000" />
+						<Path Data="M420 720 L321.5 720 L285.5 756 L420 756 Z" Fill="#CC000000" />
+					</Canvas>
+					<!-- Right margin 30, not the rail's 42: the cell is then 348 wide — the 336
+						 content column plus the 12px scrollbar zone the section ScrollViewers ask
+						 for (Width=348). At 42 the cell was exactly 336 and the bar was clamped
+						 ONTO the rows' right edge. -->
+					<Grid RowDefinitions="*" Margin="42,30,30,42">
+						<detailSections:PresetsSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:RgbLightingSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:MacrosSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:DpiSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:SettingsSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:AudioSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:FirmwareSectionView Grid.Row="0" HorizontalAlignment="Left" />
+					</Grid>
+				</Panel>
+
+				<Panel IsVisible="{Binding IsKeyboardDevice}"
+					   VerticalAlignment="Top" Height="756" Margin="0">
+					<Canvas Width="420" Height="756" IsHitTestVisible="False">
+						<Path Data="M0 20 L20 0 L20 20 L0 20 Z" Fill="#CC000000" />
+						<Rectangle Canvas.Left="20" Canvas.Top="0" Width="22" Height="20" Fill="#CC000000" />
+						<Rectangle Canvas.Left="0" Canvas.Top="20" Width="42" Height="694" Fill="#CC000000" />
+						<Rectangle Canvas.Left="42" Canvas.Top="0" Width="336" Height="714" Fill="#CC000000" />
+						<Path Data="M420 21.3145 L398.354 0 L378 0 L378.001 21.3145 L420 21.3145 Z" Fill="#CC000000" />
+						<Rectangle Canvas.Left="378" Canvas.Top="21.3145" Width="42" Height="692.685" Fill="#CC000000" />
+						<Path Data="M21.3164 756 L0.0018912 734.354 L0.0018912 714 L21.3164 714.001 L21.3164 756 Z" Fill="#CC000000" />
+						<Rectangle Canvas.Left="21.315" Canvas.Top="714" Width="254.318" Height="42" Fill="#CC000000" />
+						<Path Data="M275.633 714 L317 714 L275.633 756 L275.633 714 Z" Fill="#CC000000" />
+						<Path Data="M420 720 L321.5 720 L285.5 756 L420 756 L420 720 Z" Fill="#CC000000" />
+					</Canvas>
+					<!-- Bottom 42, like the mouse panel above: the chrome's bottom band starts at
+						 y=714 (756 - 42), and a smaller inset let long lists (Macros, Presets)
+						 scroll their rows OVER the band's diagonal ornament — the viewport must
+						 end where the band begins. -->
+					<!-- Right margin 30, not 42 — same reason as the mouse panel above: the cell
+						 must fit the 336 content column plus the 12px scrollbar zone. -->
+					<Grid RowDefinitions="*" Margin="42,16,30,42">
+						<detailSections:PresetsSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:RgbLightingSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:MacrosSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:DpiSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:SettingsSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:ActuationSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:ExtendedKeysSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						<detailSections:FirmwareSectionView Grid.Row="0" HorizontalAlignment="Left" />
+					</Grid>
+				</Panel>
+
+			</Panel>
+
+			<Panel Grid.Column="1" Grid.ColumnSpan="2" IsVisible="{Binding IsButtonsSection}">
+
+				<!-- No left margin, matching the keyboard panel below: the gap to the nav backdrop is
+				set by ButtonsBackground3Margin alone, so an extra offset here just made the
+				rendered gap wider than the value asks for. -->
+				<Panel IsVisible="{Binding IsStackNavLayout}"
+					   VerticalAlignment="Top" HorizontalAlignment="Stretch">
+
+					<Panel IsVisible="{Binding IsButtonDetailsPanelVisible}"
+						   Width="420" Height="756"
+						   VerticalAlignment="Top" HorizontalAlignment="Left">
+						<Canvas Width="420" Height="756" IsHitTestVisible="False">
+							<Path Data="M20 20 L20 0 L42 0 L42 20 Z" Fill="#CC000000" />
+							<Path Data="M0 20 L20 0 L20 20 Z" Fill="#CC000000" />
+							<Rectangle Canvas.Left="0" Canvas.Top="20" Width="42" Height="694" Fill="#CC000000" />
+							<Rectangle Canvas.Left="42" Canvas.Top="0" Width="336" Height="714" Fill="#CC000000" />
+							<Path Data="M420 21.3145 L398.354 0 H378 L378.001 21.3145 H420 Z" Fill="#CC000000" />
+							<Rectangle Canvas.Left="378" Canvas.Top="21.3145" Width="42" Height="692.685" Fill="#CC000000" />
+							<Path Data="M21.3145 756 L0 734.354 L0 714 L21.3145 714 Z" Fill="#CC000000" />
+							<Rectangle Canvas.Left="21.315" Canvas.Top="714" Width="254.318" Height="42" Fill="#CC000000" />
+							<Path Data="M275.633 714 L317 714 L275.643 756 Z" Fill="#CC000000" />
+							<Path Data="M420 720 L321.5 720 L285.5 756 L420 756 Z" Fill="#CC000000" />
+						</Canvas>
+						<Grid RowDefinitions="*" Margin="42,16,42,50">
+							<detailSections:ButtonsSectionView Grid.Row="0" HorizontalAlignment="Left" />
+						</Grid>
+					</Panel>
+
+					<Panel Margin="{Binding ButtonsBackground3Margin}"
+						   Height="756"
+						   VerticalAlignment="Top"
+						   HorizontalAlignment="Stretch">
+						<!-- Same frosted blur as the non-Buttons content panel so it persists when the
+						     Buttons section is open. -->
+						<Border Height="756" HorizontalAlignment="Stretch" ClipToBounds="True" IsHitTestVisible="False">
+							<controls:BackdropBlurControl BlurRadius="24" />
+						</Border>
+						<Grid ColumnDefinitions="42,*,42" Height="756" HorizontalAlignment="Stretch" IsHitTestVisible="False" Opacity="0.93">
+							<Canvas Grid.Column="0" Width="42" Height="756">
+								<Path Data="M0 21.306 L21.4766 0 L42 0 V21.306 H0 Z" Fill="#CC000000" />
+								<Rectangle Canvas.Top="21.3057" Width="42" Height="646.792" Fill="#CC000000" />
+								<Path Data="M22.5906 742.598 L22.5906 690.677 L0 668.099 H42 V756 H36 Z" Fill="#CC000000" />
+							</Canvas>
+							<Rectangle Grid.Column="1" Fill="#CC000000" />
+							<Canvas Grid.Column="2" Width="42" Height="756">
+								<Path Data="M0 95.3673L0 54L42 95.3567L0 95.3673Z" Fill="#CC000000" />
+								<Rectangle Canvas.Top="95.3672" Width="42" Height="639.318" Fill="#CC000000" />
+								<Path Data="M42 734.686 L20.354 756 H0 L0.001 734.686 H42 Z" Fill="#CC000000" />
+							</Canvas>
+						</Grid>
+
+						<detailSections:DeviceImageWithHotspotsView />
+
+						<detailSections:ConnectivityBarView />
+
+						<detailSections:BluetoothModeBannerView VerticalAlignment="Top" Margin="82,40,82,0" />
+					</Panel>
+
+				</Panel>
+
+				<!-- Merged Key Assignments layout: one full-width panel with the keyboard centered.
+					 The former 420px left panel (selected-key title + hint) is gone — the Key
+					 Assignment Dialog names the key, so the panel only restated the selection. -->
+				<Panel IsVisible="{Binding IsKeyboardDevice}"
+					   VerticalAlignment="Top" HorizontalAlignment="Stretch">
+
+					<!-- Transparent background so the panel itself is hit-testable: a click on empty
+						 space (not on a key button) bubbles here and clears the key selection. -->
+					<Panel Margin="{Binding ButtonsBackground3Margin}"
+						   Height="756"
+						   VerticalAlignment="Top"
+						   HorizontalAlignment="Stretch"
+						   Background="Transparent"
+						   PointerPressed="OnKeyboardPanelPointerPressed">
+						<Grid ColumnDefinitions="42,*,42" Height="756" HorizontalAlignment="Stretch" IsHitTestVisible="False">
+							<Canvas Grid.Column="0" Width="42" Height="756">
+								<Path Data="M0 21.306L21.4766 0L36 0L42 0V21.306H0Z" Fill="#CC000000" />
+								<Rectangle Canvas.Top="21.3057" Width="42" Height="646.792" Fill="#CC000000" />
+								<Path Data="M22.5906 742.598L22.5906 690.677L0 668.099H42V756H36L22.5906 742.598Z" Fill="#CC000000" />
+							</Canvas>
+							<Rectangle Grid.Column="1" Fill="#CC000000" />
+							<Canvas Grid.Column="2" Width="42" Height="756">
+								<Path Data="M0 95.3673L0 54L42 95.3567L0 95.3673Z" Fill="#CC000000" />
+								<Rectangle Canvas.Top="95.3672" Width="42" Height="639.318" Fill="#CC000000" />
+								<Path Data="M42 734.686L20.354 756H0L0.001 734.686H42Z" Fill="#CC000000" />
+							</Canvas>
+						</Grid>
+
+						<Grid Height="756" HorizontalAlignment="Stretch" ClipToBounds="True">
+							<!-- Vector, like the mouse branch below. This was an Image + UriToBitmapConverter
+								 back when the only keyboard art was Front-T-801.png; Avalonia's Bitmap
+								 decodes raster only, so every SVG silently fell into the converter's
+								 catch and rendered nothing. Binds the raw /Assets path (Svg.Path), not
+								 the avares:// ImageUri the Bitmap converter needed. -->
+							<Svg Path="{Binding DeviceDetailImagePath}"
+								 MaxWidth="628"
+								 Margin="42,0"
+								 Stretch="Uniform"
+								 HorizontalAlignment="Center"
+								 VerticalAlignment="Center"
+								 IsHitTestVisible="False"
+								 IsVisible="{Binding !HasInteractiveKeyboardOverlay}" />
+
+							<!-- Same 628 as the flat image above and the RGB panel below, but a CAP rather
+								 than a fixed Width. The sections in column 2 have the layout's `*` to
+								 live in, and near the 1200 design width that is only ~558 wide, so a
+								 hard 628 put the board ~35px past the panel on each side — over the
+								 list beside it, and off the window on the right (PG-683). Every root
+								 here is a Uniform Viewbox, so a narrower box scales the whole board
+								 down rather than cropping it. Mice were never affected, which is what
+								 QA observed: they render through the DeviceImageWidth box below.
+
+								 The 628 is NOT the same rendered size on every section any more, and
+								 the sections it is not the same on are the narrow ones. THIS panel
+								 spans columns 1+2 (ColumnSpan=2, 12px margin), so around 976 wide at
+								 the design width — the board sits at the cap and looks exactly as it
+								 always did. Macros, RGB, Actuation and Extended Keys get column 2
+								 alone: 552 less the 84 of margin below, so ~468, about a quarter
+								 smaller. Switching between them and here visibly resizes the board on
+								 a 1200-wide window. Accepted: before this the sizes did match, by
+								 overflowing their panel everywhere. Equalising them again means
+								 shrinking THIS board to the narrowest section's width, on the one
+								 section whose whole job is clicking individual keys.
+
+								 Margin 42,0 keeps the board off the panel edge once it does shrink —
+								 the same 42 as the chamfer columns of the chrome around it, so a
+								 scaled board lines up with the panel's flat middle instead of running
+								 into the corner cuts. Inert while the board is at its 628 cap, which
+								 needs only 712 of panel to clear. -->
+							<detailSections:RasterKeyboardOverlayView
+								MaxWidth="628"
+								Margin="42,0"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								IsVisible="{Binding HasInteractiveKeyboardOverlay}" />
+						</Grid>
+
+						<!-- The two banners are mutually exclusive (the read-failed one is suppressed
+							 over Bluetooth, see below), but they share a stack rather than floating in
+							 the same spot so that can never regress into an overlap. Each child keeps
+							 its own margin: a hidden sibling contributes no size, so whichever banner
+							 shows sits at its own offset. -->
+						<StackPanel VerticalAlignment="Top">
+							<detailSections:BluetoothModeBannerView Margin="82,40,82,0" />
+
+							<!-- Shown when the live matrix could not be read. The dialog's picker then shows
+								 factory defaults, which are wrong for anyone who has already remapped a key —
+								 so the fallback is announced rather than presented as the device's real state.
+								 Lived in the removed left panel; now floats over the merged panel's top.
+								 Suppressed while the transport is Bluetooth: the read always fails there and
+								 the Bluetooth banner above already names the cause — showing both just says
+								 the same thing twice, once as an alarming warning. The "reconnect" advice is
+								 also wrong over Bluetooth (only a cable/dongle helps). FallbackValue keeps
+								 the pre-Bluetooth behaviour while Device is null during navigation. -->
+							<Border Classes="warningBanner"
+									MaxWidth="628"
+									HorizontalAlignment="Center"
+									Margin="42,30,42,0">
+								<Border.IsVisible>
+									<MultiBinding Converter="{x:Static BoolConverters.And}">
+										<Binding Path="KeyAssignmentReadFailed" />
+										<!-- Deliberately HasBluetooth, not IsBluetoothConfigLocked: this gate is
+											 about the TRANSPORT (a matrix read always fails over Bluetooth),
+											 not about configurability. -->
+										<Binding Path="!Device.HasBluetooth" FallbackValue="True" />
+									</MultiBinding>
+								</Border.IsVisible>
+								<TextBlock Text="{DynamicResource DeviceDetails_KeyAssignment_ReadFailed}" />
+							</Border>
+
+							<!-- A key inside an extended-key record was clicked: the dialog stays shut and
+								 this names the record (auto-hides; edit it on Extended Keys). -->
+							<Border Classes="warningBanner"
+									MaxWidth="628"
+									HorizontalAlignment="Center"
+									Margin="42,30,42,0"
+									IsVisible="{Binding HasExtendedKeyBlockedMessage}">
+								<TextBlock Text="{Binding ExtendedKeyBlockedMessage}" />
+							</Border>
+						</StackPanel>
+
+						<detailSections:ConnectivityBarView />
+					</Panel>
+
+				</Panel>
+
+			</Panel>
+
+			<Panel Grid.Column="2" IsVisible="{Binding IsNotButtonsSection}">
+
+				<Panel IsVisible="{Binding IsStackNavLayout}"
+					   VerticalAlignment="Top" HorizontalAlignment="Stretch"
+					   Height="756" Margin="16,0,0,0">
+					<!-- True backdrop: BackdropBlurControl redraws the exact slice of the real wallpaper
+					behind this panel and blurs it, aligned by construction. The Border clips it to the
+					panel; the black backdrop Grid below is dropped to 60% so the blur reads through. -->
+					<Border Height="756" HorizontalAlignment="Stretch" ClipToBounds="True" IsHitTestVisible="False">
+						<controls:BackdropBlurControl BlurRadius="24" />
+					</Border>
+					<Grid ColumnDefinitions="42,*,42" Height="756" HorizontalAlignment="Stretch" IsHitTestVisible="False" Opacity="0.93">
+						<Canvas Grid.Column="0" Width="42" Height="756">
+							<Path Data="M0 21.306 L21.4766 0 L42 0 V21.306 H0 Z" Fill="#CC000000" />
+							<Rectangle Canvas.Top="21.3057" Width="42" Height="646.792" Fill="#CC000000" />
+							<Path Data="M22.5906 742.598 L22.5906 690.677 L0 668.099 H42 V756 H36 Z" Fill="#CC000000" />
+						</Canvas>
+						<Rectangle Grid.Column="1" Fill="#CC000000" />
+						<Canvas Grid.Column="2" Width="42" Height="756">
+							<Path Data="M0 95.3673L0 54L42 95.3567L0 95.3673Z" Fill="#CC000000" />
+							<Rectangle Canvas.Top="95.3672" Width="42" Height="639.318" Fill="#CC000000" />
+							<Path Data="M42 734.686 L20.354 756 H0 L0.001 734.686 H42 Z" Fill="#CC000000" />
+						</Canvas>
+					</Grid>
+					<!-- Non-Macros sections keep the existing stretch-centered image (unchanged). The
+						 Macros page uses the shared 1236-centered image-with-hotspots control below so
+						 its hotspots align exactly as on the Buttons page. -->
+					<Grid Height="756" HorizontalAlignment="Stretch" IsVisible="{Binding !IsMacrosSection}">
+						<!-- Animated RGB glow behind the device image. The silhouette is a MOUSE outline,
+						     so it is gated on lighting support: without this it painted a glowing mouse
+						     shape behind the Cosmo headset. -->
+						<Viewbox Width="{Binding DeviceImageWidth}" Height="{Binding DeviceImageHeight}" Stretch="Uniform"
+								 HorizontalAlignment="Center" VerticalAlignment="Center"
+								 IsHitTestVisible="False"
+								 IsVisible="{Binding IsRgbSupported}">
+							<Canvas Width="1672" Height="1860" ClipToBounds="False">
+								<Path Data="M1195.02 929.837C1195.02 1092.51 1232.12 1253.98 1182.27 1371.37C1116.37 1526.54 1014.86 1613.7 835.552 1613.7C656.245 1613.7 550.48 1526.54 484.583 1371.37C434.729 1253.98 476.086 1092.51 476.086 929.837C476.086 858.561 486.286 777.759 484.583 698.721C482.053 581.298 471.106 467.771 505.828 395.167C571.58 257.682 730.151 245.977 835.552 245.977C940.952 245.977 1098.25 257.682 1164 395.167C1198.72 467.771 1184.43 581.298 1182.27 698.721C1180.81 777.759 1195.02 858.561 1195.02 929.837Z"
+									  Fill="{Binding AnimatedGlowBrush}"
+									  IsHitTestVisible="False">
+									<Path.Effect>
+										<BlurEffect Radius="123"/>
+									</Path.Effect>
+								</Path>
+							</Canvas>
+						</Viewbox>
+						<!-- Decorative glow, for devices with no host-controllable lighting (the
+							 headsets). Same animated brush as the RGB glow above and the same
+							 Viewbox trick, but the geometry comes from DeviceGlowArtCatalog instead
+							 of being one device's outline hardcoded here, because a headset has one
+							 shape per ear cup and the two products differ.
+
+							 This is the BEHIND half: the crisp core, light escaping around the ear
+							 cup. The blurred halo that lies ON the device is a second block, after
+							 the artwork — see below. The split comes from the source SVG's own draw
+							 order (rgb-solid, photo, rgb-blur); putting both behind leaves only a
+							 thin line under the device, because the photo is opaque where the glow
+							 actually sits.
+
+							 The Canvas is sized to the artwork's own SVG viewBox and the Viewbox
+							 scales it, so the glow stays registered with the picture at any size. -->
+						<Viewbox Width="{Binding DeviceImageWidth}" Height="{Binding DeviceImageHeight}" Stretch="Uniform"
+								 HorizontalAlignment="Center" VerticalAlignment="Center"
+								 IsHitTestVisible="False"
+								 IsVisible="{Binding IsDecorativeGlowVisible}">
+							<ItemsControl ItemsSource="{Binding GlowLayersBehind}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<Canvas Width="{Binding GlowCanvasWidth}"
+												Height="{Binding GlowCanvasHeight}"
+												ClipToBounds="False" />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Path Data="{Binding Geometry}"
+											  Fill="{Binding $parent[ItemsControl].DataContext.AnimatedGlowBrush}"
+											  Stroke="{Binding $parent[ItemsControl].DataContext.AnimatedGlowBrush}"
+											  StrokeThickness="{Binding StrokeThickness}"
+											  StrokeLineCap="Round"
+											  StrokeJoin="Round"
+											  IsHitTestVisible="False">
+											<Path.Effect>
+												<BlurEffect Radius="{Binding BlurRadius}"/>
+											</Path.Effect>
+										</Path>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</Viewbox>
+						<Svg Path="{Binding DeviceDetailImagePath}"
+							 Width="{Binding DeviceImageWidth}"
+							 Height="{Binding DeviceImageHeight}"
+							 Stretch="Uniform"
+							 HorizontalAlignment="Center"
+							 VerticalAlignment="Center"
+							 IsHitTestVisible="False"
+							 IsVisible="{Binding HasVectorDeviceImage}" />
+						<!-- Raster artwork (Cosmo ships a PNG): the Svg control above renders nothing
+							 for one, so this branch is what actually shows the headset. -->
+						<Image Source="{Binding DeviceDetailImageUri, Converter={x:Static converters:UriToBitmapConverter.Instance}}"
+							   Width="{Binding DeviceImageWidth}"
+							   Height="{Binding DeviceImageHeight}"
+							   Stretch="Uniform"
+							   HorizontalAlignment="Center"
+							   VerticalAlignment="Center"
+							   RenderOptions.BitmapInterpolationMode="HighQuality"
+							   IsHitTestVisible="False"
+							   IsVisible="{Binding IsRasterDeviceImage}" />
+						<Image Source="{Binding DeviceOnlyBitmap}"
+							   Width="{Binding DeviceImageWidth}"
+							   Height="{Binding DeviceImageHeight}"
+							   Stretch="Uniform"
+							   HorizontalAlignment="Center"
+							   VerticalAlignment="Center"
+							   RenderOptions.BitmapInterpolationMode="HighQuality"
+							   IsHitTestVisible="False"
+							   IsVisible="{Binding HasDeviceOnlyBitmap}" />
+						<!-- Decorative glow, OVER half: the blurred bloom that sits on the device
+							 itself. Last in the Grid so it paints on top of every artwork branch
+							 above (vector, raster and the rasterized glow bitmap alike). -->
+						<Viewbox Width="{Binding DeviceImageWidth}" Height="{Binding DeviceImageHeight}" Stretch="Uniform"
+								 HorizontalAlignment="Center" VerticalAlignment="Center"
+								 IsHitTestVisible="False"
+								 IsVisible="{Binding IsDecorativeGlowVisible}">
+							<ItemsControl ItemsSource="{Binding GlowLayersOver}">
+								<ItemsControl.ItemsPanel>
+									<ItemsPanelTemplate>
+										<Canvas Width="{Binding GlowCanvasWidth}"
+												Height="{Binding GlowCanvasHeight}"
+												ClipToBounds="False" />
+									</ItemsPanelTemplate>
+								</ItemsControl.ItemsPanel>
+								<ItemsControl.ItemTemplate>
+									<DataTemplate>
+										<Path Data="{Binding Geometry}"
+											  Fill="{Binding $parent[ItemsControl].DataContext.AnimatedGlowBrush}"
+											  Stroke="{Binding $parent[ItemsControl].DataContext.AnimatedGlowBrush}"
+											  StrokeThickness="{Binding StrokeThickness}"
+											  StrokeLineCap="Round"
+											  StrokeJoin="Round"
+											  IsHitTestVisible="False">
+											<Path.Effect>
+												<BlurEffect Radius="{Binding BlurRadius}"/>
+											</Path.Effect>
+										</Path>
+									</DataTemplate>
+								</ItemsControl.ItemTemplate>
+							</ItemsControl>
+						</Viewbox>
+					</Grid>
+					<detailSections:DeviceImageWithHotspotsView IsVisible="{Binding IsMacrosSection}" />
+					<detailSections:ConnectivityBarView />
+					<detailSections:BluetoothModeBannerView VerticalAlignment="Top" Margin="82,40,82,0" />
+				</Panel>
+
+				<!-- Transparent background so the panel itself is hit-testable: a click on empty
+					 space (not on a key button) bubbles here and clears the key selection. -->
+				<Panel IsVisible="{Binding IsKeyboardDevice}"
+					   VerticalAlignment="Top" HorizontalAlignment="Stretch"
+					   Height="756" Margin="16,0,0,0"
+					   Background="Transparent"
+					   PointerPressed="OnKeyboardPanelPointerPressed">
+					<Grid ColumnDefinitions="42,*,42" Height="756" HorizontalAlignment="Stretch" IsHitTestVisible="False">
+						<Canvas Grid.Column="0" Width="42" Height="756">
+							<Path Data="M0 21.306L21.4766 0L36 0L42 0V21.306H0Z" Fill="#CC000000" />
+							<Rectangle Canvas.Top="21.3057" Width="42" Height="646.792" Fill="#CC000000" />
+							<Path Data="M22.5906 742.598L22.5906 690.677L0 668.099H42V756H36L22.5906 742.598Z" Fill="#CC000000" />
+						</Canvas>
+						<Rectangle Grid.Column="1" Fill="#CC000000" />
+						<Canvas Grid.Column="2" Width="42" Height="756">
+							<Path Data="M0 95.3673L0 54L42 95.3567L0 95.3673Z" Fill="#CC000000" />
+							<Rectangle Canvas.Top="95.3672" Width="42" Height="639.318" Fill="#CC000000" />
+							<Path Data="M42 734.686L20.354 756H0L0.001 734.686H42Z" Fill="#CC000000" />
+						</Canvas>
+					</Grid>
+					<!-- Macros needs a keyboard you can click, to pick which key a macro binds to —
+						 the same interactive overlay Key Assignments uses. The static images below
+						 are IsHitTestVisible="False", so without this there is nothing to select. -->
+					<detailSections:RasterKeyboardOverlayView
+						MaxWidth="628"
+						Margin="42,0"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						IsVisible="{Binding ShowKeyboardOverlayInMacros}" />
+
+					<!-- Actuation's Per-key mode single-selects a key on the same overlay; the VM's
+						 SelectPhysicalKey branches to that selection while the mode is active. -->
+					<detailSections:RasterKeyboardOverlayView
+						MaxWidth="628"
+						Margin="42,0"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						IsVisible="{Binding ShowKeyboardOverlayInActuation}" />
+
+					<!-- Extended Keys picks its record's keys on the overlay too, and shows the
+						 configured records as highlights even with no editor open — so the overlay
+						 is up for the whole section, not a mode of it. -->
+					<detailSections:RasterKeyboardOverlayView
+						MaxWidth="628"
+						Margin="42,0"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						IsVisible="{Binding ShowKeyboardOverlayInExtendedKeys}" />
+
+					<!-- Keyboards with split artwork render layered so the backlight can be
+						 tinted live from the RGB picker; the rest show the flat vector.
+						 Unlit on the Actuation and Extended Keys sections (Actuation's All-keys
+						 mode shows this static image): those pages are about switch behaviour, not
+						 lighting, so they render the same unlit board Key Assignments and Macros
+						 show (PG-589). -->
+					<detailSections:RgbKeyboardView
+						MaxWidth="628"
+						Margin="42,0"
+						Art="{Binding KeyboardArt}"
+						GlowBrush="{Binding AnimatedGlowBrush}"
+						ShowBacklight="{Binding ShowKeyboardBacklight}"
+						HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						IsHitTestVisible="False"
+						IsVisible="{Binding ShowLayeredKeyboardImage}" />
+
+					<!-- Same vector switch as the keyboard image in the Buttons panel above. -->
+					<Svg Path="{Binding DeviceDetailImagePath}"
+						 MaxWidth="628"
+						 Margin="42,0"
+						 Stretch="Uniform"
+						 HorizontalAlignment="Center"
+						 VerticalAlignment="Center"
+						 IsHitTestVisible="False"
+						 IsVisible="{Binding ShowFlatKeyboardImage}" />
+					<detailSections:ConnectivityBarView />
+					<detailSections:BluetoothModeBannerView VerticalAlignment="Top" Margin="82,40,82,0" />
+				</Panel>
+
+			</Panel>
+
+		</Grid>
+
+		<!-- Remap toast: raised when a Key Assignment Dialog pick closes it — the message, an
+			 UNDO link that reverts the pick, and a ✕. Auto-hides from the view model. Same
+			 chamfered 432-wide bar as MainWindow's NotificationGrid, just 88 tall for the second
+			 line. Drawn over both rows so it floats above the page, top-right like every other
+			 notification. -->
+		<Grid Grid.Row="0" Grid.RowSpan="2"
+			  IsVisible="{Binding IsRemapToastVisible}"
+			  HorizontalAlignment="Right" VerticalAlignment="Top"
+			  Margin="0,40,0,0" Width="432" Height="88">
+			<Grid.Effect>
+				<DropShadowEffect BlurRadius="80" Color="#6357FF" OffsetX="0" OffsetY="0" Opacity="0.3"/>
+			</Grid.Effect>
+			<Canvas Width="432" Height="88">
+				<Path Fill="Black" Data="M0 16L16 0L16 16Z"/>
+				<Rectangle Canvas.Left="0" Canvas.Top="16" Width="16" Height="72" Fill="Black"/>
+				<Rectangle Canvas.Left="16" Canvas.Top="0" Width="400" Height="88" Fill="Black"/>
+				<Rectangle Canvas.Left="416" Canvas.Top="0" Width="16" Height="72" Fill="Black"/>
+				<Path Fill="Black" Data="M432 72L416 88L416 72Z"/>
+			</Canvas>
+			<Grid ColumnDefinitions="Auto,*,Auto" Margin="26,0,16,0">
+				<!-- Outlined circle-check from the design SVG (absolute coords, translated to 20x20). -->
+				<Canvas Grid.Column="0" Width="20" Height="20" VerticalAlignment="Center">
+					<Path Fill="#00CE4F">
+						<Path.RenderTransform><TranslateTransform X="-226" Y="-218"/></Path.RenderTransform>
+						<Path.Data>M234.6 232.6L241.65 225.55L240.25 224.15L234.6 229.8L231.75 226.95L230.35 228.35L234.6 232.6ZM236 238C234.617 238 233.317 237.738 232.1 237.212C230.883 236.688 229.825 235.975 228.925 235.075C228.025 234.175 227.312 233.117 226.788 231.9C226.263 230.683 226 229.383 226 228C226 226.617 226.263 225.317 226.788 224.1C227.312 222.883 228.025 221.825 228.925 220.925C229.825 220.025 230.883 219.312 232.1 218.788C233.317 218.263 234.617 218 236 218C237.383 218 238.683 218.263 239.9 218.788C241.117 219.312 242.175 220.025 243.075 220.925C243.975 221.825 244.688 222.883 245.212 224.1C245.738 225.317 246 226.617 246 228C246 229.383 245.738 230.683 245.212 231.9C244.688 233.117 243.975 234.175 243.075 235.075C242.175 235.975 241.117 236.688 239.9 237.212C238.683 237.738 237.383 238 236 238ZM236 236C238.233 236 240.125 235.225 241.675 233.675C243.225 232.125 244 230.233 244 228C244 225.767 243.225 223.875 241.675 222.325C240.125 220.775 238.233 220 236 220C233.767 220 231.875 220.775 230.325 222.325C228.775 223.875 228 225.767 228 228C228 230.233 228.775 232.125 230.325 233.675C231.875 235.225 233.767 236 236 236Z</Path.Data>
+					</Path>
+				</Canvas>
+				<StackPanel Grid.Column="1" Margin="15,0,0,0" Spacing="6" VerticalAlignment="Center">
+					<TextBlock Text="{Binding RemapToastText}"
+							   Foreground="#FFFFFF"
+							   FontFamily="Segoe UI" FontSize="16" LineHeight="20"
+							   TextTrimming="CharacterEllipsis" />
+					<Button Classes="remapToastButton"
+							HorizontalAlignment="Left"
+							Command="{Binding UndoRemapCommand}">
+						<TextBlock Text="{DynamicResource KeyDialog_RemapToast_Undo}"
+								   Foreground="#6357FF"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="18" />
+					</Button>
+				</StackPanel>
+				<Button Grid.Column="2" Classes="remapToastButton"
+						VerticalAlignment="Top" Margin="0,21,0,0"
+						Width="14" Height="14"
+						Command="{Binding DismissRemapToastCommand}">
+					<Canvas Width="14" Height="14">
+						<Path Fill="#B2BEBCEA">
+							<Path.RenderTransform><TranslateTransform X="-589" Y="-221"/></Path.RenderTransform>
+							<Path.Data>M590.4 235L589 233.6L594.6 228L589 222.4L590.4 221L596 226.6L601.6 221L603 222.4L597.4 228L603 233.6L601.6 235L596 229.4L590.4 235Z</Path.Data>
+						</Path>
+					</Canvas>
+				</Button>
+			</Grid>
+		</Grid>
+
+	</Grid>
+</UserControl>

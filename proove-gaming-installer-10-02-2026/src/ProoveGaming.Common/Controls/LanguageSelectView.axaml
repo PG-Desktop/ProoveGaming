@@ -1,0 +1,111 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 x:Class="ProoveGaming.Common.Controls.LanguageSelectView"
+			 ClipToBounds="False">
+	<UserControl.Styles>
+		<Style Selector="Border#LanguageContainer">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+		<Style Selector="Button#LanguageHeaderButton">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="16" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="VerticalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions" Value="{x:Null}" />
+		</Style>
+		<Style Selector="Button#LanguageHeaderButton:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button#LanguageHeaderButton:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="RenderTransform" Value="none" />
+		</Style>
+		<Style Selector="Panel#LanguageDropdownOverlay Button">
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions" Value="{x:Null}" />
+			<Setter Property="CornerRadius" Value="0" />
+		</Style>
+		<Style Selector="Panel#LanguageDropdownOverlay Button /template/ ContentPresenter">
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions" Value="{x:Null}" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="Panel#LanguageDropdownOverlay Button:pressed /template/ ContentPresenter">
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="Panel#LanguageDropdownOverlay Button:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+	</UserControl.Styles>
+
+	<Grid ClipToBounds="False">
+		<Border x:Name="LanguageContainer"
+				Width="600"
+				Height="56"
+				HorizontalAlignment="Center"
+				Background="Transparent">
+			<Button x:Name="LanguageHeaderButton">
+				<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+					<StackPanel x:Name="LanguageSelectedItem"
+								Grid.Column="0"
+								Orientation="Horizontal"
+								VerticalAlignment="Center" />
+					<Grid Grid.Column="2"
+						  Width="24"
+						  Height="24"
+						  VerticalAlignment="Center">
+						<commonControls:SvgImageView x:Name="LanguageArrowDownIcon"
+													 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Property-down.svg"
+													 Width="24"
+													 Height="24"
+													 Opacity="0.7" />
+						<commonControls:SvgImageView x:Name="LanguageArrowUpIcon"
+													 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Property-up.svg"
+													 Width="24"
+													 Height="24"
+													 Opacity="0.7"
+													 IsVisible="False" />
+					</Grid>
+				</Grid>
+			</Button>
+		</Border>
+
+		<Border x:Name="LanguageDismissOverlay"
+				Background="Transparent"
+				ZIndex="99"
+				IsVisible="False"
+				IsHitTestVisible="True" />
+
+		<Canvas Width="600"
+				HorizontalAlignment="Center"
+				ZIndex="100">
+			<Panel x:Name="LanguageDropdownOverlay"
+				   Width="600"
+				   Canvas.Top="62"
+				   IsVisible="False"
+				   IsHitTestVisible="True">
+				<Panel.Effect>
+					<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="40" Color="#6357FF" Opacity="0.3" />
+				</Panel.Effect>
+				<Border Background="#000000"
+						BorderBrush="#6357FF"
+						BorderThickness="1"
+						Padding="8">
+					<StackPanel x:Name="LanguageItemsStack" />
+				</Border>
+			</Panel>
+		</Canvas>
+	</Grid>
+</UserControl>
+
+
+

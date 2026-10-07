@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.Installer.Controls.ModalCancelView">
+	<UserControl.Styles>
+		<Style Selector="Canvas#CloseButtonHost Path#CloseButtonBackgroundPath">
+			<Setter Property="Fill" Value="Black" />
+			<Setter Property="Opacity" Value="0.9" />
+		</Style>
+		<Style Selector="Canvas#CloseButtonHost:pointerover Path#CloseButtonBackgroundPath">
+			<Setter Property="Fill" Value="#4D6357FF" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+		<Style Selector="Button#CloseButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+		</Style>
+		<Style Selector="Button#CloseButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+		</Style>
+	</UserControl.Styles>
+
+	<Panel>
+		<Panel.Effect>
+			<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="40" Color="#6357FF" Opacity="0.3" />
+		</Panel.Effect>
+		<Grid Width="780" Height="356">
+			<Canvas Width="780"
+					Height="355"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top">
+				<Path Data="M80 101.306L101.477 80L116 80L122 80V101.306H80Z" Fill="Black" Opacity="0.9" />
+				<Rectangle Canvas.Left="80" Canvas.Top="101.306" Width="42" Height="86.7923" Fill="Black" Opacity="0.9" />
+				<Path Data="M102.591 262.598L102.591 210.677L80 188.099H122V276H116L102.591 262.598Z" Fill="Black" Opacity="0.9" />
+				<Rectangle Canvas.Left="122" Canvas.Top="80" Width="536" Height="196" Fill="Black" Opacity="0.9" />
+
+				<Canvas x:Name="CloseButtonHost"
+						Canvas.Left="664"
+						Canvas.Top="80"
+						Width="36"
+						Height="86">
+					<Path x:Name="CloseButtonBackgroundPath"
+						  Data="M0 0L0 50L36 86L36 0.0003L0 0Z"
+						  IsHitTestVisible="False" />
+					<Path x:Name="CloseButtonIconPath"
+						  Data="M12.4 31L11 29.6L16.6 24L11 18.4L12.4 17L18 22.6L23.6 17L25 18.4L19.4 24L25 29.6L23.6 31L18 25.4L12.4 31Z"
+						  Fill="#BEBCEA"
+						  IsHitTestVisible="False" />
+					<Path Data="M12.4 31L11 29.6L16.6 24L11 18.4L12.4 17L18 22.6L23.6 17L25 18.4L19.4 24L25 29.6L23.6 31L18 25.4L12.4 31Z"
+						  Fill="White"
+						  IsHitTestVisible="False"
+						  IsVisible="{Binding ElementName=CloseButton, Path=IsPointerOver}" />
+					<Button x:Name="CloseButton"
+							Width="36"
+							Height="86"
+							Background="Transparent"
+							BorderThickness="0"
+							Foreground="Transparent" />
+				</Canvas>
+
+				<Path Data="M658 175.367L658 134L700 175.357L658 175.367Z" Fill="Black" Opacity="0.9" />
+				<Rectangle Canvas.Left="658" Canvas.Top="175.367" Width="42" Height="79.3182" Fill="Black" Opacity="0.9" />
+				<Path Data="M700 254.686L678.354 276H658L658.001 254.686H700Z" Fill="Black" Opacity="0.9" />
+			</Canvas>
+
+			<Border Width="560"
+					Height="196"
+					HorizontalAlignment="Left"
+					VerticalAlignment="Top"
+					Margin="122,80,0,0"
+					Background="Transparent">
+				<Grid Margin="0,32,28,20" RowDefinitions="Auto,Auto,*">
+					<TextBlock Text="{DynamicResource ModalCancel_Title}"
+							   FontSize="28"
+							   FontFamily="{DynamicResource InstallerPixelFont}"
+							   FontStyle="Normal"
+							   FontWeight="Light"
+							   LineHeight="28"
+							   Foreground="White" />
+
+					<TextBlock Grid.Row="1"
+							   Margin="0,8,0,0"
+							   FontSize="16"
+							   Foreground="#BEBCEA"
+							   Opacity="0.7"
+							   Text="{DynamicResource ModalCancel_Subtitle}" />
+					<Grid Grid.Row="2"
+						  Margin="0"
+						  ColumnDefinitions="Auto,Auto"
+						  ColumnSpacing="12"
+						  HorizontalAlignment="Right"
+						  VerticalAlignment="Bottom">
+						<Button x:Name="SecondaryButton"
+								Grid.Column="0"
+								Classes="pgSecondaryActionButton"
+								Width="NaN"
+								Height="NaN"
+								Padding="16,14.5"
+								Content="{DynamicResource ModalCancel_SecondaryButton}"/>
+
+						<Button x:Name="PrimaryButton"
+								Grid.Column="1"
+								Classes="pgCancelActionButton"
+								Width="NaN"
+								Height="NaN"
+								Padding="16,14.5"
+								Content="{DynamicResource ModalCancel_PrimaryButton}"/>
+					</Grid>
+				</Grid>
+			</Border>
+		</Grid>
+	</Panel>
+</UserControl>

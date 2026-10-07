@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:views="using:ProoveGaming.Installer.Views"
+			 xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 xmlns:models="using:ProoveGaming.Installer.Models"
+			 x:Class="ProoveGaming.Installer.Views.WelcomeStepView">
+
+	<commonLayouts:StepFrameLayoutView>
+		<commonLayouts:StepFrameLayoutView.StepContent>
+			<Border x:Name="WelcomeContentBlock"
+					VerticalAlignment="Center"
+					Padding="0">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="3*" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+
+					<TextBlock Grid.Row="1"
+							   Text="{DynamicResource Welcome_Title_Design}"
+							   Classes="installerStepTitle"
+							   Foreground="White"
+							   HorizontalAlignment="Center"
+							   TextAlignment="Center" />
+
+					<TextBlock Grid.Row="2"
+							   Margin="0,18,0,0"
+							   Text="{DynamicResource Welcome_Message}"
+							   Classes="installerStepSubtitle"
+							   TextWrapping="Wrap"
+							   MaxWidth="680" />
+
+					<commonControls:LanguageSelectView x:Name="WelcomeLanguageSelect"
+													   Grid.Row="3"
+													   ClipToBounds="False"
+													   ZIndex="10"
+													   Margin="0,32,0,0" />
+
+					<Grid Grid.Row="4"
+						  Margin="0,32,0,0"
+						  Width="600"
+						  HorizontalAlignment="Center"
+						  ColumnDefinitions="*,*"
+						  ColumnSpacing="16">
+						<Button x:Name="WelcomeCancelButton"
+								Grid.Column="0"
+								Content="{DynamicResource Button_Cancel}"
+								HorizontalAlignment="Stretch"
+								Classes="installerSecondaryButton" />
+
+						<Button x:Name="WelcomeNextButton"
+								Grid.Column="1"
+								Content="{DynamicResource Button_Next}"
+								HorizontalAlignment="Stretch"
+								Classes="installerPrimaryButton" />
+					</Grid>
+				</Grid>
+			</Border>
+		</commonLayouts:StepFrameLayoutView.StepContent>
+	</commonLayouts:StepFrameLayoutView>
+</UserControl>

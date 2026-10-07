@@ -1,0 +1,40 @@
+Terms of Service
+Proove Gaming Application — Effective Date: 28.08.2026 
+These Terms of Service ("Terms") govern access to and use of the companion Proove Gaming application ("Application") provided by BE FIRST COMPANY LIMITED, a company registered at FLAT/RM 602, 6/F, KAI YUE COMMERCIAL BUILDING, NO.2C, ARGYLE STREET, MONGKOK, KL, HONG KONG (Business Registration Certificate No. 71957264-000-06-26-2, valid from 11 June 2026 to 10 June 2027) ("PROOVE GAMING", "we", "us", or "our"). By downloading, installing, or using the Application, you ("User" or "you") agree to these Terms and our Privacy Policy and License Agreement, which are incorporated herein by reference. If you do not agree, do not install or use the Application.
+1. Description of the Service
+The Application is a companion application designed for use with Proove Gaming-branded peripheral devices, including gaming mice, keyboards, and headsets ("Devices"). The Application allows you to create and manage a personal account, configure and personalize connected Devices, store and synchronize device profiles and settings, and receive firmware or software updates. The Application is intended for use by individuals who own or have lawful access to a genuine PROOVE GAMING-branded Device, and is not intended for use with third-party or non-PROOVE GAMING equipment.
+2. Eligibility and Account Registration
+To use the account-based features of the Application, you must register and create a personal account. You must be at least 18 years old, or the age of digital consent in your jurisdiction if higher, to create an account without parental or guardian consent. During registration, you will be asked to provide an email address, choose a username (nickname), and set a password. 
+You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account. You agree to provide accurate, current, and complete information and to update it promptly if it changes. We reserve the right to suspend or terminate accounts that contain false, misleading, or fraudulent information.
+3. License to Use the Application
+Subject to your compliance with these Terms, we grant you a limited, non-exclusive, non-transferable, revocable license to install and use the Application on compatible devices solely for your personal, non-commercial use of genuine PROOVE GAMING-branded Devices. Additional terms governing the software license itself are set out in a separate License Agreement, which prevails over these Terms with respect to intellectual property matters and license scope in the event of any conflict.
+4. Acceptable Use
+When using the Application, you agree not to: (a) reverse engineer, decompile, or disassemble the Application, except as permitted by applicable law; (b) use the Application with counterfeit, unauthorized, or non-PROOVE GAMING equipment in a manner that circumvents device restrictions; (c) attempt to gain unauthorized access to accounts, systems, or networks connected to the Application; (d) upload unlawful, defamatory, obscene, or infringing content, including as part of an avatar or profile; (e) interfere with or disrupt the integrity or performance of the Application; or (f) use the Application in violation of any applicable law or regulation.
+5. Devices and Compatibility
+The Application is designed to work with genuine PROOVE GAMING-branded mice, keyboards, and headsets. We do not warrant compatibility, functionality, or support for counterfeit products, modified hardware, or third-party peripheral devices. Use of the Application with unauthorized equipment is at your own risk and may void applicable product warranties.
+6. Intellectual Property
+The Application, including its software, design, graphics, trademarks (including "Proove Gaming" and "PROOVE GAMING"), and all related intellectual property, is owned by BE FIRST COMPANY LIMITED or its licensors and is protected by copyright and other intellectual property laws. Nothing in these Terms transfers any ownership rights to you. You retain ownership of any personal content you upload (such as an avatar image), but grant us a limited license to store and display it within the Application solely for the purpose of providing the service. 
+7. Updates and Changes to the Application
+We may update, modify, or discontinue features of the Application, including firmware-related features, at any time, with or without notice, to improve performance, security, or compatibility. We are not obligated to support discontinued Devices or versions of the Application indefinitely.
+8. Disclaimer of Warranties
+THE APPLICATION IS PROVIDED "AS IS" AND "AS AVAILABLE," WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR UNINTERRUPTED OPERATION, EXCEPT WHERE SUCH DISCLAIMER IS NOT PERMITTED BY APPLICABLE LAW.
+9. Limitation of Liability
+To the maximum extent permitted by applicable law, BE FIRST COMPANY LIMITED shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, profits, or goodwill, arising out of or related to your use of the Application. Our total aggregate liability for any claim arising under these Terms shall not exceed the amount, if any, you paid for the Application or the related Device during the twelve (12) months preceding the claim.
+10. Suspension and Termination
+We may suspend or terminate your access to the Application, in whole or in part, if you violate these Terms, misuse the Application, or if required by law. You may stop using the Application and delete your account at any time through the in-app settings or by contacting us at support@proovegaming.com. Sections of these Terms that by their nature should survive termination (including intellectual property, disclaimer of warranties, and limitation of liability) will continue to apply.
+11. Changes to These Terms
+We may revise these Terms from time to time. Material changes will be notified through the Application or by email to the address associated with your account. Continued use of the Application after changes take effect constitutes acceptance of the revised Terms.
+12. Governing Law and Disputes
+These Terms are governed by the laws of Hong Kong without regard to its conflict of laws principles. Any dispute arising out of or related to these Terms shall be subject to the exclusive jurisdiction of the courts of Hong Kong, unless mandatory consumer protection law in your country of residence provides otherwise.
+13. Feedback
+If you submit ideas, suggestions, or feedback regarding the Application or the Devices, you grant us a perpetual, irrevocable, royalty-free license to use such feedback for any purpose, including improving our products, without any obligation to compensate you.
+14. Force Majeure
+We shall not be liable for any failure or delay in performance caused by circumstances beyond our reasonable control, including natural disasters, internet or infrastructure outages, government actions, labor disputes, or other force majeure events.
+14. Assignment
+You may not assign or transfer your rights or obligations under these Terms without our prior written consent. We may transfer these Terms, in whole or in part, in connection with a merger, acquisition, corporate reorganization, or sale of assets.
+16. Severability and No Waiver
+If any provision of these Terms is held invalid or unenforceable, the remaining provisions will remain in full force and effect. Our failure to enforce any right or provision of these Terms will not be deemed a waiver of such right or provision.
+17. Entire Agreement
+These Terms, together with the Privacy Policy and the License Agreement, constitute the entire agreement between you and BE FIRST COMPANY LIMITED regarding the Application and supersede all prior agreements and understandings, whether written or oral, relating to its subject matter.
+18. Contact Information
+If you have any questions about these Terms, please contact us at: support@proovegaming.com.

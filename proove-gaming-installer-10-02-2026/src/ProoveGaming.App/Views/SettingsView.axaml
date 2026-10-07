@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:commonControls="using:ProoveGaming.Common.Controls"
+             mc:Ignorable="d" d:DesignWidth="1392" d:DesignHeight="844"
+             x:Class="ProoveGaming.App.Views.SettingsView">
+
+    <!-- The NavBackBg hover styles live in App.axaml with the other header *Bg styles. -->
+    <Grid RowDefinitions="80,*">
+
+        <!-- ══ Header (ProfileView pattern: back plate + pixel-font title) ══ -->
+        <Grid Grid.Row="0" VerticalAlignment="Center">
+            <StackPanel HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal"
+                        Spacing="16">
+                <Button x:Name="NavBackButton"
+                        Classes="linkButton"
+                        Cursor="Hand">
+                    <Grid Width="56" Height="56">
+                        <Path x:Name="NavBackBg"
+                              Fill="#4D6357FF"
+                              Data="{StaticResource CutCornerFrameGeometry}"/>
+                        <Path Width="22" Height="22" Stretch="Uniform" Fill="White"
+                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Data="M5.1 12L12.5667 19.4667L10.6667 21.3333L0 10.6667L10.6667 0L12.5667 1.86667L5.1 9.33333H21.3333V12H5.1Z"/>
+                    </Grid>
+                </Button>
+                <TextBlock Text="{DynamicResource SettingsView_Title}"
+                           FontFamily="{DynamicResource AppPixelFont}"
+                           FontSize="36"
+                           LineHeight="32"
+                           FontWeight="250"
+                           Foreground="White"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- ══ Bevelled panel + rails (decoded from the 2026-08-31 mock, 776×804 artboard).
+             752 wide (42 + 668 + 42, rails included) and 740 tall, centered, with symmetric
+             21.65×21.31 chamfers on ALL FOUR corners — the earlier top-only chamfer, right-rail
+             stagger and bottom notch are gone from the design. Opacity 0.8 per the mock's
+             fill-opacity (mapped separately per the repo SVG rule), superseding the 0.7 the
+             previous mock carried. Fixed size is safe: the panel renders no localized text of
+             its own (labels live in the 600px content column, which wraps). The empty space
+             under the language section is per the design — the mock's Color Theme cards are a
+             separate feature (no theming support ships yet) and will fill it later. ══ -->
+        <Grid Grid.Row="1"
+              ColumnDefinitions="42,*,42"
+              Width="752"
+              Height="740"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Top"
+              Margin="0,12,0,0">
+
+            <!-- Left rail: top chamfer, body, bottom chamfer -->
+            <Canvas Grid.Column="0" Width="42" Height="740">
+                <Path Fill="Black" Opacity="0.8" Data="M0 21.3145 L21.6462 0 L42 0 V21.3145 Z"/>
+                <Rectangle Canvas.Left="0" Canvas.Top="21.3145" Width="42" Height="697.371" Fill="Black" Opacity="0.8"/>
+                <Path Fill="Black" Opacity="0.8" Data="M0 718.6855 L21.6462 740 L42 740 V718.6855 Z"/>
+            </Canvas>
+
+            <!-- Main content panel -->
+            <Rectangle Grid.Column="1" Fill="Black" Opacity="0.8"/>
+
+            <!-- Right rail: mirrored chamfers -->
+            <Canvas Grid.Column="2" Width="42" Height="740">
+                <Path Fill="Black" Opacity="0.8" Data="M42 21.3145 L20.3538 0 L0 0 V21.3145 Z"/>
+                <Rectangle Canvas.Left="0" Canvas.Top="21.3145" Width="42" Height="697.371" Fill="Black" Opacity="0.8"/>
+                <Path Fill="Black" Opacity="0.8" Data="M42 718.6855 L20.3538 740 L0 740 V718.6855 Z"/>
+            </Canvas>
+
+            <!-- Content: single 600px column centered in the panel; the label sits 54px below
+                 the panel top per the mock (text top y=78 against panel top y=24). -->
+            <StackPanel Grid.Column="1"
+                        Width="600"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Top"
+                        Margin="0,54,0,0">
+                <TextBlock Text="{DynamicResource SettingsView_LanguageLabel}"
+                           FontSize="18"
+                           Foreground="White"/>
+                <commonControls:LanguageSelectView x:Name="LanguageSelect"
+                                                   Margin="0,12,0,0"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

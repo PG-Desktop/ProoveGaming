@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="140" height="504" viewBox="0 0 140 504" fill="none">
+<path d="M0 16L16 -6.99382e-07L16 16L0 16Z" fill="black" fill-opacity="0.8"/>
+<rect y="16" width="16" height="472" fill="black" fill-opacity="0.8"/>
+<path d="M16 504L1.39876e-06 488L16 488L16 504Z" fill="black" fill-opacity="0.8"/>
+<rect width="108" height="504" transform="translate(16)" fill="black" fill-opacity="0.8"/>
+<path d="M124 0L140 16H124V0Z" fill="black" fill-opacity="0.8"/>
+<rect x="124" y="16" width="16" height="472" fill="black" fill-opacity="0.8"/>
+<path d="M140 488L124 504L124 488L140 488Z" fill="black" fill-opacity="0.8"/>
+</svg>

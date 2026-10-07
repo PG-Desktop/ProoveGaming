@@ -1,0 +1,60 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:DataType="viewmodels:AddDeviceCardViewModel"
+			 Cursor="Hand"
+			 x:Class="ProoveGaming.App.AddDeviceCard">
+	<!-- 336 wide — matches SingleCard; the path data below was always the 336 design.
+		 The hover-lift transition lives on this root element, not the UserControl —
+		 DeviceCardBase lifts the CONTENT so the hit-area stays put (the jitter fix). -->
+	<Grid Width="336" Height="324">
+		<Grid.Transitions>
+			<Transitions>
+				<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+			</Transitions>
+		</Grid.Transitions>
+		<Canvas Width="336" Height="324">
+
+			<Path Width="336"
+				  Height="324"
+				  Stretch="Fill"
+				  Fill="#6357FF"
+				  VerticalAlignment="Top"
+				  Data="
+				  M0 21.306L21.4766 0H42V21.306H0Z
+				  M0 21.3057H42V236.097H0Z
+				  M22.5906 310.598V258.677L0 236.099H42V324H36L22.5906 310.598Z
+				  M0 245L17 261.999V305.237L0 288.237Z
+				  M42 0H294V324H42Z
+				  M294 54L336 95.3567L294 95.3673Z
+				  M294 95.3672H336V302.685H294Z
+				  M336 302.686L314.354 324H294V302.686Z
+				  "/>
+
+		</Canvas>
+		<StackPanel HorizontalAlignment="Center"
+					VerticalAlignment="Center"
+					Spacing="14">
+
+			<Path Width="30"
+				  Height="30"
+				  Fill="White"
+				  Data="M13.3333 30V16.6667H0V13.3333H13.3333V0H16.6667V13.3333H30V16.6667H16.6667V30H13.3333Z"/>
+
+			<!-- Wraps inside the 252px solid middle of the shape (x 42..294, minus a 16px inset
+				 each side): "ПІДКЛЮЧІТЬ ПЕРШИЙ ДЕВАЙС" does not fit on one line at 16px. -->
+			<TextBlock Text="{DynamicResource HomeView_AddDeviceCard_Title}"
+					   Foreground="White"
+					   FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7"
+					   FontSize="16"
+					   LineHeight="18"
+					   MaxWidth="220"
+					   TextWrapping="Wrap"
+					   TextAlignment="Center"
+					   HorizontalAlignment="Center"/>
+		</StackPanel>
+	</Grid>
+</UserControl>

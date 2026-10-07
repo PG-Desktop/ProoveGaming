@@ -1,0 +1,317 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 xmlns:common="using:ProoveGaming.Common.Controls"
+			 xmlns:views="using:ProoveGaming.App.Views"
+			 xmlns:detailSections="using:ProoveGaming.App.Views.DeviceDetailsSections"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:DataType="viewmodels:DoubleCardViewModel"
+			 Classes.inactive="{Binding !Connected}"
+			 Cursor="Hand"
+			 x:Class="ProoveGaming.App.DoubleCard">
+	<UserControl.Styles>
+		<Style Selector="Button.menuButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4D6357FF" />
+		</Style>
+		<Style Selector="Button.deleteButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4DFF383C" />
+		</Style>
+
+		<!-- Background card chrome: slightly darker when disconnected. -->
+		<Style Selector="Path.cardBg">
+			<Setter Property="Fill" Value="#B3000000"/>
+		</Style>
+		<Style Selector="UserControl.inactive Path.cardBg">
+			<Setter Property="Fill" Value="#CC000000"/>
+		</Style>
+
+		<!-- The device artwork fades when disconnected by binding Opacity to CardArtOpacity
+			 directly, NOT by a Classes.dimmed + style pair. This file already documents one family
+			 of selectors that silently never match (see the UserControl.inactive note below), and
+			 the layered-artwork rule was another: the boards drawn through RgbKeyboardView stayed
+			 at full brightness while disconnected, while those drawn through SvgImageView faded.
+			 A selector that fails to match raises nothing, so the two art paths drifted apart
+			 unnoticed — the binding keeps them provably identical. -->
+
+		<!-- Text colors dim when the card is in the inactive state. -->
+		<Style Selector="TextBlock.deviceType">
+			<Setter Property="Foreground" Value="#B2BEBCEA"/>
+		</Style>
+		<Style Selector="UserControl.inactive TextBlock.deviceType">
+			<Setter Property="Foreground" Value="#4DBEBCEA"/>
+		</Style>
+
+		<Style Selector="TextBlock.deviceName">
+			<Setter Property="Foreground" Value="#FFFFFF"/>
+		</Style>
+		<Style Selector="UserControl.inactive TextBlock.deviceName">
+			<Setter Property="Foreground" Value="#66FFFFFF"/>
+		</Style>
+
+		<!-- Dots-overlay sizing: shrinks when inactive (only Delete menu item left). -->
+		<Style Selector="Grid.dotsOverlay, Canvas.dotsOverlay, Rectangle.dotsOverlay">
+			<Setter Property="Height" Value="136"/>
+		</Style>
+		<Style Selector="UserControl.inactive Grid.dotsOverlay,
+		                 UserControl.inactive Canvas.dotsOverlay,
+		                 UserControl.inactive Rectangle.dotsOverlay">
+			<Setter Property="Height" Value="64"/>
+		</Style>
+
+		<Style Selector="Rectangle.dotsOverlaySide">
+			<Setter Property="Height" Value="120"/>
+		</Style>
+		<Style Selector="UserControl.inactive Rectangle.dotsOverlaySide">
+			<Setter Property="Height" Value="48"/>
+		</Style>
+
+		<Style Selector="Path.dotsOverlayCorner">
+			<Setter Property="Data" Value="M16 136 L0 120 L16 120 Z"/>
+		</Style>
+		<Style Selector="UserControl.inactive Path.dotsOverlayCorner">
+			<Setter Property="Data" Value="M16 64 L0 48 L16 48 Z"/>
+		</Style>
+	</UserControl.Styles>
+	<!-- 688 wide: two keyboard cards plus the 16px gap fill the default 1440 window's
+		 1392px row exactly (688*2+16 = 1392), running from the 24px window margin to the
+		 scrollbar's 10px content gap. This is the design's original 688 geometry (the card
+		 spent a while at 668 with the right-edge group shifted left by 20).
+		 The hover-lift transition lives on this root element, not the UserControl —
+		 DeviceCardBase lifts the CONTENT so the hit-area stays put (the jitter fix). -->
+	<Grid Width="688" Height="324" Background="Transparent">
+		<Grid.Transitions>
+			<Transitions>
+				<TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.2" Easing="CubicEaseOut"/>
+			</Transitions>
+		</Grid.Transitions>
+		<Canvas Width="688" Height="324">
+			<Path Classes="cardBg"
+				  Data="M0 21.306L21.4766 0H42V21.306H0Z
+				  M0 21.3057H42V236.0977H0Z
+				  M22.5906 310.598V258.677L0 236.099H42V324H36L22.5906 310.598Z
+				  M0 245L17 261.999V305.237L0 288.237V245Z
+				  M42 0H646V324H42V0Z
+				  M652 0V50L688 86V0Z
+				  M646 54L688 95.3567L646 95.3673V54Z
+				  M646 95.3672H688V302.6852H646V95.3672Z
+				  M688 302.686L666.354 324H646V302.686H688Z"/>
+
+			<!-- Device image. Keyboards had none until now — only the mouse card (SingleCard)
+				 rendered one.
+
+				 The card shows the vendor artwork as delivered (CardSvgUri), not the layered
+				 build used on the device-details pages: a card is a product shot, so it keeps
+				 the factory backlight instead of tracking the RGB picker. Boards without split
+				 artwork fall back to the configured flat image.
+
+				 Bounded by MaxWidth/MaxHeight rather than a fixed Width so each board keeps its
+				 aspect: the wide ones land at 336 across, while T-801 — whose card artwork is a
+				 near-square canvas with the board in a band across the middle — is held by the
+				 height instead of overflowing into the labels below.
+				 Top-aligned at y=48 so every board sits the same distance below the card edge
+				 regardless of how tall it renders; the band stops short of the type label at
+				 y=226. -->
+			<Grid Canvas.Left="42" Canvas.Top="48" Width="604" Height="170">
+				<!-- Unlit boards (T-Racer, Cyrex, Aress) render the layered build with the
+					 backlight off, the same as Key Assignments: chassis, black bed between the
+					 keys, keycaps, unlit legends. T-Racer has no lit product shot at all;
+					 Cyrex/Aress show unlit by product decision. See UseUnlitCardArt. -->
+				<detailSections:RgbKeyboardView Art="{Binding KeyboardArt}"
+												ShowBacklight="False"
+												DimOpacity="{Binding CardArtDimOpacity}"
+												MaxWidth="336"
+												MaxHeight="160"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Top"
+												IsHitTestVisible="False"
+												IsVisible="{Binding UseUnlitCardArt}"/>
+
+				<common:SvgImageView SourceUri="{Binding KeyboardArt.CardSvgUri}"
+									 Opacity="{Binding CardArtOpacity}"
+									 Stretch="Uniform"
+									 MaxWidth="336"
+									 MaxHeight="160"
+									 HorizontalAlignment="Center"
+									 VerticalAlignment="Top"
+									 IsVisible="{Binding UseProductShotCardArt}"/>
+				<common:SvgImageView SourceUri="{Binding ImageUri}"
+									 Opacity="{Binding CardArtOpacity}"
+									 Stretch="Uniform"
+									 MaxWidth="336"
+									 MaxHeight="160"
+									 HorizontalAlignment="Center"
+									 VerticalAlignment="Top"
+									 IsVisible="{Binding !HasKeyboardArt}"/>
+			</Grid>
+
+			<TextBlock Canvas.Left="42" Canvas.Top="226"
+					   Classes="deviceType"
+					   Width="604"
+					   Text="{Binding DeviceTypeLabel, Converter={x:Static converters:DeviceTypeLabelConverter.Instance}}"
+					   TextAlignment="Center"
+					   FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7"
+					   FontStyle="Normal"
+					   FontSize="14"
+					   LineHeight="14"/>
+
+			<TextBlock Canvas.Left="42" Canvas.Top="245"
+					   Classes="deviceName"
+					   Width="604"
+					   Text="{Binding DisplayName, Converter={x:Static converters:StringToUpperConverter.Instance}}"
+					   TextAlignment="Center"
+					   FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7"
+					   FontStyle="Normal"
+					   FontSize="16"
+					   LineHeight="18"/>
+
+			<!-- Status row (transports / battery / NO CONNECTION), shared with SingleCard via
+			     CardStatusRowView. Hosted across the full 42..646 content band so the control's
+			     internal centering lands whatever combination is visible on the band's centre
+			     (x=344) — the old fixed Canvas coordinates here (transport icon at 294, battery
+			     at 332, percentage at 352) were tuned for the widest combination and left any
+			     shorter one sitting left of centre. The control carries the connection tooltip
+			     itself, which retires the transparent hover-rectangle workaround that used to
+			     cover these icons. Top 268: the row's 16px glyphs sit flush at the panel top,
+			     so this keeps them on the old Top 268 line (battery-Full's 0,4,0,0 margin
+			     reproduces the old 272, NO CONNECTION the old 268). -->
+			<views:CardStatusRowView Canvas.Left="42" Canvas.Top="268" Width="604"/>
+
+			<Ellipse Canvas.Left="667.334" Canvas.Top="16" Width="5.333" Height="5.333" Fill="#6357FF"/>
+			<Ellipse Canvas.Left="667.334" Canvas.Top="25.333" Width="5.333" Height="5.333" Fill="#6357FF"/>
+			<Ellipse Canvas.Left="667.334" Canvas.Top="34.667" Width="5.333" Height="5.333" Fill="#6357FF"/>
+		</Canvas>
+
+		<!-- MinWidth, never a fixed Width: the menu rows carry localized text, so the overlay
+			 takes its width from the widest row ("Змінити профіль" outgrew the en-sized 204)
+			 and 204 only floors it to the design size. -->
+		<Grid x:Name="DotsOverlay"
+			  Classes="dotsOverlay"
+			  MinWidth="204"
+			  HorizontalAlignment="Right"
+			  VerticalAlignment="Top"
+			  Margin="0,60,20,0"
+			  IsVisible="False">
+			<Grid.Effect>
+				<DropShadowEffect BlurRadius="40" Color="#6357FF" Opacity="0.3"/>
+			</Grid.Effect>
+
+			<!-- Background shape (height-adaptive via styles): 16px chamfer columns and a
+				 stretching middle, so the shape follows the natural width. -->
+			<Grid Classes="dotsOverlay" ColumnDefinitions="16,*,16">
+				<Rectangle Classes="dotsOverlaySide" VerticalAlignment="Top" Fill="Black"/>
+				<Path Classes="dotsOverlayCorner" Fill="Black"/>
+				<Rectangle Grid.Column="1" Classes="dotsOverlay" Fill="Black"/>
+				<Path Grid.Column="2" Fill="Black" Data="M0 0 L16 16 L0 16 Z"/>
+				<Rectangle Grid.Column="2" Classes="dotsOverlaySide" VerticalAlignment="Top" Margin="0,16,0,0" Fill="Black"/>
+			</Grid>
+
+			<!-- Content -->
+			<StackPanel Margin="22,8,24,0" Spacing="0" VerticalAlignment="Top">
+
+				<Button Classes="menuButton" Background="Transparent" BorderThickness="0"
+						Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Left" Command="{Binding SwitchProfileCommand}"
+						IsVisible="{Binding Connected}">
+					<StackPanel Orientation="Horizontal" Spacing="10">
+						<Viewbox Width="22" Height="16">
+							<Canvas Width="22" Height="16">
+								<Path Fill="#BEBCEA" Opacity="0.7">
+									<Path.RenderTransform><TranslateTransform X="-65" Y="-60"/></Path.RenderTransform>
+									<Path.Data>M68.7258 76C67.7258 76 66.8716 75.6417 66.1633 74.925C65.4549 74.2083 65.0841 73.3417 65.0508 72.325C65.0508 72.175 65.0591 72.025 65.0758 71.875C65.0924 71.725 65.1174 71.575 65.1508 71.425L67.2508 63.025C67.4841 62.125 67.9591 61.3958 68.6758 60.8375C69.3924 60.2792 70.2091 60 71.1258 60H80.8758C81.7924 60 82.6091 60.2792 83.3258 60.8375C84.0424 61.3958 84.5175 62.125 84.7508 63.025L86.8508 71.425C86.8841 71.575 86.9133 71.7292 86.9383 71.8875C86.9633 72.0458 86.9758 72.2 86.9758 72.35C86.9758 73.3667 86.6133 74.2292 85.8883 74.9375C85.1633 75.6458 84.2924 76 83.2758 76C82.5758 76 81.9258 75.8167 81.3258 75.45C80.7258 75.0833 80.2758 74.5833 79.9758 73.95L79.2758 72.5C79.1924 72.3333 79.0674 72.2083 78.9008 72.125C78.7341 72.0417 78.5591 72 78.3758 72H73.6258C73.4424 72 73.2674 72.0417 73.1008 72.125C72.9341 72.2083 72.8091 72.3333 72.7258 72.5L72.0258 73.95C71.7258 74.5833 71.2758 75.0833 70.6758 75.45C70.0758 75.8167 69.4258 76 68.7258 76ZM68.8008 74C69.1174 74 69.4049 73.9167 69.6633 73.75C69.9216 73.5833 70.1174 73.3583 70.2508 73.075L70.9508 71.65C71.2008 71.1333 71.5674 70.7292 72.0508 70.4375C72.5341 70.1458 73.0591 70 73.6258 70H78.3758C78.9424 70 79.4674 70.15 79.9508 70.45C80.4341 70.75 80.8091 71.15 81.0758 71.65L81.7758 73.075C81.9091 73.3583 82.1049 73.5833 82.3633 73.75C82.6216 73.9167 82.9091 74 83.2258 74C83.6924 74 84.0924 73.8458 84.4258 73.5375C84.7591 73.2292 84.9341 72.8417 84.9508 72.375C84.9508 72.3917 84.9341 72.2333 84.9008 71.9L82.8008 63.525C82.6841 63.075 82.4508 62.7083 82.1008 62.425C81.7508 62.1417 81.3424 62 80.8758 62H71.1258C70.6591 62 70.2466 62.1417 69.8883 62.425C69.5299 62.7083 69.3008 63.075 69.2008 63.525L67.1008 71.9C67.0674 72 67.0508 72.15 67.0508 72.35C67.0508 72.8167 67.2216 73.2083 67.5633 73.525C67.9049 73.8417 68.3174 74 68.8008 74ZM78.2133 66.7125C78.4049 66.5208 78.5008 66.2833 78.5008 66C78.5008 65.7167 78.4049 65.4792 78.2133 65.2875C78.0216 65.0958 77.7841 65 77.5008 65C77.2174 65 76.9799 65.0958 76.7883 65.2875C76.5966 65.4792 76.5008 65.7167 76.5008 66C76.5008 66.2833 76.5966 66.5208 76.7883 66.7125C76.9799 66.9042 77.2174 67 77.5008 67C77.7841 67 78.0216 66.9042 78.2133 66.7125ZM80.2133 64.7125C80.4049 64.5208 80.5008 64.2833 80.5008 64C80.5008 63.7167 80.4049 63.4792 80.2133 63.2875C80.0216 63.0958 79.7841 63 79.5008 63C79.2174 63 78.9799 63.0958 78.7883 63.2875C78.5966 63.4792 78.5008 63.7167 78.5008 64C78.5008 64.2833 78.5966 64.5208 78.7883 64.7125C78.9799 64.9042 79.2174 65 79.5008 65C79.7841 65 80.0216 64.9042 80.2133 64.7125ZM80.2133 68.7125C80.4049 68.5208 80.5008 68.2833 80.5008 68C80.5008 67.7167 80.4049 67.4792 80.2133 67.2875C80.0216 67.0958 79.7841 67 79.5008 67C79.2174 67 78.9799 67.0958 78.7883 67.2875C78.5966 67.4792 78.5008 67.7167 78.5008 68C78.5008 68.2833 78.5966 68.5208 78.7883 68.7125C78.9799 68.9042 79.2174 69 79.5008 69C79.7841 69 80.0216 68.9042 80.2133 68.7125ZM82.2133 66.7125C82.4049 66.5208 82.5008 66.2833 82.5008 66C82.5008 65.7167 82.4049 65.4792 82.2133 65.2875C82.0216 65.0958 81.7841 65 81.5008 65C81.2174 65 80.9799 65.0958 80.7883 65.2875C80.5966 65.4792 80.5008 65.7167 80.5008 66C80.5008 66.2833 80.5966 66.5208 80.7883 66.7125C80.9799 66.9042 81.2174 67 81.5008 67C81.7841 67 82.0216 66.9042 82.2133 66.7125ZM73.0383 68.2875C73.1799 68.1458 73.2508 67.9667 73.2508 67.75V66.75H74.2508C74.4674 66.75 74.6466 66.6792 74.7883 66.5375C74.9299 66.3958 75.0008 66.2167 75.0008 66C75.0008 65.7833 74.9299 65.6042 74.7883 65.4625C74.6466 65.3208 74.4674 65.25 74.2508 65.25H73.2508V64.25C73.2508 64.0333 73.1799 63.8542 73.0383 63.7125C72.8966 63.5708 72.7174 63.5 72.5008 63.5C72.2841 63.5 72.1049 63.5708 71.9633 63.7125C71.8216 63.8542 71.7508 64.0333 71.7508 64.25V65.25H70.7508C70.5341 65.25 70.3549 65.3208 70.2133 65.4625C70.0716 65.6042 70.0008 65.7833 70.0008 66C70.0008 66.2167 70.0716 66.3958 70.2133 66.5375C70.3549 66.6792 70.5341 66.75 70.7508 66.75H71.7508V67.75C71.7508 67.9667 71.8216 68.1458 71.9633 68.2875C72.1049 68.4292 72.2841 68.5 72.5008 68.5C72.7174 68.5 72.8966 68.4292 73.0383 68.2875Z</Path.Data>
+								</Path>
+							</Canvas>
+						</Viewbox>
+						<TextBlock Text="{DynamicResource HomeView_CardMenu_SwitchProfile}" Foreground="White" FontSize="16" FontFamily="{DynamicResource BaseAppFont}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Button>
+
+				<Button Classes="menuButton" Background="Transparent" BorderThickness="0"
+						Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Left" Command="{Binding OpenSettingsCommand}"
+						IsVisible="{Binding Connected}">
+					<StackPanel Orientation="Horizontal" Spacing="10">
+						<Viewbox Width="22" Height="20">
+							<Canvas Width="22" Height="20">
+								<Path Fill="#BEBCEA" Opacity="0.7">
+									<Path.RenderTransform><TranslateTransform X="-65" Y="-98"/></Path.RenderTransform>
+									<Path.Data>M73.2492 118L72.8492 114.8C72.6326 114.717 72.4284 114.617 72.2367 114.5C72.0451 114.383 71.8576 114.258 71.6742 114.125L68.6992 115.375L65.9492 110.625L68.5242 108.675C68.5076 108.558 68.4992 108.446 68.4992 108.338V107.663C68.4992 107.554 68.5076 107.442 68.5242 107.325L65.9492 105.375L68.6992 100.625L71.6742 101.875C71.8576 101.742 72.0492 101.617 72.2492 101.5C72.4492 101.383 72.6492 101.283 72.8492 101.2L73.2492 98H78.7492L79.1492 101.2C79.3659 101.283 79.5701 101.383 79.7617 101.5C79.9534 101.617 80.1409 101.742 80.3242 101.875L83.2992 100.625L86.0492 105.375L83.4742 107.325C83.4909 107.442 83.4992 107.554 83.4992 107.663V108.338C83.4992 108.446 83.4826 108.558 83.4492 108.675L86.0242 110.625L83.2742 115.375L80.3242 114.125C80.1409 114.258 79.9492 114.383 79.7492 114.5C79.5492 114.617 79.3492 114.717 79.1492 114.8L78.7492 118H73.2492ZM74.9992 116H76.9742L77.3242 113.35C77.8409 113.217 78.3201 113.021 78.7617 112.762C79.2034 112.504 79.6076 112.192 79.9742 111.825L82.4492 112.85L83.4242 111.15L81.2742 109.525C81.3576 109.292 81.4159 109.046 81.4492 108.788C81.4826 108.529 81.4992 108.267 81.4992 108C81.4992 107.733 81.4826 107.471 81.4492 107.213C81.4159 106.954 81.3576 106.708 81.2742 106.475L83.4242 104.85L82.4492 103.15L79.9742 104.2C79.6076 103.817 79.2034 103.496 78.7617 103.238C78.3201 102.979 77.8409 102.783 77.3242 102.65L76.9992 100H75.0242L74.6742 102.65C74.1576 102.783 73.6784 102.979 73.2367 103.238C72.7951 103.496 72.3909 103.808 72.0242 104.175L69.5492 103.15L68.5742 104.85L70.7242 106.45C70.6409 106.7 70.5826 106.95 70.5492 107.2C70.5159 107.45 70.4992 107.717 70.4992 108C70.4992 108.267 70.5159 108.525 70.5492 108.775C70.5826 109.025 70.6409 109.275 70.7242 109.525L68.5742 111.15L69.5492 112.85L72.0242 111.8C72.3909 112.183 72.7951 112.504 73.2367 112.762C73.6784 113.021 74.1576 113.217 74.6742 113.35L74.9992 116ZM76.0492 111.5C77.0159 111.5 77.8409 111.158 78.5242 110.475C79.2076 109.792 79.5492 108.967 79.5492 108C79.5492 107.033 79.2076 106.208 78.5242 105.525C77.8409 104.842 77.0159 104.5 76.0492 104.5C75.0659 104.5 74.2367 104.842 73.5617 105.525C72.8867 106.208 72.5492 107.033 72.5492 108C72.5492 108.967 72.8867 109.792 73.5617 110.475C74.2367 111.158 75.0659 111.5 76.0492 111.5Z</Path.Data>
+								</Path>
+							</Canvas>
+						</Viewbox>
+						<TextBlock Text="{DynamicResource HomeView_CardMenu_OpenSettings}" Foreground="White" FontSize="16" FontFamily="{DynamicResource BaseAppFont}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Button>
+
+				<Button Classes="deleteButton" Background="Transparent" BorderThickness="0"
+						Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+						HorizontalContentAlignment="Left" Command="{Binding DeleteCommand}">
+					<StackPanel Orientation="Horizontal" Spacing="10">
+						<Viewbox Width="22" Height="18">
+							<Canvas Width="16" Height="18">
+								<Path Fill="#FF383C">
+									<Path.RenderTransform><TranslateTransform X="-68" Y="-139"/></Path.RenderTransform>
+									<Path.Data>M71 157C70.45 157 69.9792 156.804 69.5875 156.413C69.1958 156.021 69 155.55 69 155V142H68V140H73V139H79V140H84V142H83V155C83 155.55 82.8042 156.021 82.4125 156.413C82.0208 156.804 81.55 157 81 157H71ZM81 142H71V155H81V142ZM73 153H75V144H73V153ZM77 153H79V144H77V153Z</Path.Data>
+								</Path>
+							</Canvas>
+						</Viewbox>
+						<TextBlock Text="{DynamicResource HomeView_CardMenu_Delete}" Foreground="#FF383C" FontSize="16" FontFamily="{DynamicResource BaseAppFont}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+					</StackPanel>
+				</Button>
+
+			</StackPanel>
+		</Grid>
+
+		<Button
+		x:Name="DotsButton"
+		Width="36"
+		Height="86"
+		Background="Transparent"
+		BorderThickness="0"
+		VerticalAlignment="Top"
+		HorizontalAlignment="Right"
+		Padding="0"
+		Classes="dotsMenuButton">
+			<Button.Styles>
+				<Style Selector="Button.dotsMenuButton">
+					<Setter Property="Template">
+						<ControlTemplate>
+							<Canvas Width="36" Height="86">
+								<Path x:Name="BgPath"
+									  Width="36"
+									  Height="86"
+									  Data="M0 0 L0 50 L36 86 L36 0 Z"
+									  Fill="Transparent"/>
+								<Ellipse Canvas.Left="15.334" Canvas.Top="16"
+										 Width="5.333" Height="5.333" Fill="Transparent"/>
+								<Ellipse Canvas.Left="15.334" Canvas.Top="25.333"
+										 Width="5.333" Height="5.333" Fill="Transparent"/>
+								<Ellipse Canvas.Left="15.334" Canvas.Top="34.667"
+										 Width="5.333" Height="5.333" Fill="Transparent"/>
+							</Canvas>
+						</ControlTemplate>
+					</Setter>
+				</Style>
+
+				<Style Selector="Button.dotsMenuButton:pointerover /template/ Path#BgPath">
+					<Setter Property="Fill" Value="#786DFF"/>
+				</Style>
+
+				<Style Selector="Button.dotsMenuButton:pointerover /template/ Ellipse">
+					<Setter Property="Fill" Value="White"/>
+				</Style>
+				<Style Selector="Button.dotsMenuButton:pressed">
+					<Setter Property="RenderTransform" Value="none"/>
+				</Style>
+				<Style Selector="Button.dotsMenuButton.open /template/ Path#BgPath">
+					<Setter Property="Fill" Value="#786DFF"/>
+				</Style>
+				<Style Selector="Button.dotsMenuButton.open /template/ Ellipse">
+					<Setter Property="Fill" Value="White"/>
+				</Style>
+			</Button.Styles>
+		</Button>
+	</Grid>
+</UserControl>

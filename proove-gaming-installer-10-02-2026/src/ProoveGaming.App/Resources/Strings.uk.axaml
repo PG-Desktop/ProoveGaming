@@ -1,0 +1,607 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <sys:String x:Key="Window_Title">Proove Gaming</sys:String>
+    <sys:String x:Key="Header_Title">Ласкаво просимо до застосунку Proove Gaming</sys:String>
+
+    <sys:String x:Key="WelcomeView_Title">PROOVE GAMING</sys:String>
+    <sys:String x:Key="WelcomeView_Subtitle">Увійдіть або зареєструйтеся</sys:String>
+    <sys:String x:Key="WelcomeView_SignIn">УВІЙТИ</sys:String>
+    <sys:String x:Key="WelcomeView_SignUp">ЗАРЕЄСТРУВАТИСЯ</sys:String>
+    <sys:String x:Key="WelcomeView_EmailLabel">Електронна пошта</sys:String>
+    <sys:String x:Key="WelcomeView_PasswordLabel">Пароль</sys:String>
+    <sys:String x:Key="WelcomeView_EmailPlaceholder">Введіть електронну пошту</sys:String>
+    <sys:String x:Key="WelcomeView_PasswordPlaceholder">Введіть пароль</sys:String>
+    <sys:String x:Key="WelcomeView_ForgotPassword">Забули пароль?</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Title">СКИДАННЯ ПАРОЛЯ</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Description">Введіть електронну адресу, з якою ви реєструвались. Ми надішлемо посилання для скидання пароля.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Submit">НАДІСЛАТИ ПОСИЛАННЯ</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_BackToSignIn">ПОВЕРНУТИСЬ ДО ВХОДУ</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Error_NotFound">Обліковий запис із такою електронною адресою не знайдено.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Error_Mail">Не вдалося надіслати листа. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Error_Generic">Щось пішло не так. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Sent_Title">Перевірте пошту</sys:String>
+    <sys:String x:Key="WelcomeView_Forgot_Sent_Description">Ми надіслали посилання для скидання пароля на вашу пошту. Відкрийте пошту й перейдіть за посиланням, щоб задати новий пароль. Посилання діє 15 хвилин.</sys:String>
+    <sys:String x:Key="WelcomeView_Notification_ResetLinkSent">Посилання для скидання пароля успішно надіслано</sys:String>
+    <sys:String x:Key="WelcomeView_NoAccount">Немає облікового запису?</sys:String>
+    <sys:String x:Key="WelcomeView_HasAccount">Вже є обліковий запис?</sys:String>
+    <sys:String x:Key="WelcomeView_FirstNamePlaceholder">Ім'я</sys:String>
+    <sys:String x:Key="WelcomeView_LastNamePlaceholder">Прізвище</sys:String>
+    <sys:String x:Key="WelcomeView_TermsPrefix">Реєструючись, ви погоджуєтеся з </sys:String>
+    <sys:String x:Key="WelcomeView_TermsLink">Умовами використання</sys:String>
+    <sys:String x:Key="WelcomeView_TermsSuffix"> та </sys:String>
+    <sys:String x:Key="WelcomeView_PrivacyLink">Політикою конфіденційності</sys:String>
+    <sys:String x:Key="WelcomeView_AgreeTerms">Будь ласка, прийміть умови для продовження.</sys:String>
+    <sys:String x:Key="WelcomeView_PasswordHint">Мінімум 8 символів: велика літера та цифра. Лише латиниця, без пробілів.</sys:String>
+    <sys:String x:Key="WelcomeView_Attempts_Left">Невірна електронна пошта або пароль. Залишилось спроб: {0}.</sys:String>
+    <sys:String x:Key="WelcomeView_Attempts_Locked">Забагато невірних спроб. Спробуйте знову через {0}:{1}</sys:String>
+    <sys:String x:Key="WelcomeView_Error_EmailAlreadyExists">Ця електронна адреса вже зареєстрована. Спробуйте увійти.</sys:String>
+
+    <!-- Spec error_code → user message -->
+    <sys:String x:Key="Auth_Error_EmailRequired">Введіть електронну адресу.</sys:String>
+    <sys:String x:Key="Auth_Error_InvalidEmail">Введіть коректну електронну адресу.</sys:String>
+    <sys:String x:Key="Auth_Error_EmailAlreadyExists">Ця електронна адреса вже зареєстрована. Спробуйте увійти.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordRequired">Введіть пароль.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordTooShort">Пароль має містити щонайменше 8 символів.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordNoUppercase">Пароль має містити велику літеру.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordNoNumber">Пароль має містити цифру.</sys:String>
+    <sys:String x:Key="Auth_Error_PasswordHasSpaces">Пароль не може містити пробіли.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameRequired">Введіть нікнейм.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameTooShort">Нікнейм має містити щонайменше 3 символи.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameTooLong">Нікнейм може містити максимум 20 символів.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameHasSpaces">Нікнейм не може містити пробіли.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameInvalidCharacters">Дозволені лише латинські літери, цифри та підкреслення.</sys:String>
+    <sys:String x:Key="Auth_Error_NicknameAlreadyExists">Цей нікнейм вже зайнятий.</sys:String>
+    <sys:String x:Key="Auth_Error_TermsRequired">Прийміть умови, щоб продовжити.</sys:String>
+
+    <sys:String x:Key="AgreementTermsView_Title_PrivacyPolicy">Політика конфіденційності</sys:String>
+    <sys:String x:Key="AgreementTermsView_Title_TermsOfService">Умови надання послуг</sys:String>
+    <sys:String x:Key="AgreementTermsView_Title_LicenseAgreement">Ліцензійна угода</sys:String>
+
+    <sys:String x:Key="ChooseNicknameView_Title">Введіть нікнейм</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Subtitle">Створіть власний нікнейм або оберіть один із рекомендованих Proove Gaming</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Placeholder">Нікнейм</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Or">Рекомендовані нікнейми</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Error_Nickname">Введіть нікнейм.</sys:String>
+    <sys:String x:Key="ChooseNicknameView_Success_Nickname">Ви обрали чудовий нікнейм!</sys:String>
+
+    <sys:String x:Key="Button_Cancel">СКАСУВАТИ</sys:String>
+    <sys:String x:Key="Button_Confirm">ПІДТВЕРДИТИ</sys:String>
+
+    <sys:String x:Key="HomeView_LogoutConfirm_Title">Вийти?</sys:String>
+    <sys:String x:Key="HomeView_LogoutConfirm_Body">Ви вийдете з облікового запису на цьому пристрої.
+Ви зможете увійти знову в будь-який час.</sys:String>
+    <sys:String x:Key="HomeView_LogoutConfirm_Confirm">ВИЙТИ</sys:String>
+
+    <sys:String x:Key="HomeView_Tab_Devices">ПРИСТРОЇ</sys:String>
+    <sys:String x:Key="HomeView_Tab_Games">ІГРИ</sys:String>
+    <sys:String x:Key="HomeView_Tab_Statistics">СТАТИСТИКА</sys:String>
+    <sys:String x:Key="HomeView_ProfileMenu_Profile">Профіль</sys:String>
+    <sys:String x:Key="HomeView_ProfileMenu_LogOut">Вийти</sys:String>
+    <sys:String x:Key="HomeView_Menu_ContactUs">Зв'язатися з нами</sys:String>
+    <sys:String x:Key="HomeView_Menu_Information">Інформація</sys:String>
+    <sys:String x:Key="HomeView_GuestMenu_Title">Гостьовий режим</sys:String>
+    <sys:String x:Key="HomeView_GuestMenu_SignUp">Зареєструватися</sys:String>
+    <sys:String x:Key="HomeView_Greeting_Default">Привіт, гостю</sys:String>
+    <sys:String x:Key="HomeView_Greeting_Format">Привіт, {0}</sys:String>
+    <sys:String x:Key="HomeView_AddDeviceCard_Title">ПІДКЛЮЧІТЬ ПЕРШИЙ ДЕВАЙС</sys:String>
+    <sys:String x:Key="HomeView_CardMenu_SwitchProfile">Змінити профіль</sys:String>
+    <sys:String x:Key="HomeView_CardMenu_OpenSettings">Налаштування</sys:String>
+    <sys:String x:Key="HomeView_CardMenu_Delete">Видалити</sys:String>
+    <sys:String x:Key="DeviceType_WiredMouse">Дротова миша</sys:String>
+    <sys:String x:Key="DeviceType_WirelessMouse">Бездротова миша</sys:String>
+    <sys:String x:Key="DeviceType_WiredKeyboard">Дротова клавіатура</sys:String>
+    <sys:String x:Key="DeviceType_WirelessKeyboard">Бездротова клавіатура</sys:String>
+    <sys:String x:Key="DeviceType_WirelessHeadset">Бездротова гарнітура</sys:String>
+
+    <sys:String x:Key="SettingsView_Title">Налаштування</sys:String>
+    <sys:String x:Key="SettingsView_LanguageLabel">Мова застосунку</sys:String>
+
+    <sys:String x:Key="InformationView_Title">Інформація</sys:String>
+    <sys:String x:Key="InformationView_Tab_PrivacyPolicy">ПОЛІТИКА КОНФІДЕНЦІЙНОСТІ</sys:String>
+    <sys:String x:Key="InformationView_Tab_TermsOfService">УМОВИ&#x0A;НАДАННЯ ПОСЛУГ</sys:String>
+    <sys:String x:Key="InformationView_Tab_LicenseAgreement">ЛІЦЕНЗІЙНА УГОДА</sys:String>
+
+    <sys:String x:Key="ProfileView_Title">Профіль</sys:String>
+    <sys:String x:Key="ProfileView_Joined_Format">Приєднався: {0}</sys:String>
+    <!-- Explicit two-line break: on one line the label fills the whole 120px tab width
+         edge-to-edge (PG QA). -->
+    <sys:String x:Key="ProfileView_Nav_Account">ОБЛІКОВИЙ&#x0A;ЗАПИС</sys:String>
+    <sys:String x:Key="ProfileView_Nav_Security">БЕЗПЕКА</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_FirstName">Ім'я</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_LastName">Прізвище</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_DateOfBirth">Дата народження</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_Phone">Номер телефону</sys:String>
+    <sys:String x:Key="ProfileView_Placeholder_Country">Країна</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Title">Нікнейм</sys:String>
+    <sys:String x:Key="ProfileView_Security_ChangePassword">Змінити пароль</sys:String>
+    <sys:String x:Key="ProfileView_Security_DeleteAccount">ВИДАЛИТИ АКАУНТ</sys:String>
+    <sys:String x:Key="ProfileView_ChangePassword_Title">Зміна пароля</sys:String>
+    <sys:String x:Key="ProfileView_ChangePassword_Subtitle">Ми надішлемо на пошту посилання для встановлення нового пароля. Підтвердьте адресу нижче, і ми його відправимо.</sys:String>
+    <sys:String x:Key="ProfileView_ChangePassword_Send">НАДІСЛАТИ ПОСИЛАННЯ</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Title">Видалення акаунту</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Subtitle">Цю дію неможливо скасувати — профіль, аватар і всі дані буде видалено безповоротно. Введіть пароль для підтвердження.</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_PasswordPlaceholder">Поточний пароль</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Confirm">ВИДАЛИТИ</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Error_InvalidPassword">Невірний пароль.</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Error_PasswordRequired">Введіть поточний пароль.</sys:String>
+    <sys:String x:Key="ProfileView_DeleteAccount_Error_Generic">Не вдалося видалити акаунт. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Subtitle">Створіть власний нікнейм або оберіть один із рекомендованих Proove Gaming</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Placeholder">Нікнейм</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Recommended">Рекомендовані нікнейми</sys:String>
+    <sys:String x:Key="ProfileView_EditNickname_Error_Generic">Не вдалося оновити нікнейм. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_NicknameUpdated">Нікнейм успішно оновлено</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarUpdated">Аватар успішно оновлено</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarTooLarge">Зображення завелике. Максимальний розмір — 2 МБ.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarLoadFailed">Не вдалося завантажити вибране зображення.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarUploadFailed">Не вдалося завантажити аватар. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarInvalidType">Формат зображення не підтримується.</sys:String>
+    <sys:String x:Key="ProfileView_FilePicker_Title">Виберіть зображення аватара</sys:String>
+    <sys:String x:Key="ProfileView_FilePicker_Images">Зображення</sys:String>
+    <sys:String x:Key="ProfileView_EditEmail_Title">Змінити пошту</sys:String>
+    <sys:String x:Key="ProfileView_EditEmail_Subtitle">Ваша пошта використовується для входу.
+Введіть нову адресу, щоб оновити обліковий запис.</sys:String>
+    <sys:String x:Key="ProfileView_EditEmail_Placeholder">Адреса електронної пошти</sys:String>
+    <sys:String x:Key="ProfileView_Notification_EmailUpdated">Пошту успішно оновлено</sys:String>
+
+    <!-- Date picker (shared DatePickerView control). Values are stored already uppercased —
+         the control renders them verbatim so each language keeps control of its own casing.
+         Full month names are nominative: the popup header shows the month standalone. -->
+    <sys:String x:Key="DatePicker_DayShort_Su">НД</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Mo">ПН</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Tu">ВТ</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_We">СР</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Th">ЧТ</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Fr">ПТ</sys:String>
+    <sys:String x:Key="DatePicker_DayShort_Sa">СБ</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_1">СІЧ</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_2">ЛЮТ</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_3">БЕР</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_4">КВІ</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_5">ТРА</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_6">ЧЕР</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_7">ЛИП</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_8">СЕР</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_9">ВЕР</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_10">ЖОВ</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_11">ЛИС</sys:String>
+    <sys:String x:Key="DatePicker_MonthShort_12">ГРУ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_1">СІЧЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_2">ЛЮТИЙ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_3">БЕРЕЗЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_4">КВІТЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_5">ТРАВЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_6">ЧЕРВЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_7">ЛИПЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_8">СЕРПЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_9">ВЕРЕСЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_10">ЖОВТЕНЬ</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_11">ЛИСТОПАД</sys:String>
+    <sys:String x:Key="DatePicker_MonthFull_12">ГРУДЕНЬ</sys:String>
+
+    <sys:String x:Key="KeyAssignments_Category_Macros">Макроси</sys:String>
+    <!-- Device Details nav labels -->
+    <sys:String x:Key="DeviceDetails_Nav_Presets">ПРЕСЕТИ</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_RgbLighting">RGB ПІДСВІТКА</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Buttons">КНОПКИ</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Macros">МАКРОСИ</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Dpi">DPI</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Settings">НАЛАШТУВАННЯ</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Firmware">ПРОШИВКА</sys:String>
+    <sys:String x:Key="DeviceDetails_Firmware_CurrentVersionFormat">Поточна версія: {0}</sys:String>
+    <sys:String x:Key="DeviceDetails_Firmware_UpToDate">Прошивка пристрою оновлена до останньої стабільної версії.</sys:String>
+    <sys:String x:Key="DeviceDetails_Firmware_CheckForUpdates">ПЕРЕВІРИТИ ОНОВЛЕННЯ</sys:String>
+
+    <!-- Device Details section headers -->
+    <sys:String x:Key="DeviceDetails_Section_ButtonSettings">НАЛАШТУВАННЯ КНОПОК</sys:String>
+    <sys:String x:Key="DeviceDetails_Section_KeyAssignment">ПРИЗНАЧЕННЯ КЛАВІШ</sys:String>
+    <sys:String x:Key="DeviceDetails_Header_SelectMouseButton">Оберіть кнопку миші</sys:String>
+    <sys:String x:Key="DeviceDetails_Header_KeyAssignment">Призначення клавіші</sys:String>
+    <sys:String x:Key="DeviceDetails_KeyAssignment_ReadFailed">Не вдалося зчитати поточну розкладку з клавіатури. Нижче показано заводські значення, які можуть не збігатися з клавіатурою. Перепідключіть її та відкрийте цю сторінку знову.</sys:String>
+    <sys:String x:Key="DeviceDetails_Macros_UploadFailed">Не вдалося записати бібліотеку макросів у клавіатуру, тому клавішу не прив'язано. Перепідключіть клавіатуру і спробуйте ще раз; якщо помилка повторюється — прошивка цієї клавіатури може не зберігати макроси.</sys:String>
+    <sys:String x:Key="DeviceDetails_BluetoothMode_Title">РЕЖИМ BLUETOOTH</sys:String>
+    <sys:String x:Key="DeviceDetails_BluetoothMode_Message">Налаштування пристрою недоступні під час підключення через Bluetooth. Підключіть пристрій через бездротовий адаптер або USB-кабель, щоб внести зміни.</sys:String>
+
+    <!-- RGB Lighting section -->
+    <sys:String x:Key="DeviceDetails_Rgb_LightingEffect">Ефект підсвітки</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_RandomLighting">ВИПАДКОВА ПІДСВІТКА</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_Static">Статичний</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_Breathing">Дихання</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_RainbowBreathing">Веселкове дихання</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_ColorCycle">Зміна кольору</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_NeonFlowing">Неон</sys:String>
+    <sys:String x:Key="DeviceDetails_Rgb_Effect_Wave">Хвиля</sys:String>
+
+    <!-- RGB Color Picker -->
+    <sys:String x:Key="DeviceDetails_Picker_Color">Колір</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Gradient">Градієнт</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_PopularColors">Популярні кольори</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Brightness">Яскравість</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Speed">Швидкість</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Cancel">СКАСУВАТИ</sys:String>
+    <sys:String x:Key="DeviceDetails_Picker_Apply">ЗАСТОСУВАТИ</sys:String>
+
+    <!-- Buttons section -->
+    <sys:String x:Key="DeviceDetails_Buttons_SearchPlaceholder">Пошук</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Default">За замовчуванням</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Reset">СКИНУТИ</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_Standard">Стандартні</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_Recommended">Рекомендовані</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_Macroses">Макроси</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Group_System">Система</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_NotSupported">Перепризначення кнопок недоступне для цього пристрою.</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_LeftClick">Лівий клік</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_RightClick">Правий клік</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_WheelClick">Клік колеса</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Forward">Вперед</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_MouseBack">Назад</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_MyPc">Мій ПК</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Desktop">Робочий стіл</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Search">Пошук</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Player">Програвач</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_PlayPause">Грати/Пауза</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Next">Наступний</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Back">Попередній</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Stop">Стоп</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Mute">Без звуку</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_VolumeUp">Гучність +</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_VolumeDown">Гучність -</sys:String>
+    <sys:String x:Key="DeviceDetails_Buttons_Action_Home">Головна</sys:String>
+
+    <!-- Hotspot labels and descriptions -->
+    <sys:String x:Key="DeviceDetails_Hotspot_LeftClick_Label">Лівий клік</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_LeftClick_Desc">Основна кнопка</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_RightClick_Label">Правий клік</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_RightClick_Desc">Додаткова кнопка</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_ScrollClick_Label">Клік колеса</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_ScrollClick_Desc">Середня кнопка</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideForward_Label">Бічна вперед</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideForward_Desc">Бічна кнопка вперед</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideBack_Label">Бічна назад</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_SideBack_Desc">Бічна кнопка назад</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_PollingSwitch_Label">Polling Rate</sys:String>
+    <sys:String x:Key="DeviceDetails_Hotspot_PollingSwitch_Desc">Кнопка циклу polling rate</sys:String>
+
+    <!-- Device details — preset buttons -->
+    <sys:String x:Key="DeviceDetails_SavePreset">ЗБЕРЕГТИ ПРЕСЕТ</sys:String>
+    <sys:String x:Key="DeviceDetails_NewPreset">НОВИЙ ПРЕСЕТ</sys:String>
+
+    <!-- Діалог створення пресету -->
+    <sys:String x:Key="NewPreset_Title">Новий пресет</sys:String>
+    <sys:String x:Key="NewPreset_Subtitle">Поточні налаштування пристрою будуть збережені в цей пресет.</sys:String>
+    <sys:String x:Key="NewPreset_NamePlaceholder">Назва пресету</sys:String>
+    <sys:String x:Key="NewPreset_DescriptionPlaceholder">Опис</sys:String>
+    <sys:String x:Key="NewPreset_DeviceSelectorLabel">Ігри та програми</sys:String>
+    <sys:String x:Key="NewPreset_DeviceSelectorHint">Оберіть гру або програму, яка найкраще підходить для цього пресету</sys:String>
+    <sys:String x:Key="NewPreset_SetDefaultTitle">Встановити за замовчуванням</sys:String>
+    <sys:String x:Key="NewPreset_SetDefaultDescription">Цей пресет буде використовуватись, коли не активний жоден пресет для конкретної гри</sys:String>
+
+    <!-- Секція пресетів -->
+    <sys:String x:Key="PresetsDropdown_Caption">Поточний пресет</sys:String>
+    <sys:String x:Key="Presets_Header_TotalFormat">Всього: {0}</sys:String>
+    <sys:String x:Key="Presets_Header_ItemsLabel">ІГРИ</sys:String>
+    <sys:String x:Key="Presets_EmptyHint">Пресетів ще немає. Натисніть НОВИЙ ПРЕСЕТ, щоб зберегти поточні налаштування пристрою.</sys:String>
+    <sys:String x:Key="Presets_DefaultBadge">За замовчуванням</sys:String>
+    <sys:String x:Key="Presets_Item_App">Робочий стіл</sys:String>
+    <sys:String x:Key="Presets_Menu_Edit">Редагувати</sys:String>
+    <sys:String x:Key="Presets_Menu_Duplicate">Дублювати</sys:String>
+    <sys:String x:Key="Presets_Menu_Restore">Скинути</sys:String>
+    <sys:String x:Key="Presets_Menu_Delete">Видалити</sys:String>
+    <sys:String x:Key="NewPreset_Cancel">СКАСУВАТИ</sys:String>
+    <sys:String x:Key="NewPreset_Confirm">ПІДТВЕРДИТИ</sys:String>
+
+    <!-- Діалог редагування пресета використовує ті ж елементи, лише з цими рядками -->
+    <sys:String x:Key="EditPreset_Title">Редагувати пресет</sys:String>
+    <sys:String x:Key="EditPreset_Subtitle">Оновіть деталі пресета та призначення.</sys:String>
+    <sys:String x:Key="EditPreset_Save">ЗБЕРЕГТИ</sys:String>
+
+    <!-- Діалог дублювання пресета використовує ті ж елементи, лише з цими рядками -->
+    <sys:String x:Key="DuplicatePreset_Title">Дублювати пресет</sys:String>
+    <sys:String x:Key="DuplicatePreset_Subtitle">Буде створено новий пресет із налаштуваннями обраного пресета.</sys:String>
+    <sys:String x:Key="DuplicatePreset_Confirm">ДУБЛЮВАТИ</sys:String>
+    <sys:String x:Key="DuplicatePreset_NameFormat">{0} Копія</sys:String>
+
+    <!-- Діалог "Зберегти пресет" -->
+    <sys:String x:Key="SavePreset_Title">Зберегти пресет</sys:String>
+    <sys:String x:Key="SavePreset_Subtitle">Оберіть пресет, у який перезаписати поточні налаштування пристрою.</sys:String>
+    <sys:String x:Key="SavePreset_SearchPlaceholder">Пошук</sys:String>
+    <sys:String x:Key="SavePreset_Confirm">ЗБЕРЕГТИ</sys:String>
+
+    <!-- Підказка підключення на картці пристрою -->
+    <sys:String x:Key="Card_Connection_Cable">Підключено через кабель</sys:String>
+    <sys:String x:Key="Card_Connection_Dongle">Підключено через донгл</sys:String>
+    <sys:String x:Key="Card_Connection_Bluetooth">Підключено через Bluetooth</sys:String>
+    <sys:String x:Key="Card_Connection_None">Не підключено</sys:String>
+    <sys:String x:Key="Card_Connection_BatteryLevel">Рівень заряду {0}%</sys:String>
+
+    <!-- Статус відключеної картки (великими літерами за дизайном; піксельний шрифт не має
+         трансформації регістру, тому регістр у самому значенні). -->
+    <sys:String x:Key="Card_NoConnection">НЕ ПІДКЛЮЧЕНО</sys:String>
+
+    <!-- Діалог підтвердження скидання пресета -->
+    <sys:String x:Key="ResetPreset_Title">Скинути пресет?</sys:String>
+    <sys:String x:Key="ResetPreset_Body">Усі зміни, внесені до поточного пресета, буде скасовано.
+Відновити налаштування за замовчуванням?</sys:String>
+    <sys:String x:Key="ResetPreset_Confirm">СКИНУТИ</sys:String>
+
+    <!-- Діалог підтвердження видалення пресета -->
+    <!-- Delete Device confirmation dialog (home view card 3-dot menu -> Delete) -->
+    <sys:String x:Key="DeleteDevice_Title">ВИДАЛИТИ ПРИСТРІЙ</sys:String>
+    <sys:String x:Key="DeleteDevice_Body">Цей пристрій буде видалено зі списку. Ви зможете підключити його знову в будь-який час.</sys:String>
+    <sys:String x:Key="DeleteDevice_Confirm">ВИДАЛИТИ</sys:String>
+
+    <sys:String x:Key="DeletePreset_Title">Видалити пресет?</sys:String>
+    <sys:String x:Key="DeletePreset_Body">Цей пресет і всі його збережені налаштування буде видалено назавжди.
+Цю дію неможливо скасувати.</sys:String>
+    <sys:String x:Key="DeletePreset_Confirm">ВИДАЛИТИ</sys:String>
+    <sys:String x:Key="DeleteDpiPoint_Title">Видалити точку DPI?</sys:String>
+    <sys:String x:Key="DeleteDpiPoint_Body">Ви впевнені, що хочете видалити цю точку DPI? Цю дію не можна скасувати.</sys:String>
+    <sys:String x:Key="DeleteDpiPoint_Confirm">ВИДАЛИТИ</sys:String>
+
+    <!-- Діалог підтвердження незбережених змін (при виході з DeviceDetails з незбереженим пресетом) -->
+    <sys:String x:Key="UnsavedChanges_Title">Зберегти зміни поточного пресета?</sys:String>
+    <sys:String x:Key="UnsavedChanges_Body">Налаштування пристрою було змінено.
+Зберегти зміни перед виходом?</sys:String>
+    <sys:String x:Key="UnsavedChanges_Body_Switching">Налаштування пристрою було змінено.
+Зберегти зміни перед перемиканням пресета?</sys:String>
+    <sys:String x:Key="UnsavedChanges_Discard">НЕ ЗБЕРІГАТИ</sys:String>
+    <sys:String x:Key="UnsavedChanges_Save">ЗБЕРЕГТИ</sys:String>
+
+    <!-- Ім'я автоматично створеного пресета (створюється при підключенні пристрою, якщо список пресетів порожній). -->
+    <sys:String x:Key="Presets_DefaultName">За замовчуванням</sys:String>
+
+    <!-- DPI section -->
+    <sys:String x:Key="DeviceDetails_Dpi_Title">Налаштування DPI</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Recommendations">РЕКОМЕНДАЦІЇ</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_PollingRate">Частота опитування</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_PollingRate_Subtitle">Більші значення забезпечують плавніший рух курсора.</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_LiftOffDistance">Відстань відриву</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_LiftOffDistance_Subtitle">Регулює висоту, на якій зупиняється відстеження під час підйому миші.</sys:String>
+    <!-- No leading "+" — see the note in Strings.en.axaml. -->
+    <sys:String x:Key="DeviceDetails_Dpi_AddPoint">ДОДАТИ ТОЧКУ</sys:String>
+    <!-- Ordinals agree with "точка" (feminine), which is why these are written out rather than
+         composed from a number — see the note in Strings.en.axaml. -->
+    <sys:String x:Key="DeviceDetails_Dpi_Point_1">1-ша точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_2">2-га точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_3">3-тя точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_4">4-та точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_5">5-та точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_6">6-та точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_7">7-ма точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_Point_8">8-ма точка</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_PointFormat">Точка {0}</sys:String>
+    <sys:String x:Key="DeviceDetails_Dpi_StepFormat">Крок: {0} dpi</sys:String>
+
+    <sys:String x:Key="DeviceDetails_Audio_OutputVolume">Гучність виводу</sys:String>
+    <sys:String x:Key="DeviceDetails_Audio_OutputVolume_Subtitle">Встановлює рівень відтворення для цієї гарнітури.</sys:String>
+    <sys:String x:Key="DeviceDetails_Audio_MicrophoneVolume">Гучність мікрофона</sys:String>
+    <sys:String x:Key="DeviceDetails_Audio_MicrophoneVolume_Subtitle">Встановлює рівень запису мікрофона цієї гарнітури.</sys:String>
+
+    <sys:String x:Key="DeviceDetails_Settings_DefaultSettings">СТАНДАРТНІ НАЛАШТУВАННЯ</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ScrollOneScreen">Прокручувати один екран за раз</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ScrollLines">Рядки прокрутки</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ScrollLines_Subtitle">Прокручувати від 1 до 100 рядків за раз.</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_DoubleClickSpeed">Швидкість подвійного кліку</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_DoubleClickSpeed_Subtitle">Налаштуйте, наскільки швидко потрібно виконувати подвійний клік.</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_SleepTimer">Таймер сну</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_SleepTimer_Subtitle">Автоматично вимикає підсвічування після бездіяльності.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Loading">Читаємо налаштування сили натискання з клавіатури…</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_WriteFailed">Клавіатура не прийняла останню зміну — повзунки показують її фактичні значення. Спробуйте ще раз; якщо помилка повторюється, прошивка цієї клавіатури може не підтримувати налаштування сили натискання.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Press">Точка спрацювання</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Press_Subtitle">Глибина спрацювання. Менше = легший дотик.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Release">Точка відпускання</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Release_Subtitle">Глибина відпускання — більше значення = раніше.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_RapidTrigger">Rapid Trigger (RT)</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_RapidTrigger_Subtitle">Активація на мікрорухах — швидші повтори.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_QuickPress">Швидке натискання</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_QuickRelease">Швидке відпускання</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_ModeAllKeys">ВСІ КЛАВІШІ</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_ModePerKey">ОКРЕМІ КЛАВІШІ</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_AllKeysNote">Зміни застосовуються до всіх клавіш клавіатури.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_SelectKeysHint">Натисніть клавішу, щоб налаштувати її.</sys:String>
+    <sys:String x:Key="DeviceDetails_Actuation_Selected_Format">Вибрано: {0}</sys:String>
+    <sys:String x:Key="ExtendedKeys_Loading">Читаємо розширені клавіші з клавіатури…</sys:String>
+    <sys:String x:Key="ExtendedKeys_WriteFailed">Клавіатура не прийняла останню зміну розширених клавіш — список показує її фактичний стан. Спробуйте ще раз; якщо помилка повторюється, прошивка цієї клавіатури може не підтримувати розширені клавіші.</sys:String>
+    <sys:String x:Key="ExtendedKeys_AddHeading">Додати розширену клавішу</sys:String>
+    <sys:String x:Key="ExtendedKeys_ConfiguredHeading">Налаштовані розширені клавіші</sys:String>
+    <sys:String x:Key="ExtendedKeys_Empty">Розширених клавіш ще немає. Оберіть режим вище, щоб додати.</sys:String>
+    <sys:String x:Key="ExtendedKeys_StorageFull">Пам'ять розширених клавіш клавіатури заповнена. Видаліть запис, щоб додати новий.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_RapidSnap">Rapid Snap (RS)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_RapidSnap_Description">Коли дві клавіші натиснуто разом, спрацьовує глибше натиснута.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Socd">Instant Release (SOCD)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Socd_Description">Коли дві клавіші натиснуто разом, спрацьовує клавіша за налаштованим пріоритетом.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_ModTap">Mod-Tap (MT)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_ModTap_Description">Розрізняє короткий натиск і утримання однієї клавіші для різних дій.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Toggle">Toggle (TGL)</sys:String>
+    <sys:String x:Key="ExtendedKeys_Mode_Toggle_Description">Натисніть, щоб увімкнути або вимкнути постійне спрацювання; утримуйте для звичайної роботи клавіші.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_RapidSnap">RS</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_Socd">SOCD</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_ModTap">MT</sys:String>
+    <sys:String x:Key="ExtendedKeys_Badge_Toggle">TGL</sys:String>
+    <sys:String x:Key="ExtendedKeys_Key1">Клавіша 1</sys:String>
+    <sys:String x:Key="ExtendedKeys_Key2">Клавіша 2</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_PriorityHeading">Налаштування пріоритету</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_PriorityDescription">Оберіть, яка клавіша спрацьовує, коли обидві натиснуто глибше точки спрацювання.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_LastInput">Пріоритет останнього натискання</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_LastInput_Tip">Коли обидві клавіші проходять точку спрацювання, остання натиснута перекриває першу.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_MutualCancel">Взаємне скасування</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_MutualCancel_Tip">Коли обидві клавіші проходять точку спрацювання, жодна не спрацьовує.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_Absolute">Абсолютний пріоритет</sys:String>
+    <sys:String x:Key="ExtendedKeys_Socd_Absolute_Tip_Format">{0} завжди перекриває іншу клавішу, незалежно від того, яку натиснуто першою.</sys:String>
+    <sys:String x:Key="ExtendedKeys_PickHint_Format">Натисніть клавішу на клавіатурі, щоб задати «{0}».</sys:String>
+    <sys:String x:Key="ExtendedKeys_ConfirmHint">Обидві клавіші задано — натисніть «Підтвердити» або клацніть клавішу, щоб змінити її.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ClearKey">Очистити цю клавішу</sys:String>
+    <sys:String x:Key="ExtendedKeys_PhysicalKey">Фізична клавіша</sys:String>
+    <sys:String x:Key="ExtendedKeys_Hold">Утримання</sys:String>
+    <sys:String x:Key="ExtendedKeys_Tap">Натиск</sys:String>
+    <sys:String x:Key="ExtendedKeys_TimeMs">Час (мс)</sys:String>
+    <sys:String x:Key="ExtendedKeys_TimeMs_Format">{0} мс</sys:String>
+    <sys:String x:Key="ExtendedKeys_ModTap_TimeHint_Format">Утримання ≥ {0} мс рахується як утримання; коротше — як натиск.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ToggledKey">Перемикана клавіша</sys:String>
+    <sys:String x:Key="ExtendedKeys_Toggled">Перемикання</sys:String>
+    <sys:String x:Key="ExtendedKeys_Toggle_TimeHint_Format">Утримання ≥ {0} мс спрацьовує звичайно; коротший натиск вмикає або вимикає клавішу.</sys:String>
+    <sys:String x:Key="ExtendedKeys_OutputsHint">Клацніть чип виводу, щоб обрати клавішу, яку він надсилає.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ConfirmHint_Single">Усе задано — натисніть «Підтвердити» або клацніть чип, щоб змінити.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_PhysicalKeySet">Спочатку очистьте чип фізичної клавіші, щоб обрати іншу.</sys:String>
+    <sys:String x:Key="ExtendedKeys_ClearPhysicalKey">Очистити фізичну клавішу</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_SameKey">Оберіть дві різні клавіші.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_Fn">Клавіша FN не може бути частиною розширеної клавіші.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_AlreadyUsed">Ця клавіша вже належить розширеній клавіші. Спочатку видаліть той запис.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_Blocked">Цю клавішу використовує налаштування, яким ця програма не керує. Оберіть іншу клавішу.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_Remapped">Цю клавішу перепризначено. Спочатку скиньте її призначення на сторінці «Призначення клавіш».</sys:String>
+    <sys:String x:Key="ExtendedKeys_Refuse_MacroBound">Ця клавіша відтворює макрос. Спочатку зніміть макрос.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Blocked_Format">{0} є частиною розширеної клавіші ({1}). Змініть її на сторінці «Розширені клавіші».</sys:String>
+    <sys:String x:Key="ExtendedKeys_Blocked_ProbePending">Триває зчитування розширених клавіш цієї клавіатури. Спробуйте цю клавішу за мить.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Tooltip_Format">{0} · {1}</sys:String>
+    <sys:String x:Key="ExtendedKeys_Delete">Видалити розширену клавішу</sys:String>
+    <sys:String x:Key="ExtendedKeys_Defaults_Title">Скинути розширені клавіші?</sys:String>
+    <sys:String x:Key="ExtendedKeys_Defaults_Body">Усі розширені клавіші цієї клавіатури буде видалено. Клавіші повернуться до звичайної поведінки.</sys:String>
+    <sys:String x:Key="ExtendedKeys_Defaults_Confirm">СКИНУТИ</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ButtonDebounce">Антидребезг кнопки</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_ButtonDebounce_Subtitle">Зменшує випадкові подвійні кліки. Нижче = швидша реакція.</sys:String>
+<sys:String x:Key="DeviceDetails_Settings_LiftOffDistance">Відстань відриву</sys:String>
+    <sys:String x:Key="DeviceDetails_Settings_LiftOffDistance_Subtitle">Відстань, на якій сенсор перестає відстежувати після відриву від поверхні.</sys:String>
+
+    <!-- Macros -->
+    <sys:String x:Key="Macros_Tab_Macros">МАКРОСИ</sys:String>
+    <sys:String x:Key="Macros_Tab_Commands">КОМАНДИ</sys:String>
+    <sys:String x:Key="Macros_NewMacro">НОВИЙ МАКРОС</sys:String>
+    <sys:String x:Key="Macros_SearchPlaceholder">Пошук макросів</sys:String>
+    <sys:String x:Key="Macros_Unassign">Зняти макрос</sys:String>
+    <sys:String x:Key="Macros_Menu_Edit">Редагувати</sys:String>
+    <sys:String x:Key="Macros_Menu_Remove">Видалити</sys:String>
+    <sys:String x:Key="Macros_Dialog_CreateTitle">Створити макрос</sys:String>
+    <sys:String x:Key="Macros_Dialog_EditTitle">Редагувати макрос</sys:String>
+    <sys:String x:Key="Macros_Dialog_Create">СТВОРИТИ</sys:String>
+    <sys:String x:Key="Macros_Dialog_Save">ЗБЕРЕГТИ</sys:String>
+    <sys:String x:Key="Macros_StartRecording">ПОЧАТИ ЗАПИС</sys:String>
+    <sys:String x:Key="Macros_StopRecording">ЗУПИНИТИ ЗАПИС</sys:String>
+    <sys:String x:Key="Macros_RecordHint">Натисніть «Почати запис», щоб почати</sys:String>
+    <sys:String x:Key="Macros_RecordedCount">Рядки: {0}</sys:String>
+    <sys:String x:Key="Macros_ClearRecording">ОЧИСТИТИ</sys:String>
+    <sys:String x:Key="Macros_LimitReached">Досягнуто максимум у {0} кроків — запис зупинено</sys:String>
+    <sys:String x:Key="Macros_Field_Name">Назва макросу</sys:String>
+    <sys:String x:Key="Macros_Field_Repetitions">Кількість повторень</sys:String>
+    <sys:String x:Key="Macros_AutoDelays">Автоматично записувати затримки</sys:String>
+    <sys:String x:Key="Macros_RepeatUntilReleased">Повторювати, доки кнопку не відпущено</sys:String>
+    <sys:String x:Key="Macros_Attention">УВАГА!</sys:String>
+    <sys:String x:Key="Macros_AttentionBody">Кнопки деяких пристроїв (MSP80 Pro) наразі мають функції, що відрізняються від типових налаштувань.</sys:String>
+    <sys:String x:Key="Macros_Delete_Title">ВИДАЛИТИ МАКРОС</sys:String>
+    <sys:String x:Key="Macros_Delete_Body">«{0}» буде видалено та відв’язано від усіх кнопок.</sys:String>
+    <sys:String x:Key="Macros_Delete_Confirm">ВИДАЛИТИ</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeDown">Зменшити гучність</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeUp">Збільшити гучність</sys:String>
+    <sys:String x:Key="Macros_Command_Back">Назад</sys:String>
+    <sys:String x:Key="Macros_Command_BrightnessDown">Зменшити яскравість</sys:String>
+    <sys:String x:Key="Macros_Command_BrightnessUp">Збільшити яскравість</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeMute">Вимкнути звук</sys:String>
+    <sys:String x:Key="Macros_Command_VolumeToggle">Перемкнути звук</sys:String>
+    <sys:String x:Key="Macros_Command_BrowserBack">Браузер: назад</sys:String>
+
+    <!-- Key Assignment Dialog -->
+    <sys:String x:Key="KeyDialog_Title_Format">Клавіша {0}</sys:String>
+    <sys:String x:Key="KeyDialog_Tab_Keys">КЛАВІШІ</sys:String>
+    <sys:String x:Key="KeyDialog_Tab_System">СИСТЕМА</sys:String>
+    <sys:String x:Key="KeyDialog_Tab_Macros">МАКРОСИ</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_Keys">Щоб призначити клавішу, натисніть її на фізичній клавіатурі або виберіть на віртуальній клавіатурі нижче.</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_System">Виберіть системну дію, щоб призначити її цій клавіші.</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_Macros">Виберіть макрос, щоб призначити його цій клавіші.</sys:String>
+    <sys:String x:Key="KeyDialog_PickTitle_Format">Оберіть клавішу: {0}</sys:String>
+    <sys:String x:Key="KeyDialog_Hint_Pick">Натисніть клавішу на фізичній клавіатурі або оберіть її на віртуальній клавіатурі нижче.</sys:String>
+    <sys:String x:Key="KeyDialog_RemapToast_Format">Клавішу {0} успішно перепризначено на {1}</sys:String>
+    <sys:String x:Key="KeyDialog_ResetToast_Format">Клавішу {0} відновлено до типового значення</sys:String>
+
+    <!-- Contact Us dialog -->
+    <sys:String x:Key="ContactUs_Title">Зв'язатися з нами</sys:String>
+    <sys:String x:Key="ContactUs_Field_Email">Email</sys:String>
+    <sys:String x:Key="ContactUs_Field_Topic">Тема</sys:String>
+    <sys:String x:Key="ContactUs_Field_Message">Повідомлення</sys:String>
+    <sys:String x:Key="ContactUs_Send">НАДІСЛАТИ</sys:String>
+    <!-- «Надіслано»: лише коли бекенд підтвердив отримання (2xx success). -->
+    <sys:String x:Key="ContactUs_DeliveredTitle">Повідомлення надіслано</sys:String>
+    <sys:String x:Key="ContactUs_DeliveredToast">Ваше повідомлення надіслано</sys:String>
+    <sys:String x:Key="ContactUs_SendFailed">Не вдалося надіслати повідомлення. Спробуйте ще раз.</sys:String>
+
+    <!-- API error surfacing (docs/plans/improve-api-error-surfacing) -->
+    <sys:String x:Key="ContactUs_Error_RateLimited">Ви щойно надіслали повідомлення. Зачекайте близько хвилини, перш ніж надсилати наступне.</sys:String>
+    <sys:String x:Key="ContactUs_Error_DailyLimit">Ви досягли ліміту в 5 повідомлень на добу. Спробуйте ще раз завтра.</sys:String>
+    <sys:String x:Key="ContactUs_Error_Duplicate">Ви вже надсилали це повідомлення. Змініть тему або текст чи зачекайте близько 10 хвилин.</sys:String>
+    <sys:String x:Key="ContactUs_Error_MailError">Не вдалося доставити ваше повідомлення. Спробуйте ще раз за хвилину.</sys:String>
+    <sys:String x:Key="ContactUs_Error_InvalidEmail">Введіть коректну електронну адресу.</sys:String>
+    <sys:String x:Key="ContactUs_Error_TopicLength">Тема має містити від 3 до 100 символів.</sys:String>
+    <sys:String x:Key="ContactUs_Error_MessageLength">Повідомлення має містити від 10 до 2000 символів.</sys:String>
+    <sys:String x:Key="Api_Error_TooManyRequests">Забагато запитів. Зачекайте хвилину та спробуйте ще раз.</sys:String>
+    <sys:String x:Key="Api_Error_Network">Помилка мережі. Перевірте з’єднання та спробуйте ще раз.</sys:String>
+    <sys:String x:Key="Api_Error_Timeout">Сервер надто довго не відповідає. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="Api_Error_Generic">Щось пішло не так. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="ProfileView_UpdateProfile_Error_Generic">Не вдалося оновити профіль. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="Auth_Error_RegistrationFailed">Не вдалося завершити реєстрацію. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_ProfileSaveFailed">Не вдалося зберегти зміни профілю. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="ProfileView_Notification_AvatarRequired">Не вдалося завантажити аватар. Спробуйте ще раз.</sys:String>
+    <sys:String x:Key="KeyDialog_RemapToast_Undo">СКАСУВАТИ</sys:String>
+    <sys:String x:Key="Macros_UnassignToast_Format">Макрос {0} знято з клавіші {1}</sys:String>
+    <sys:String x:Key="KeyDialog_Command_PlayPause">Відтворити / Пауза</sys:String>
+    <sys:String x:Key="KeyDialog_Command_NextTrack">Наступний трек</sys:String>
+    <sys:String x:Key="KeyDialog_Command_PrevTrack">Попередній трек</sys:String>
+
+    <sys:String x:Key="Notifications_Title">Сповіщення</sys:String>
+    <sys:String x:Key="Notifications_DeleteAllTooltip">Видалити всі</sys:String>
+    <sys:String x:Key="Notifications_ReadAllTooltip">Позначити як прочитані</sys:String>
+    <sys:String x:Key="Notifications_Today">Сьогодні</sys:String>
+    <sys:String x:Key="Notifications_Yesterday">Вчора</sys:String>
+    <sys:String x:Key="Notifications_Empty_Title">Усе чисто</sys:String>
+    <sys:String x:Key="Notifications_Empty_Subtitle">Немає нових сповіщень.</sys:String>
+    <sys:String x:Key="Notification_NewDeviceConnected">Підключено новий пристрій</sys:String>
+    <sys:String x:Key="Notification_DeviceConnected">Пристрій підключено</sys:String>
+    <sys:String x:Key="Notification_DeviceDisconnected">Пристрій відключено</sys:String>
+    <sys:String x:Key="Notification_LowBattery">Низький заряд батареї</sys:String>
+
+    <!-- Guest session expiry warning (docs/plans/add-guest-session-expiry-warning) -->
+    <sys:String x:Key="Notification_GuestSessionExpiringTitle">Гостьовий сеанс незабаром завершиться</sys:String>
+    <sys:String x:Key="Notification_GuestSessionExpiringBody_Format">Завершиться приблизно через {0} год. Ваші гостьові пристрої, пресети, макроси та налаштування буде видалено — зареєструйте акаунт, щоб зберегти їх.</sys:String>
+
+    <!-- Global session-token expiry (docs/plans/add-global-token-expiry) -->
+    <sys:String x:Key="Session_ExpiredTitle">Сеанс завершено</sys:String>
+    <sys:String x:Key="Session_ExpiredToast">Ваш сеанс завершився. Будь ласка, увійдіть знову.</sys:String>
+
+    <!-- App update check (docs/plans/contact-us-and-update-check) -->
+    <sys:String x:Key="AppUpdate_AvailableTitle">Доступне оновлення</sys:String>
+    <sys:String x:Key="AppUpdate_AvailableBody_Format">Доступна версія {0} — завантажте на proovegaming.com</sys:String>
+
+    <!-- Backfilled keys (previously English-only) -->
+    <sys:String x:Key="Body_Description">Ваш ігровий простір готовий. Відстежуйте активність, тестуйте функції та досліджуйте застосунок на цій головній сторінці.</sys:String>
+    <sys:String x:Key="Button_Back">НАЗАД</sys:String>
+    <sys:String x:Key="Button_Continue">Продовжити</sys:String>
+    <sys:String x:Key="Button_DarkTheme">Темна тема</sys:String>
+    <sys:String x:Key="Button_LightTheme">Світла тема</sys:String>
+    <sys:String x:Key="Button_Next">ДАЛІ</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_KeyAssign">ПРИЗНАЧЕННЯ КЛАВІШ</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Audio">АУДІО</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_Actuation">СИЛА НАТИСКАННЯ</sys:String>
+    <sys:String x:Key="DeviceDetails_Nav_ExtendedKeys">РОЗШИРЕНІ КЛАВІШІ</sys:String>
+
+    <sys:String x:Key="Label_Language">Мова</sys:String>
+    <sys:String x:Key="Label_Settings">Налаштування</sys:String>
+    <sys:String x:Key="Setting_MinimizeToTray">Згортати в трей</sys:String>
+    <sys:String x:Key="Tray_Exit">Вихід</sys:String>
+    <sys:String x:Key="Tray_Show">Відкрити</sys:String>
+    <sys:String x:Key="WelcomeView_Button_EnterAsGuest">УВІЙТИ ЯК ГІСТЬ</sys:String>
+    <sys:String x:Key="WelcomeView_Button_SignIn">УВІЙТИ</sys:String>
+    <sys:String x:Key="WelcomeView_Button_SignUp">ЗАРЕЄСТРУВАТИСЯ</sys:String>
+    <sys:String x:Key="WelcomeView_Error_Email">Введіть коректну електронну адресу.</sys:String>
+    <sys:String x:Key="WelcomeView_Error_Password">Пароль не відповідає вимогам.</sys:String>
+    <sys:String x:Key="WelcomeView_Error_SignIn">Невірна електронна пошта або пароль.</sys:String>
+    <sys:String x:Key="WelcomeView_Error_Terms">Прийміть умови, щоб продовжити.</sys:String>
+    <sys:String x:Key="WelcomeView_Marketing">Я погоджуюсь отримувати маркетингові розсилки</sys:String>
+    <sys:String x:Key="WelcomeView_Placeholder_Email">Електронна пошта</sys:String>
+    <sys:String x:Key="WelcomeView_Placeholder_Password">Пароль</sys:String>
+    <sys:String x:Key="WelcomeView_RememberMe">Запам’ятати мене</sys:String>
+    <sys:String x:Key="WelcomeView_Tab_SignIn">УВІЙТИ</sys:String>
+    <sys:String x:Key="WelcomeView_Tab_SignUp">ЗАРЕЄСТРУВАТИСЯ</sys:String>
+    <sys:String x:Key="WelcomeView_Terms_Agree">Я погоджуюсь з </sys:String>
+    <sys:String x:Key="WelcomeView_Terms_TermsOfService">Умовами надання послуг</sys:String>
+    <sys:String x:Key="WelcomeView_Terms_Comma">, </sys:String>
+    <sys:String x:Key="WelcomeView_Terms_PrivacyPolicy">Політикою конфіденційності</sys:String>
+    <sys:String x:Key="WelcomeView_Terms_And"> та </sys:String>
+    <sys:String x:Key="WelcomeView_Terms_License">Ліцензійною угодою</sys:String>
+</ResourceDictionary>

@@ -1,0 +1,98 @@
+name: installer-release
+
+# Shows the branch being published (and who triggered it) in the Actions run list.
+# The dated version (MM-DD-YYYY.N) is computed at run time, so it can't appear here —
+# it is written to the run summary and used as the release title instead.
+run-name: installer-release · ${{ github.ref_name }} · @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+
+# Needed so the workflow can create a GitHub Release and upload assets to it.
+permissions:
+  contents: write
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+    env:
+      INSTALLER_PROJECT: ProoveGaming.Installer/ProoveGaming.Installer.csproj
+      INSTALLER_PUBLISH_DIR: ProoveGaming.Installer/bin/Release/net10.0/win-x64/publish
+      INSTALLER_EXE_NAME: ProoveGaming.Installer.exe
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    defaults:
+      run:
+        shell: pwsh
+        working-directory: ./src
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Publish installer
+        run: dotnet publish $env:INSTALLER_PROJECT -c Release
+
+      - name: Validate published installer
+        run: |
+          $publishDir = Join-Path "." $env:INSTALLER_PUBLISH_DIR
+          $installerExe = Join-Path $publishDir $env:INSTALLER_EXE_NAME
+
+          if (!(Test-Path $installerExe)) {
+            throw "Installer EXE not found: $installerExe"
+          }
+
+      - name: Package and publish pre-release
+        run: |
+          # One pre-release per calendar day: tag "installer-MM-DD-YYYY", title = the date.
+          # Each build that day is attached as an incrementing asset
+          # "proove-gaming-installer-MM-DD-YYYY.<N>.zip", so a single dated version holds the
+          # .1/.2/... downloads instead of creating many releases. Assets live in the Releases
+          # section (not Actions artifacts) to avoid the artifact-storage limit.
+          $date = Get-Date -Format 'MM-dd-yyyy'
+          $tag = "installer-$date"
+
+          # If today's release already exists, count its installer assets to pick the next N.
+          $assets = gh release view $tag --json assets --jq '.assets[].name' 2>$null
+          $releaseExists = ($LASTEXITCODE -eq 0)
+          $n = if ($releaseExists) {
+            (@($assets | Where-Object { $_ -like "proove-gaming-installer-$date.*" }).Count) + 1
+          } else { 1 }
+
+          $asset = "proove-gaming-installer-$date.$n.zip"
+
+          $publishDir = Join-Path "." $env:INSTALLER_PUBLISH_DIR
+          $installerExe = Join-Path $publishDir $env:INSTALLER_EXE_NAME
+          $zipPath = Join-Path $publishDir $asset
+
+          Compress-Archive -Path $installerExe -DestinationPath $zipPath -Force
+
+          if ($releaseExists) {
+            Write-Host "Adding asset '$asset' to existing pre-release '$tag'"
+            gh release upload $tag $zipPath
+          } else {
+            Write-Host "Creating pre-release '$tag' with asset '$asset'"
+            gh release create $tag $zipPath `
+              --title $date `
+              --notes "Automated Proove Gaming installer dev builds for $date. Pre-release." `
+              --prerelease `
+              --target $env:GITHUB_SHA
+          }
+
+          # Surface the version/branch/asset in the run summary (run-name can't hold the
+          # runtime-computed asset number, so it's shown here for at-a-glance visibility).
+          @(
+            "### installer-release published",
+            "",
+            "| Field | Value |",
+            "| --- | --- |",
+            "| Version (date) | ``$date`` |",
+            "| Branch | ``$env:GITHUB_REF_NAME`` |",
+            "| Release tag | ``$tag`` |",
+            "| Asset | ``$asset`` |",
+            "| Commit | ``$env:GITHUB_SHA`` |"
+          ) | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8

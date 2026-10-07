@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Infinite keyboards — macro storage request (2026-08)</title>
+<style>
+  :root {
+    --ground: #F6F7F9;
+    --panel: #FFFFFF;
+    --ink: #14171B;
+    --ink-muted: #5A6470;
+    --ink-faint: #8A939E;
+    --rule: #DDE1E7;
+    --rule-strong: #C3CAD3;
+    --ok: #1B6E5F;
+    --ok-bg: #E4F0EC;
+    --fail: #B04A32;
+    --fail-bg: #F8E7E2;
+    --ask: #245A96;
+    --ask-bg: #E7EFF8;
+    --evidence-bg: #EEF1F4;
+    --mark: #FBE3A8;
+    --mark-ink: #6B4E07;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #131619; --panel: #1A1E23; --ink: #E7EAEE; --ink-muted: #98A2AE;
+      --ink-faint: #6F7985; --rule: #2A3038; --rule-strong: #3A424C;
+      --ok: #6FC8B2; --ok-bg: #17302B; --fail: #E08A70; --fail-bg: #33201A;
+      --ask: #7FB2E5; --ask-bg: #1B2836; --evidence-bg: #202630;
+      --mark: #4A3A10; --mark-ink: #F5D68A;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.6rem;
+  }
+
+  header { display: flex; flex-direction: column; gap: 1rem; }
+
+  .eyebrow {
+    font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--ink-faint); font-weight: 600;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.8rem, 4.2vw, 2.5rem);
+    line-height: 1.15; letter-spacing: -0.02em; font-weight: 650;
+    text-wrap: balance;
+  }
+
+  .meta {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem;
+    font-size: 0.85rem; color: var(--ink-muted);
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+
+  section { display: flex; flex-direction: column; gap: 1rem; }
+
+  h2.sec {
+    margin: 0; font-size: 1.25rem; font-weight: 650; letter-spacing: -0.01em;
+    display: flex; align-items: baseline; gap: 0.75rem;
+    border-bottom: 1px solid var(--rule); padding-bottom: 0.6rem;
+  }
+  h2.sec .num {
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.8rem; color: var(--ink-faint); font-weight: 600;
+  }
+
+  p { margin: 0; }
+  p + p { margin-top: 0.6rem; }
+  .muted { color: var(--ink-muted); }
+
+  .verdict {
+    background: var(--panel); border: 1px solid var(--rule-strong);
+    border-left: 4px solid var(--fail);
+    border-radius: 10px; padding: 1.4rem 1.6rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
+  }
+  .verdict h2 { margin: 0; font-size: 1.05rem; font-weight: 650; }
+  .verdict.good { border-left-color: var(--ok); }
+
+  table {
+    width: 100%; border-collapse: collapse; font-size: 0.92rem;
+    background: var(--panel);
+  }
+  .table-scroll {
+    overflow-x: auto; border-radius: 8px; border: 1px solid var(--rule);
+  }
+  th, td {
+    text-align: left; padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid var(--rule); vertical-align: top;
+  }
+  th {
+    font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--ink-muted); font-weight: 600; background: var(--evidence-bg);
+  }
+  tr:last-child td { border-bottom: none; }
+
+  code, .hex {
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.88em;
+    background: var(--evidence-bg);
+    padding: 0.1em 0.35em; border-radius: 4px;
+  }
+
+  pre {
+    margin: 0; padding: 1rem 1.2rem;
+    background: var(--evidence-bg);
+    border: 1px solid var(--rule); border-radius: 8px;
+    overflow-x: auto;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.84rem; line-height: 1.55;
+  }
+  pre code { background: none; padding: 0; }
+
+  .ok-chip, .fail-chip {
+    display: inline-block; padding: 0.05em 0.55em; border-radius: 999px;
+    font-size: 0.8rem; font-weight: 600; white-space: nowrap;
+  }
+  .ok-chip   { color: var(--ok);   background: var(--ok-bg); }
+  .fail-chip { color: var(--fail); background: var(--fail-bg); }
+
+  .ask {
+    background: var(--ask-bg); border: 1px solid var(--rule-strong);
+    border-left: 4px solid var(--ask);
+    border-radius: 10px; padding: 1.2rem 1.4rem;
+    display: flex; flex-direction: column; gap: 0.5rem;
+  }
+  .ask h3 { margin: 0; font-size: 1rem; font-weight: 650; color: var(--ask); }
+  .ask ul { margin: 0.2rem 0 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.35rem; }
+
+  ul.plain { margin: 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.4rem; }
+
+  mark { background: var(--mark); color: var(--mark-ink); padding: 0 0.25em; border-radius: 3px; }
+
+  .decode { font-size: 0.84rem; color: var(--ink-muted); }
+  .decode b { color: var(--ink); }
+
+  footer {
+    border-top: 1px solid var(--rule); padding-top: 1.2rem;
+    font-size: 0.85rem; color: var(--ink-faint);
+  }
+
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .wrap { padding: 0.5cm 0; gap: 1.2rem; max-width: none; }
+    .verdict, .ask, pre, .table-scroll { break-inside: avoid; }
+    h2.sec { break-after: avoid; }
+    pre { white-space: pre-wrap; word-break: break-all; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Proove Gaming — firmware vendor request</div>
+    <h1>Macro data is never stored on either tested keyboard</h1>
+    <div class="meta">
+      <span>2026-08-04</span>
+      <span>Cyrex fw 0x0002 · Rampage (RM1) fw 0x0100</span>
+      <span>follow-up to your C1–C12 answers</span>
+    </div>
+  </header>
+
+  <div class="verdict">
+    <h2>The problem in one paragraph</h2>
+    <p>On <b>Cyrex</b>, command <code>0x2D</code> (设定宏信息) acknowledges every packet with
+      <code>0x55</code> — at every transfer shape, including the full 2048-byte
+      <code>MACRO_TAB</code> from your C8 answer — and <code>0x2C</code> reads the <b>entire
+      2048-byte region back as zeros</b> after every attempt. On <b>Rampage (RM1)</b>,
+      <code>0x2C</code>/<code>0x2D</code> return status <code>0x0F</code> on every packet, with
+      <b>and without</b> a preceding <code>0x10</code>. Key remapping works on both boards using
+      exactly the rules you gave us, so the transport is proven correct — the macro subsystem
+      specifically does not store.</p>
+  </div>
+
+  <div class="verdict good">
+    <h2>First: your key-write answer is confirmed working</h2>
+    <p>Your C1/C3 instruction — no <code>0x10</code>/<code>0x11</code>, bare <code>0x18</code>,
+      full-table transfer — was implemented and verified on both keyboards:</p>
+    <div class="table-scroll"><table>
+      <tr><th>Board</th><th>Firmware</th><th>Bare 0x18, 384 bytes, 7 packets (6 × 56 + 48)</th></tr>
+      <tr><td>Rampage (RM1)</td><td><code>0x0100</code></td>
+          <td><span class="ok-chip">works</span> 7/7 acked, read-back matches, physical key follows immediately</td></tr>
+      <tr><td>Cyrex</td><td><code>0x0002</code></td>
+          <td><span class="ok-chip">works</span> 7/7 acked, read-back matches, physical key follows</td></tr>
+    </table></div>
+    <p class="muted">This matters for everything below: the same interface, framing, checksum and
+      pacing that make key writes persist are used byte-for-byte for the macro writes that do not.</p>
+  </div>
+
+  <section>
+    <h2 class="sec"><span class="num">01</span> Devices under test</h2>
+    <div class="table-scroll"><table>
+      <tr><th></th><th>Cyrex</th><th>Rampage (RM1)</th></tr>
+      <tr><td>USB VID / PID</td><td><code>0x28E9</code> / <code>0x3272</code></td><td><code>0x28E9</code> / <code>0x3258</code></td></tr>
+      <tr><td>Interface</td><td colspan="2"><code>mi_01&amp;col05</code> — usage <code>0x20</code>, page <code>0xFF87</code>, 64-byte reports (per your C10/C12)</td></tr>
+      <tr><td>Device Info (<code>0x12</code>)</td>
+          <td><code>productId=0x2404, matrix=75 slots (225 B), macro=1024 B, keys=68, USB, fw=0x0002</code></td>
+          <td><code>productId=0x3258, matrix=128 slots (384 B), macro=2048 B, keys=0, USB+BT+2.4G, fw=0x0100</code></td></tr>
+    </table></div>
+    <p class="muted">Note the macro-space values against your C8 <code>MACRO_TAB_SIZE = 2048</code>:
+      Cyrex reports <mark>1024</mark>. We wrote the full 2048 anyway — every chunk, including
+      addresses ≥ 1024, was acknowledged.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">02</span> The macro payload we write</h2>
+    <p>One macro that types <code>tt</code> — 4 actions, packed per your 宏信息格式, 30 bytes of
+      data, zero-padded to the table size for the full transfers:</p>
+    <pre><code>AA 55 1E 00 01 00 00 00 0A 00 04 00 00 00 0A 00 17 81 50 00 17 01 DC 00 17 81 64 00 17 01</code></pre>
+    <p class="decode"><b>AA 55</b> in-use flag &nbsp;·&nbsp; <b>1E 00</b> total length 30 &nbsp;·&nbsp;
+      <b>01 00</b> one macro &nbsp;·&nbsp; <b>0A 00</b> macro 0 at offset 10 &nbsp;·&nbsp;
+      <b>04 00</b> four actions &nbsp;·&nbsp; then per action: key <b>0x17</b> (T),
+      attribute <b>0x81</b> press / <b>0x01</b> release, delay.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">03</span> Cyrex <code>fw 0x0002</code> — acknowledged at every shape, stored at none</h2>
+    <p>Every variant below was acknowledged <code>0x55</code> chunk by chunk. After <b>each</b> one,
+      a scan of the <b>entire 2048-byte region</b> via <code>0x2C</code> (every read acknowledged
+      <code>0x55</code>) returned <b>all zeros</b> — so the data is not merely landing at an
+      unexpected offset.</p>
+    <div class="table-scroll"><table>
+      <tr><th>#</th><th>Transfer shape</th><th>Session bracket</th><th>Write acks</th><th>Read-back</th></tr>
+      <tr><td>1</td><td>30 bytes (data only), 1 packet</td><td>inside <code>0x10</code>…<code>0x11</code></td>
+          <td><span class="ok-chip">acked</span></td><td><span class="fail-chip">region zero</span></td></tr>
+      <tr><td>2</td><td>30 bytes (data only), 1 packet</td><td>none (bare)</td>
+          <td><span class="ok-chip">acked</span></td><td><span class="fail-chip">region zero</span></td></tr>
+      <tr><td>3</td><td>full 2048 bytes, 37 packets (36 × 56 + 32)</td><td>inside <code>0x10</code>…<code>0x11</code></td>
+          <td><span class="ok-chip">37/37 acked</span></td><td><span class="fail-chip">region zero</span></td></tr>
+      <tr><td>4</td><td>full 2048 bytes, 37 packets</td><td>none (bare)</td>
+          <td><span class="ok-chip">37/37 acked</span></td><td><span class="fail-chip">region zero</span></td></tr>
+    </table></div>
+    <p>Verbatim tool output for shapes 3–4:</p>
+    <pre><code>A  bare 0x2C read:      status 0x55 (OK)
+B  bare 0x2D write:     status 0x55 (OK)
+C1 bracketed 0x2D 2048: acked=37 rejected=0 silent=0
+C2 in-session 0x2C:     ALL ZERO — acked and discarded
+D  post-End  0x2C:      ALL ZERO — acked and discarded
+
+bare 0x2D 2048: 37/37 acked
+scan after full write:    ALL 2048 BYTES ZERO
+bare 0x2D 30-byte: status 0x55
+scan after 30-byte write: ALL 2048 BYTES ZERO</code></pre>
+    <p class="muted">For completeness: a key record <code>{0x60, 0x00, 0x00}</code>
+      (MACRO_AP_TYPE, macro 0, play-through) was written to a key slot and verified by read-back —
+      the physical key then did nothing, consistent with the macro region being empty.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">04</span> Rampage (RM1) <code>fw 0x0100</code> — <code>0x2C</code>/<code>0x2D</code> rejected with <code>0x0F</code>, session or not</h2>
+    <p>On the same firmware where bare <code>0x18</code> key writes work (your RM1 answer,
+      confirmed), the macro commands are not reachable at all:</p>
+    <pre><code>A  bare 0x2C read:      status 0x0F
+B  bare 0x2D write:     status 0x0F
+C1 bracketed 0x2D 2048: acked=0 rejected=37 (every status 0x0F) silent=0
+C2 in-session 0x2C:     every read status 0x0F</code></pre>
+    <p>Your documentation describes <code>0x0F</code> as the session-lapse status — but here it is
+      returned on the very first command <b>immediately after <code>0x10</code> was sent and
+      acknowledged</b>, so that reading cannot apply. This firmware uses the older command
+      numbering (key matrix on <code>0x17</code>/<code>0x18</code>, not
+      <code>0x1A</code>/<code>0x1B</code>), and the macro command bytes for it have never been
+      documented to us.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">05</span> Ruled out</h2>
+    <ul class="plain">
+      <li><b>Transport / framing / checksum / interface</b> — proven by working key writes on the same handle, same additive checksum, both boards.</li>
+      <li><b>Transfer length</b> — 30 bytes, the 1024 boundary and the full 2048 all behave identically on Cyrex.</li>
+      <li><b>Session bracket</b> — with and without, identically.</li>
+      <li><b>Wrong read offset</b> — the read-back scans the entire 2048-byte region, not just offset 0.</li>
+      <li><b>Packet pacing</b> — the same 4–5 ms pacing the working key writes use.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">06</span> What we need</h2>
+    <p class="muted">Any one of these unblocks the feature; they are in order of preference.</p>
+
+    <div class="ask">
+      <h3>6.1 — The exact macro procedure, per firmware</h3>
+      <p>For <b>each</b> of <code>fw 0x0002</code> (Cyrex) and <code>fw 0x0100</code> (RM1):</p>
+      <ul>
+        <li>the command bytes that read and write <code>MACRO_TAB</code>;</li>
+        <li>whether a session (<code>0x10</code>) is required for them;</li>
+        <li>the exact required transfer length — your C1 said 384 for keys and your C3 said 386; which logic applies to the 2048-byte macro table?</li>
+        <li>whether any enable, commit or bank-select step must precede or follow the write;</li>
+        <li>whether macro storage is even <b>enabled</b> in these firmware builds — on Cyrex the region is writable-in-name-only (every ack, zero storage), which looks exactly like the RM1 key situation before your update revealed the missing piece.</li>
+      </ul>
+    </div>
+
+    <div class="ask">
+      <h3>6.2 — A USB capture of your own tool storing one macro</h3>
+      <p>A Wireshark/USBPcap capture on <code>mi_01&amp;col05</code> of your configuration tool
+        recording one macro and binding it to a key — from clicking “save” until the physical key
+        plays it, both directions, with timestamps. One trace answers every question above at once.</p>
+    </div>
+
+    <div class="ask">
+      <h3>6.3 — The meaning of status 0x0F in this context</h3>
+      <p>What does <code>0x0F</code> mean when returned immediately after an acknowledged
+        <code>0x10</code> (Rampage <code>fw 0x0100</code>, commands
+        <code>0x2C</code>/<code>0x2D</code>)? Is it “unknown command”, “subsystem disabled”, or
+        something else?</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">07</span> What we can offer</h2>
+    <ul class="plain">
+      <li>Full host logs of any sequence you ask us to try — every request and reply in hex, results the same day.</li>
+      <li>Our host implementation is complete: packing (byte-identical to your 宏信息格式 worked example), chunked transfer at any shape you specify, read-back verification, key-record binding (<code>0x60</code>/<code>0x61</code>). The only missing piece is the firmware-side procedure that makes <code>MACRO_TAB</code> actually store.</li>
+    </ul>
+  </section>
+
+  <footer>
+    Proove Gaming · Smart Infinite keyboards (Cyrex / Aress / Rampage) · macro storage follow-up to C1–C12 · 2026-08-04
+  </footer>
+</div>
+</body>
+</html>

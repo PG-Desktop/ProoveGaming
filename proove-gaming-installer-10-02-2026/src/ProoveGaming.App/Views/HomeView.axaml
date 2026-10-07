@@ -1,0 +1,405 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:local="using:ProoveGaming.App"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+			 x:DataType="viewmodels:HomeViewModel"
+			 x:Class="ProoveGaming.App.Views.HomeView">
+	<Grid ClipToBounds="False">
+		<Grid x:Name="ContentGrid" RowDefinitions="72,*" Margin="20" ClipToBounds="False">
+			<Grid Grid.Row="0" VerticalAlignment="Center">
+				<Path HorizontalAlignment="Left"
+					  VerticalAlignment="Center"
+					  Width="94"
+					  Height="56"
+					  Stretch="Fill"
+					  Fill="#6357FF"
+					  Data="
+					  M94 40.7644V56H40.9847C30.0801 56 20.2244 48.0546 19.1601 37.1754C19.002 35.56 19.002 33.964 19.2372 32.4412H25.8656C24.2345 41.4855 31.2562 49.4154 39.9977 49.4154H87.4371V42.8153C87.4371 40.2749 85.4013 38.2546 82.8794 38.2546H55.1629V31.6894H84.931C89.9435 31.6894 93.9691 35.7488 93.9691 40.7337L94 40.7644Z
+
+					  M94 14.0443V20.6096H40.5298C39.0103 20.6096 37.4758 20.8448 36.0336 21.3151H24.1882C27.994 16.8779 33.697 14.0443 39.9977 14.0443H94Z
+
+					  M73.7292 22.915V22.9613L73.5866 23.181L73.3821 23.4625L73.3361 23.5242L73.1626 23.8056L72.9581 24.0716L72.8 24.3067L72.7383 24.3684L72.5338 24.6036L72.3297 24.8234L72.0635 25.1356L71.89 25.3554L71.5777 25.6522L71.3578 25.8565L71.1534 26.0609L71.0765 26.1534L70.6213 26.5312L70.5598 26.5774L70.3245 26.8126L70.1046 26.9861L69.8233 27.1442L69.7615 27.2212L69.5265 27.3947L69.3066 27.5528L69.1794 27.6299L68.8977 27.788L68.6782 27.9306L68.3002 28.1658L68.0185 28.3084L67.7217 28.4664C67.5945 28.5436 67.5482 28.5937 67.4249 28.6245L67.1278 28.7672C66.8928 28.8944 66.7038 28.9715 66.4994 29.0486H66.4222L66.1254 29.1912C66.0481 29.2375 65.921 29.2683 65.8286 29.3184H65.7822C65.705 29.3647 65.5778 29.3956 65.5006 29.3956L65.4391 29.4418C65.3119 29.4881 65.2347 29.5189 65.1574 29.5189H65.0805L64.7834 29.6115L64.6562 29.6577C63.403 29.9546 62.1347 30.1589 60.8505 30.1589H13.1448C10.0909 30.1589 7.56914 32.684 7.56914 35.6911V41.9595H1.00633V35.6911C1.00633 29.0601 6.45862 23.5897 13.1487 23.5897H60.8851C62.0305 23.5897 63.1871 23.37 64.1744 22.915H73.7292Z
+
+					  M75.5763 11.7698H68.6667C67.4134 8.71264 64.3594 6.58076 60.8814 6.58076H0V0H60.8814C68.0264 0 74.0572 5.00014 75.5763 11.7698Z
+					  "/>
+
+				<StackPanel HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							Orientation="Horizontal"
+							Spacing="0">
+					<Grid Width="117" Height="56">
+						<Polygon Points="0,56 15,0 117,0 102,56" Fill="#4D6357FF" />
+						<TextBlock Text="{DynamicResource HomeView_Tab_Devices}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="18"
+								   FontWeight="Regular"
+								   HorizontalAlignment="Center"
+								   VerticalAlignment="Center"
+								   Classes="tab selected"/>
+					</Grid>
+					<Grid Width="100" Height="56">
+						<Polygon x:Name="GamesHoverBg"
+								 Points="0,56 15,0 100,0 85,56"
+								 Fill="#336357FF"
+								 IsVisible="False" />
+						<Button Width="100" Height="56"
+								x:Name="GamesTabButton"
+								Cursor="Hand"
+								Classes="linkButton">
+							<TextBlock Text="{DynamicResource HomeView_Tab_Games}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"
+									   FontWeight="Regular"
+									   HorizontalAlignment="Center"
+									   VerticalAlignment="Center"
+									   Classes="tab"/>
+						</Button>
+					</Grid>
+					<Grid Width="144" Height="56">
+						<Polygon x:Name="StatisticsHoverBg"
+								 Points="0,56 15,0 144,0 129,56"
+								 Fill="#336357FF"
+								 IsVisible="False" />
+						<Button Width="144" Height="56"
+								x:Name="StatisticsTabButton"
+								Cursor="Hand"
+								Classes="linkButton">
+							<TextBlock Text="{DynamicResource HomeView_Tab_Statistics}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"
+									   FontWeight="Regular"
+									   HorizontalAlignment="Center"
+									   VerticalAlignment="Center"
+									   Classes="tab"/>
+						</Button>
+					</Grid>
+				</StackPanel>
+
+				<StackPanel HorizontalAlignment="Right"
+							VerticalAlignment="Center"
+							Orientation="Horizontal"
+							Spacing="16">
+					<Button x:Name="SearchButton" Background="Transparent" BorderThickness="0" Padding="0">
+						<Grid Width="56" Height="56">
+							<Path x:Name="SearchBg"
+								  Data="{StaticResource CutCornerFrameGeometry}"
+								  Fill="#4D6357FF" />
+							<Path Width="24" Height="24" Stretch="Uniform" Fill="#6357FF"
+								  HorizontalAlignment="Center" VerticalAlignment="Center"
+								  Data="M22.1333 24L13.7333 15.6C13.0667 16.1333 12.3 16.5556 11.4333 16.8667C10.5667 17.1778 9.64444 17.3333 8.66667 17.3333C6.24444 17.3333 4.19444 16.4944 2.51667 14.8167C0.838889 13.1389 0 11.0889 0 8.66667C0 6.24444 0.838889 4.19444 2.51667 2.51667C4.19444 0.838889 6.24444 0 8.66667 0C11.0889 0 13.1389 0.838889 14.8167 2.51667C16.4944 4.19444 17.3333 6.24444 17.3333 8.66667C17.3333 9.64444 17.1778 10.5667 16.8667 11.4333C16.5556 12.3 16.1333 13.0667 15.6 13.7333L24 22.1333L22.1333 24ZM8.66667 14.6667C10.3333 14.6667 11.75 14.0833 12.9167 12.9167C14.0833 11.75 14.6667 10.3333 14.6667 8.66667C14.6667 7 14.0833 5.58333 12.9167 4.41667C11.75 3.25 10.3333 2.66667 8.66667 2.66667C7 2.66667 5.58333 3.25 4.41667 4.41667C3.25 5.58333 2.66667 7 2.66667 8.66667C2.66667 10.3333 3.25 11.75 4.41667 12.9167C5.58333 14.0833 7 14.6667 8.66667 14.6667Z"/>
+						</Grid>
+					</Button>
+					<!-- No Cursor="Hand" and no command yet: like SearchButton this is still a
+					     placeholder, and both deliberately omit the hand cursor so the header
+					     only advertises clickability where something actually happens. -->
+					<Button x:Name="HelpButton"
+							Background="Transparent" BorderThickness="0" Padding="0"
+							IsVisible="{Binding IsGuest}">
+						<Grid Width="56" Height="56">
+							<Path x:Name="HelpBg"
+								  Data="{StaticResource CutCornerFrameGeometry}"
+								  Fill="#4D6357FF" />
+							<!-- Natural artwork size (viewBox 0 0 23 27). The bell and gear beside it
+							     are drawn ~27 tall in 56x56 canvas coordinates; only SearchButton is
+							     24, so scaling this to 24 would leave it visibly undersized. -->
+							<Path Width="23" Height="27" Stretch="Uniform" Fill="#6357FF"
+								  HorizontalAlignment="Center" VerticalAlignment="Center"
+								  Data="M12 26.6667L11.6667 22.6667H11.3333C8.17778 22.6667 5.5 21.5667 3.3 19.3667C1.1 17.1667 0 14.4889 0 11.3333C0 8.17778 1.1 5.5 3.3 3.3C5.5 1.1 8.17778 0 11.3333 0C12.9111 0 14.3833 0.294444 15.75 0.883333C17.1167 1.47222 18.3167 2.28333 19.35 3.31667C20.3833 4.35 21.1944 5.55 21.7833 6.91667C22.3722 8.28333 22.6667 9.75556 22.6667 11.3333C22.6667 13 22.3944 14.6 21.85 16.1333C21.3056 17.6667 20.5611 19.0889 19.6167 20.4C18.6722 21.7111 17.55 22.9 16.25 23.9667C14.95 25.0333 13.5333 25.9333 12 26.6667ZM14.6667 21.8C16.2444 20.4667 17.5278 18.9056 18.5167 17.1167C19.5056 15.3278 20 13.4 20 11.3333C20 8.91111 19.1611 6.86111 17.4833 5.18333C15.8056 3.50556 13.7556 2.66667 11.3333 2.66667C8.91111 2.66667 6.86111 3.50556 5.18333 5.18333C3.50556 6.86111 2.66667 8.91111 2.66667 11.3333C2.66667 13.7556 3.50556 15.8056 5.18333 17.4833C6.86111 19.1611 8.91111 20 11.3333 20H14.6667V21.8ZM12.2667 18.2333C12.5333 17.9667 12.6667 17.6444 12.6667 17.2667C12.6667 16.8889 12.5333 16.5667 12.2667 16.3C12 16.0333 11.6778 15.9 11.3 15.9C10.9222 15.9 10.6 16.0333 10.3333 16.3C10.0667 16.5667 9.93333 16.8889 9.93333 17.2667C9.93333 17.6444 10.0667 17.9667 10.3333 18.2333C10.6 18.5 10.9222 18.6333 11.3 18.6333C11.6778 18.6333 12 18.5 12.2667 18.2333ZM10.3333 14.4H12.3333C12.3333 13.7333 12.4 13.2667 12.5333 13C12.6667 12.7333 13.0889 12.2444 13.8 11.5333C14.2 11.1333 14.5333 10.7 14.8 10.2333C15.0667 9.76667 15.2 9.26667 15.2 8.73333C15.2 7.6 14.8167 6.75 14.05 6.18333C13.2833 5.61667 12.3778 5.33333 11.3333 5.33333C10.3556 5.33333 9.53333 5.60556 8.86667 6.15C8.2 6.69444 7.73333 7.35556 7.46667 8.13333L9.33333 8.86667C9.44444 8.48889 9.65555 8.11667 9.96667 7.75C10.2778 7.38333 10.7333 7.2 11.3333 7.2C11.9333 7.2 12.3833 7.36667 12.6833 7.7C12.9833 8.03333 13.1333 8.4 13.1333 8.8C13.1333 9.17778 13.0222 9.51667 12.8 9.81667C12.5778 10.1167 12.3111 10.4222 12 10.7333C11.2222 11.4 10.75 11.9278 10.5833 12.3167C10.4167 12.7056 10.3333 13.4 10.3333 14.4Z"/>
+						</Grid>
+					</Button>
+					<Button x:Name="NotifButton"
+							Background="Transparent" BorderThickness="0" Padding="0"
+							Cursor="Hand"
+							Command="{Binding ToggleNotificationsCommand}">
+						<Canvas Width="56" Height="56">
+							<Path x:Name="NotifBg"
+								  Data="{StaticResource CutCornerFrameGeometry}"
+								  Fill="#4D6357FF" />
+							<Path Fill="#6357FF"
+								  Data="M17.334 37.3337V34.667H20.0007V25.3337C20.0007 23.4892 20.5562 21.8503 21.6673 20.417C22.7784 18.9837 24.2229 18.0448 26.0007 17.6003V16.667C26.0007 16.1114 26.1951 15.6392 26.584 15.2503C26.9729 14.8614 27.4451 14.667 28.0007 14.667C28.5562 14.667 29.0284 14.8614 29.4173 15.2503C29.8062 15.6392 30.0007 16.1114 30.0007 16.667V17.6003C31.7784 18.0448 33.2229 18.9837 34.334 20.417C35.4451 21.8503 36.0007 23.4892 36.0007 25.3337V34.667H38.6673V37.3337H17.334ZM28.0007 41.3337C27.2673 41.3337 26.6395 41.0725 26.1173 40.5503C25.5951 40.0281 25.334 39.4003 25.334 38.667H30.6673C30.6673 39.4003 30.4062 40.0281 29.884 40.5503C29.3618 41.0725 28.734 41.3337 28.0007 41.3337ZM22.6673 34.667H33.334V25.3337C33.334 23.867 32.8118 22.6114 31.7673 21.567C30.7229 20.5225 29.4673 20.0003 28.0007 20.0003C26.534 20.0003 25.2784 20.5225 24.234 21.567C23.1895 22.6114 22.6673 23.867 22.6673 25.3337V34.667Z"/>
+							<Border Canvas.Left="36" Canvas.Top="0" Width="20" Height="20"
+									Background="#FF383C"
+									IsVisible="{Binding HasUnreadNotifications}">
+								<TextBlock Text="{Binding UnreadNotificationsCount}"
+										   Foreground="White"
+										   FontFamily="{DynamicResource AppPixelFont}"
+										   FontSize="14"
+										   HorizontalAlignment="Center"
+										   VerticalAlignment="Center"/>
+							</Border>
+						</Canvas>
+					</Button>
+					<Button x:Name="SettingsButton" Background="Transparent" BorderThickness="0" Padding="0"
+							Cursor="Hand"
+							Click="OnSettingsButtonClick">
+						<Grid Width="56" Height="56">
+							<Path x:Name="SettingsBg"
+								  Data="{StaticResource CutCornerFrameGeometry}"
+								  Fill="#4D6357FF" />
+							<Path Width="24" Height="24" Stretch="Uniform" Fill="#6357FF"
+								  HorizontalAlignment="Center" VerticalAlignment="Center"
+								  Data="M24.3329 41.3337L23.7996 37.067C23.5107 36.9559 23.2385 36.8225 22.9829 36.667C22.7274 36.5114 22.4774 36.3448 22.2329 36.167L18.2663 37.8337L14.5996 31.5003L18.0329 28.9003C18.0107 28.7448 17.9996 28.5948 17.9996 28.4503V27.5503C17.9996 27.4059 18.0107 27.2559 18.0329 27.1003L14.5996 24.5003L18.2663 18.167L22.2329 19.8337C22.4774 19.6559 22.7329 19.4892 22.9996 19.3337C23.2663 19.1781 23.5329 19.0448 23.7996 18.9337L24.3329 14.667H31.6663L32.1996 18.9337C32.4885 19.0448 32.7607 19.1781 33.0163 19.3337C33.2718 19.4892 33.5218 19.6559 33.7663 19.8337L37.7329 18.167L41.3996 24.5003L37.9663 27.1003C37.9885 27.2559 37.9996 27.4059 37.9996 27.5503V28.4503C37.9996 28.5948 37.9774 28.7448 37.9329 28.9003L41.3663 31.5003L37.6996 37.8337L33.7663 36.167C33.5218 36.3448 33.2663 36.5114 32.9996 36.667C32.7329 36.8225 32.4663 36.9559 32.1996 37.067L31.6663 41.3337H24.3329ZM26.6663 38.667H29.2996L29.7663 35.1337C30.4552 34.9559 31.0941 34.6948 31.6829 34.3503C32.2718 34.0059 32.8107 33.5892 33.2996 33.1003L36.5996 34.467L37.8996 32.2003L35.0329 30.0337C35.1441 29.7225 35.2218 29.3948 35.2663 29.0503C35.3107 28.7059 35.3329 28.3559 35.3329 28.0003C35.3329 27.6448 35.3107 27.2948 35.2663 26.9503C35.2218 26.6059 35.1441 26.2781 35.0329 25.967L37.8996 23.8003L36.5996 21.5337L33.2996 22.9337C32.8107 22.4225 32.2718 21.9948 31.6829 21.6503C31.0941 21.3059 30.4552 21.0448 29.7663 20.867L29.3329 17.3337H26.6996L26.2329 20.867C25.5441 21.0448 24.9052 21.3059 24.3163 21.6503C23.7274 21.9948 23.1885 22.4114 22.6996 22.9003L19.3996 21.5337L18.0996 23.8003L20.9663 25.9337C20.8552 26.267 20.7774 26.6003 20.7329 26.9337C20.6885 27.267 20.6663 27.6225 20.6663 28.0003C20.6663 28.3559 20.6885 28.7003 20.7329 29.0337C20.7774 29.367 20.8552 29.7003 20.9663 30.0337L18.0996 32.2003L19.3996 34.467L22.6996 33.067C23.1885 33.5781 23.7274 34.0059 24.3163 34.3503C24.9052 34.6948 25.5441 34.9559 26.2329 35.1337L26.6663 38.667ZM28.0663 32.667C29.3552 32.667 30.4552 32.2114 31.3663 31.3003C32.2774 30.3892 32.7329 29.2892 32.7329 28.0003C32.7329 26.7114 32.2774 25.6114 31.3663 24.7003C30.4552 23.7892 29.3552 23.3337 28.0663 23.3337C26.7552 23.3337 25.6496 23.7892 24.7496 24.7003C23.8496 25.6114 23.3996 26.7114 23.3996 28.0003C23.3996 29.2892 23.8496 30.3892 24.7496 31.3003C25.6496 32.2114 26.7552 32.667 28.0663 32.667Z"/>
+						</Grid>
+					</Button>
+					<Button x:Name="ProfileButton"
+							Background="Transparent" BorderThickness="0" Padding="0"
+							Cursor="Hand"
+							Click="OnProfileButtonClick"
+							IsVisible="{Binding !IsGuest}">
+						<Canvas Width="56" Height="56">
+							<Path x:Name="ProfileBg"
+								  Fill="#6357FF"
+								  Data="{StaticResource CutCornerFrameGeometry}"/>
+							<Path IsVisible="{Binding HasAvatar}"
+								  RenderOptions.BitmapInterpolationMode="HighQuality"
+								  Data="{StaticResource CutCornerFrameGeometry}">
+								<Path.Fill>
+									<ImageBrush Source="{Binding AvatarImage}"
+												Stretch="UniformToFill"
+												AlignmentX="Center"
+												AlignmentY="Center"/>
+								</Path.Fill>
+							</Path>
+							<Path IsVisible="{Binding !HasAvatar}"
+								  Fill="White"
+								  Data="M20.9 18.2H33.5V19.6H34.9V28H33.5V29.4H23.7V35H20.9V18.2ZM23.7 26.6H32.1V21H23.7V26.6Z"/>
+						</Canvas>
+					</Button>
+					<Button x:Name="GuestButton"
+							Click="OnGuestButtonClick"
+							Background="Transparent"
+							BorderThickness="0"
+							Padding="0"
+							Cursor="Hand"
+							IsVisible="{Binding IsGuest}">
+						<Canvas Width="56" Height="56" IsHitTestVisible="False">
+							<Path x:Name="GuestBg"
+								  Fill="#786DFF"
+								  Data="{StaticResource CutCornerFrameGeometry}" />
+							<Path Fill="White"
+								  Data="M24.234 26.434C23.1895 25.3895 22.6673 24.134 22.6673 22.6673C22.6673 21.2007 23.1895 19.9451 24.234 18.9007C25.2784 17.8562 26.534 17.334 28.0007 17.334C29.4673 17.334 30.7229 17.8562 31.7673 18.9007C32.8118 19.9451 33.334 21.2007 33.334 22.6673C33.334 24.134 32.8118 25.3895 31.7673 26.434C30.7229 27.4784 29.4673 28.0007 28.0007 28.0007C26.534 28.0007 25.2784 27.4784 24.234 26.434ZM17.334 38.6673V34.934C17.334 34.1784 17.5284 33.484 17.9173 32.8507C18.3062 32.2173 18.8229 31.734 19.4673 31.4007C20.8451 30.7118 22.2451 30.1951 23.6673 29.8507C25.0895 29.5062 26.534 29.334 28.0007 29.334C29.4673 29.334 30.9118 29.5062 32.334 29.8507C33.7562 30.1951 35.1562 30.7118 36.534 31.4007C37.1784 31.734 37.6951 32.2173 38.084 32.8507C38.4729 33.484 38.6673 34.1784 38.6673 34.934V38.6673H17.334ZM20.0007 36.0007H36.0007V34.934C36.0007 34.6895 35.9395 34.4673 35.8173 34.2673C35.6951 34.0673 35.534 33.9118 35.334 33.8007C34.134 33.2007 32.9229 32.7507 31.7007 32.4507C30.4784 32.1507 29.2451 32.0007 28.0007 32.0007C26.7562 32.0007 25.5229 32.1507 24.3007 32.4507C23.0784 32.7507 21.8673 33.2007 20.6673 33.8007C20.4673 33.9118 20.3062 34.0673 20.184 34.2673C20.0618 34.4673 20.0007 34.6895 20.0007 34.934V36.0007ZM29.884 24.5507C30.4062 24.0284 30.6673 23.4007 30.6673 22.6673C30.6673 21.934 30.4062 21.3062 29.884 20.784C29.3618 20.2618 28.734 20.0007 28.0007 20.0007C27.2673 20.0007 26.6395 20.2618 26.1173 20.784C25.5951 21.3062 25.334 21.934 25.334 22.6673C25.334 23.4007 25.5951 24.0284 26.1173 24.5507C26.6395 25.0729 27.2673 25.334 28.0007 25.334C28.734 25.334 29.3618 25.0729 29.884 24.5507Z" />
+						</Canvas>
+					</Button>
+				</StackPanel>
+			</Grid>
+			<!-- The 688px double card is sized so [double double] with the 16px gap fills the
+			     1392px card row exactly (688*2+16); four 336 singles do the same (336*4+16*3).
+			     The WrapPanel is LEFT-aligned: a partial row (few devices) starts at the
+			     viewport's left edge — 24 from the window edge — instead of floating centered. -->
+
+			<!-- AllowAutoHide off: the overlay bar otherwise materialises only under the pointer,
+			     which reads as "no scroll here". Auto visibility still keeps it away entirely
+			     while the cards fit; when they overflow, the 4px pgScrollViewer bar stays put —
+			     same persistent-bar behaviour as the agreement step.
+			     Design redlines, measured against the WINDOW (verified pixel-by-pixel in the
+			     running app): leftmost card 24 from the left window edge, bar 10 from the right
+			     window edge with a 10px gap to the cards, track from 24 below the header band
+			     to 24 above the window bottom. The window edge is NOT this view's edge — on the
+			     Home step MainWindow's RootLayoutGrid carries Margin=24 on all sides (set at
+			     runtime by GetLayoutProfile in MainWindow.axaml.cs — NOT the margin in
+			     MainWindow.axaml, which the profile overrides), and HomeView's own page Grid
+			     adds another 20 — the margins below compensate as follows:
+			     - left: -20 cancels the page margin so the viewport starts at the host's 24 —
+			       which is exactly where the leftmost card must sit;
+			     - right: -44 = 20 (page) + 24 (host) puts the ScrollViewer edge on the
+			       window edge; the bar's own 10px right margin is then measured from the
+			       real window edge, and the bar column reserves 10+4+10 so the viewport
+			       ends 10+4+10 = 24 before it — making the viewport exactly the 1392px
+			       card row wide at the default 1440 window (1440-24-24): zero centering
+			       slack, cards pinned 24 from the left edge and 10 from the bar;
+			     - bottom: -20 lands the ScrollViewer 24 above the window bottom
+			       (24 host + 20 page - 20 = 24), which is where the track ends;
+			     - top: the 24 top inset IS the design's 24 below the header band;
+			     - the vertical insets live HERE, outside the scrollable content (the
+			       ItemsControl carries none) — inside they inflate the scroll extent and
+			       summon the bar even when every card is already on screen. -->
+			<!-- The 24px top inset is split 14 (outer margin) + 10 (ItemsControl margin, INSIDE
+			     the scrollable content): the hover lift (DeviceCardBase, translateY(-10px))
+			     renders above a first-row card, and the ScrollViewer's ScrollContentPresenter
+			     always clips at the viewport edge — every ClipToBounds="False" around it
+			     notwithstanding — so the lift needs its 10px of headroom inside that clip.
+			     One outer margin of 24 put the clip line exactly on the cards' top edge and
+			     visibly cut the rising card. The split keeps every design position: cards sit
+			     at the same 14+10 = 24 below the header, and extent and viewport both grow by
+			     the same 10px, so the no-scroll fit (and the bar's appearance) is unchanged.
+			     The bar keeps its 24 via the extra 10 in its own top margin below. -->
+			<ScrollViewer Grid.Row="1"
+						  Classes="pgScrollViewer"
+						  ClipToBounds="False"
+						  AllowAutoHide="False"
+						  Margin="-20,14,-44,-20"
+						  HorizontalScrollBarVisibility="Disabled"
+						  VerticalScrollBarVisibility="Auto">
+					<ScrollViewer.Styles>
+						<Style Selector="ScrollBar:vertical">
+							<Setter Property="Margin" Value="10,10,10,0" />
+						</Style>
+					</ScrollViewer.Styles>
+					<ItemsControl ClipToBounds="False"
+								  Margin="0,10,0,0"
+								  ItemsSource="{Binding Devices}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<WrapPanel ItemSpacing="16" LineSpacing="16" ClipToBounds="False"
+									   HorizontalAlignment="Left"/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+
+					<ItemsControl.DataTemplates>
+						<DataTemplate DataType="{x:Type viewmodels:SingleCardViewModel}">
+							<local:SingleCard Tapped="OnDeviceCardTapped"/>
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type viewmodels:DoubleCardViewModel}">
+							<local:DoubleCard Tapped="OnDeviceCardTapped"/>
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type viewmodels:InactiveDeviceCardViewModel}">
+							<Panel>
+								<local:InactiveDeviceCard IsVisible="{Binding !IsDouble}"/>
+								<local:InactiveDoubleCard IsVisible="{Binding IsDouble}"/>
+							</Panel>
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type viewmodels:AddDeviceCardViewModel}">
+							<local:AddDeviceCard/>
+						</DataTemplate>
+					</ItemsControl.DataTemplates>
+					</ItemsControl>
+				</ScrollViewer>
+		</Grid>
+
+		<!-- Profile dropdown popup -->
+		<Popup x:Name="ProfilePopup"
+			   PlacementTarget="{Binding ElementName=ProfileButton}"
+			   Placement="BottomEdgeAlignedRight"
+			   HorizontalOffset="21"
+			   VerticalOffset="-12"
+			   IsLightDismissEnabled="True">
+			<!-- MinWidth, never a fixed Width: the rows carry localized text, and at 204 the uk
+			     "Зв'язатися з нами" ended exactly flush with the row's right edge (QA
+			     2026-08-31 — "додати відступ"). The chamfered background is therefore built
+			     from 16px corner caps plus a stretching middle, so a longer label widens the
+			     whole menu instead of running out of room; MaxWidth bounds the greeting,
+			     whose username is arbitrary and ellipsized. -->
+			<Panel MinWidth="204" MaxWidth="280" Margin="20">
+				<Panel.Effect>
+					<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="40" Color="#6357FF" Opacity="0.3"/>
+				</Panel.Effect>
+				<Grid ColumnDefinitions="16,*,16">
+					<Rectangle Grid.Column="0" Fill="Black" Margin="0,0,0,16"/>
+					<Path Grid.Column="0" Fill="Black" VerticalAlignment="Bottom" Width="16" Height="16"
+						  Data="M16 16 L0 0 L16 0 Z"/>
+					<Rectangle Grid.Column="1" Fill="Black"/>
+					<Path Grid.Column="2" Fill="Black" VerticalAlignment="Top" Width="16" Height="16"
+						  Data="M0 0 L16 16 L0 16 Z"/>
+					<Rectangle Grid.Column="2" Fill="Black" Margin="0,16,0,0"/>
+				</Grid>
+				<StackPanel Margin="0,0,0,12">
+					<Border Height="44" Padding="24,0,16,0">
+						<TextBlock Text="{Binding GreetingText}"
+								   TextTrimming="CharacterEllipsis"
+								   ToolTip.Tip="{Binding GreetingText}"
+								   Foreground="#BEBCEA"
+								   Opacity="0.7"
+								   VerticalAlignment="Center"
+								   FontFamily="Segoe UI"
+								   FontWeight="Regular"
+								   FontSize="16"/>
+					</Border>
+					<Button Classes="profileMenuItem" Click="OnProfileMenuProfileClick">
+						<StackPanel Orientation="Horizontal" Spacing="12" Margin="8,0">
+							<Path Width="20" Height="20" Stretch="Uniform" Fill="#B3BEBCEA" VerticalAlignment="Center"
+								  Data="M5.175 6.825C4.39167 6.04167 4 5.1 4 4C4 2.9 4.39167 1.95833 5.175 1.175C5.95833 0.391667 6.9 0 8 0C9.1 0 10.0417 0.391667 10.825 1.175C11.6083 1.95833 12 2.9 12 4C12 5.1 11.6083 6.04167 10.825 6.825C10.0417 7.60833 9.1 8 8 8C6.9 8 5.95833 7.60833 5.175 6.825ZM0 16V13.2C0 12.6333 0.145833 12.1125 0.4375 11.6375C0.729167 11.1625 1.11667 10.8 1.6 10.55C2.63333 10.0333 3.68333 9.64583 4.75 9.3875C5.81667 9.12917 6.9 9 8 9C9.1 9 10.1833 9.12917 11.25 9.3875C12.3167 9.64583 13.3667 10.0333 14.4 10.55C14.8833 10.8 15.2708 11.1625 15.5625 11.6375C15.8542 12.1125 16 12.6333 16 13.2V16H0ZM2 14H14V13.2C14 13.0167 13.9542 12.85 13.8625 12.7C13.7708 12.55 13.65 12.4333 13.5 12.35C12.6 11.9 11.6917 11.5625 10.775 11.3375C9.85833 11.1125 8.93333 11 8 11C7.06667 11 6.14167 11.1125 5.225 11.3375C4.30833 11.5625 3.4 11.9 2.5 12.35C2.35 12.4333 2.22917 12.55 2.1375 12.7C2.04583 12.85 2 13.0167 2 13.2V14ZM9.4125 5.4125C9.80417 5.02083 10 4.55 10 4C10 3.45 9.80417 2.97917 9.4125 2.5875C9.02083 2.19583 8.55 2 8 2C7.45 2 6.97917 2.19583 6.5875 2.5875C6.19583 2.97917 6 3.45 6 4C6 4.55 6.19583 5.02083 6.5875 5.4125C6.97917 5.80417 7.45 6 8 6C8.55 6 9.02083 5.80417 9.4125 5.4125Z"/>
+							<TextBlock Text="{DynamicResource HomeView_ProfileMenu_Profile}" Foreground="White" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+					<Button Classes="profileMenuItem" Click="OnMenuContactUsClick">
+						<StackPanel Orientation="Horizontal" Spacing="12" Margin="8,0">
+							<Path Width="20" Height="20" Stretch="Uniform" Fill="#B3BEBCEA" VerticalAlignment="Center"
+								  Data="M9 20L8.75 17H8.5C6.13333 17 4.125 16.175 2.475 14.525C0.825 12.875 0 10.8667 0 8.5C0 6.13333 0.825 4.125 2.475 2.475C4.125 0.825 6.13333 0 8.5 0C9.68333 0 10.7875 0.220833 11.8125 0.6625C12.8375 1.10417 13.7375 1.7125 14.5125 2.4875C15.2875 3.2625 15.8958 4.1625 16.3375 5.1875C16.7792 6.2125 17 7.31667 17 8.5C17 9.75 16.7958 10.95 16.3875 12.1C15.9792 13.25 15.4208 14.3167 14.7125 15.3C14.0042 16.2833 13.1625 17.175 12.1875 17.975C11.2125 18.775 10.15 19.45 9 20ZM11 16.35C12.1833 15.35 13.1458 14.1792 13.8875 12.8375C14.6292 11.4958 15 10.05 15 8.5C15 6.68333 14.3708 5.14583 13.1125 3.8875C11.8542 2.62917 10.3167 2 8.5 2C6.68333 2 5.14583 2.62917 3.8875 3.8875C2.62917 5.14583 2 6.68333 2 8.5C2 10.3167 2.62917 11.8542 3.8875 13.1125C5.14583 14.3708 6.68333 15 8.5 15H11V16.35ZM9.2 13.675C9.4 13.475 9.5 13.2333 9.5 12.95C9.5 12.6667 9.4 12.425 9.2 12.225C9 12.025 8.75833 11.925 8.475 11.925C8.19167 11.925 7.95 12.025 7.75 12.225C7.55 12.425 7.45 12.6667 7.45 12.95C7.45 13.2333 7.55 13.475 7.75 13.675C7.95 13.875 8.19167 13.975 8.475 13.975C8.75833 13.975 9 13.875 9.2 13.675ZM7.75 10.8H9.25C9.25 10.3 9.3 9.95 9.4 9.75C9.5 9.55 9.81667 9.18333 10.35 8.65C10.65 8.35 10.9 8.025 11.1 7.675C11.3 7.325 11.4 6.95 11.4 6.55C11.4 5.7 11.1125 5.0625 10.5375 4.6375C9.9625 4.2125 9.28333 4 8.5 4C7.76667 4 7.15 4.20417 6.65 4.6125C6.15 5.02083 5.8 5.51667 5.6 6.1L7 6.65C7.08333 6.36667 7.24167 6.0875 7.475 5.8125C7.70833 5.5375 8.05 5.4 8.5 5.4C8.95 5.4 9.2875 5.525 9.5125 5.775C9.7375 6.025 9.85 6.3 9.85 6.6C9.85 6.88333 9.76667 7.1375 9.6 7.3625C9.43333 7.5875 9.23333 7.81667 9 8.05C8.41667 8.55 8.0625 8.94583 7.9375 9.2375C7.8125 9.52917 7.75 10.05 7.75 10.8Z"/>
+							<TextBlock Text="{DynamicResource HomeView_Menu_ContactUs}" Foreground="White" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+					<Button Classes="profileMenuItem" Click="OnMenuInformationClick">
+						<StackPanel Orientation="Horizontal" Spacing="12" Margin="8,0">
+							<Path Width="20" Height="20" Stretch="Uniform" Fill="#B3BEBCEA" VerticalAlignment="Center"
+								  Data="M9 15H11V9H9V15ZM10.7125 6.7125C10.9042 6.52083 11 6.28333 11 6C11 5.71667 10.9042 5.47917 10.7125 5.2875C10.5208 5.09583 10.2833 5 10 5C9.71667 5 9.47917 5.09583 9.2875 5.2875C9.09583 5.47917 9 5.71667 9 6C9 6.28333 9.09583 6.52083 9.2875 6.7125C9.47917 6.90417 9.71667 7 10 7C10.2833 7 10.5208 6.90417 10.7125 6.7125ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z"/>
+							<TextBlock Text="{DynamicResource HomeView_Menu_Information}" Foreground="White" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+					<Button Classes="profileMenuItem" Command="{Binding LogoutCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="12" Margin="8,0">
+							<Path Width="20" Height="20" Stretch="Uniform" Fill="#B3BEBCEA" VerticalAlignment="Center"
+								  Data="M2 18C1.45 18 0.979167 17.8042 0.5875 17.4125C0.195833 17.0208 0 16.55 0 16V2C0 1.45 0.195833 0.979167 0.5875 0.5875C0.979167 0.195833 1.45 0 2 0H9V2H2V16H9V18H2ZM13 14L11.625 12.55L14.175 10H6V8H14.175L11.625 5.45L13 4L18 9L13 14Z"/>
+							<TextBlock Text="{DynamicResource HomeView_ProfileMenu_LogOut}" Foreground="White" VerticalAlignment="Center"/>
+						</StackPanel>
+					</Button>
+				</StackPanel>
+			</Panel>
+		</Popup>
+
+		<!-- Guest dropdown popup -->
+		<Popup x:Name="GuestPopup"
+			   PlacementTarget="{Binding ElementName=GuestButton}"
+			   Placement="BottomEdgeAlignedRight"
+			   HorizontalOffset="21"
+			   VerticalOffset="-12"
+			   IsLightDismissEnabled="True">
+			<!-- Same stretch-to-content chrome as ProfilePopup above, and it matters more here:
+			     these rows render at 16px SemiBold, where the uk labels did not fit the fixed
+			     204 at all. -->
+			<Panel MinWidth="204" MaxWidth="280" Margin="20">
+				<Panel.Effect>
+					<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="40" Color="#6357FF" Opacity="0.3"/>
+				</Panel.Effect>
+				<Grid ColumnDefinitions="16,*,16">
+					<Rectangle Grid.Column="0" Fill="Black" Margin="0,0,0,16"/>
+					<Path Grid.Column="0" Fill="Black" VerticalAlignment="Bottom" Width="16" Height="16"
+						  Data="M16 16 L0 0 L16 0 Z"/>
+					<Rectangle Grid.Column="1" Fill="Black"/>
+					<Path Grid.Column="2" Fill="Black" VerticalAlignment="Top" Width="16" Height="16"
+						  Data="M0 0 L16 16 L0 16 Z"/>
+					<Rectangle Grid.Column="2" Fill="Black" Margin="0,16,0,0"/>
+				</Grid>
+				<StackPanel Margin="0,0,0,8">
+					<Border Height="44" Padding="16,0,16,0">
+						<TextBlock Text="{DynamicResource HomeView_GuestMenu_Title}"
+								   Foreground="#BEBCEA"
+								   Opacity="0.7"
+								   VerticalAlignment="Center"
+								   FontFamily="Segoe UI"
+								   FontWeight="SemiBold"
+								   FontSize="18"
+								   LineHeight="24"/>
+					</Border>
+					<Button Classes="profileMenuItem" Height="44" Click="OnGuestMenuSignUpClick">
+						<StackPanel Orientation="Horizontal" Spacing="12" Margin="8,0">
+							<Path Width="20" Height="20" Stretch="Uniform" Fill="#B3BEBCEA" VerticalAlignment="Center"
+								  Data="M9 18V16H16V2H9V0H16C16.55 0 17.0208 0.195833 17.4125 0.5875C17.8042 0.979167 18 1.45 18 2V16C18 16.55 17.8042 17.0208 17.4125 17.4125C17.0208 17.8042 16.55 18 16 18H9ZM7 14L5.625 12.55L8.175 10H0V8H8.175L5.625 5.45L7 4L12 9L7 14Z"/>
+							<TextBlock Text="{DynamicResource HomeView_GuestMenu_SignUp}" Foreground="White" VerticalAlignment="Center"
+									   FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="16" LineHeight="24"/>
+						</StackPanel>
+					</Button>
+					<Button Classes="profileMenuItem" Height="44" Click="OnMenuContactUsClick">
+						<StackPanel Orientation="Horizontal" Spacing="12" Margin="8,0">
+							<Path Width="20" Height="20" Stretch="Uniform" Fill="#B3BEBCEA" VerticalAlignment="Center"
+								  Data="M9 20L8.75 17H8.5C6.13333 17 4.125 16.175 2.475 14.525C0.825 12.875 0 10.8667 0 8.5C0 6.13333 0.825 4.125 2.475 2.475C4.125 0.825 6.13333 0 8.5 0C9.68333 0 10.7875 0.220833 11.8125 0.6625C12.8375 1.10417 13.7375 1.7125 14.5125 2.4875C15.2875 3.2625 15.8958 4.1625 16.3375 5.1875C16.7792 6.2125 17 7.31667 17 8.5C17 9.75 16.7958 10.95 16.3875 12.1C15.9792 13.25 15.4208 14.3167 14.7125 15.3C14.0042 16.2833 13.1625 17.175 12.1875 17.975C11.2125 18.775 10.15 19.45 9 20ZM11 16.35C12.1833 15.35 13.1458 14.1792 13.8875 12.8375C14.6292 11.4958 15 10.05 15 8.5C15 6.68333 14.3708 5.14583 13.1125 3.8875C11.8542 2.62917 10.3167 2 8.5 2C6.68333 2 5.14583 2.62917 3.8875 3.8875C2.62917 5.14583 2 6.68333 2 8.5C2 10.3167 2.62917 11.8542 3.8875 13.1125C5.14583 14.3708 6.68333 15 8.5 15H11V16.35ZM9.2 13.675C9.4 13.475 9.5 13.2333 9.5 12.95C9.5 12.6667 9.4 12.425 9.2 12.225C9 12.025 8.75833 11.925 8.475 11.925C8.19167 11.925 7.95 12.025 7.75 12.225C7.55 12.425 7.45 12.6667 7.45 12.95C7.45 13.2333 7.55 13.475 7.75 13.675C7.95 13.875 8.19167 13.975 8.475 13.975C8.75833 13.975 9 13.875 9.2 13.675ZM7.75 10.8H9.25C9.25 10.3 9.3 9.95 9.4 9.75C9.5 9.55 9.81667 9.18333 10.35 8.65C10.65 8.35 10.9 8.025 11.1 7.675C11.3 7.325 11.4 6.95 11.4 6.55C11.4 5.7 11.1125 5.0625 10.5375 4.6375C9.9625 4.2125 9.28333 4 8.5 4C7.76667 4 7.15 4.20417 6.65 4.6125C6.15 5.02083 5.8 5.51667 5.6 6.1L7 6.65C7.08333 6.36667 7.24167 6.0875 7.475 5.8125C7.70833 5.5375 8.05 5.4 8.5 5.4C8.95 5.4 9.2875 5.525 9.5125 5.775C9.7375 6.025 9.85 6.3 9.85 6.6C9.85 6.88333 9.76667 7.1375 9.6 7.3625C9.43333 7.5875 9.23333 7.81667 9 8.05C8.41667 8.55 8.0625 8.94583 7.9375 9.2375C7.8125 9.52917 7.75 10.05 7.75 10.8Z"/>
+							<TextBlock Text="{DynamicResource HomeView_Menu_ContactUs}" Foreground="White" VerticalAlignment="Center"
+									   FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="16" LineHeight="24"/>
+						</StackPanel>
+					</Button>
+					<Button Classes="profileMenuItem" Height="44" Click="OnMenuInformationClick">
+						<StackPanel Orientation="Horizontal" Spacing="12" Margin="8,0">
+							<Path Width="20" Height="20" Stretch="Uniform" Fill="#B3BEBCEA" VerticalAlignment="Center"
+								  Data="M9 15H11V9H9V15ZM10.7125 6.7125C10.9042 6.52083 11 6.28333 11 6C11 5.71667 10.9042 5.47917 10.7125 5.2875C10.5208 5.09583 10.2833 5 10 5C9.71667 5 9.47917 5.09583 9.2875 5.2875C9.09583 5.47917 9 5.71667 9 6C9 6.28333 9.09583 6.52083 9.2875 6.7125C9.47917 6.90417 9.71667 7 10 7C10.2833 7 10.5208 6.90417 10.7125 6.7125ZM10 20C8.61667 20 7.31667 19.7375 6.1 19.2125C4.88333 18.6875 3.825 17.975 2.925 17.075C2.025 16.175 1.3125 15.1167 0.7875 13.9C0.2625 12.6833 0 11.3833 0 10C0 8.61667 0.2625 7.31667 0.7875 6.1C1.3125 4.88333 2.025 3.825 2.925 2.925C3.825 2.025 4.88333 1.3125 6.1 0.7875C7.31667 0.2625 8.61667 0 10 0C11.3833 0 12.6833 0.2625 13.9 0.7875C15.1167 1.3125 16.175 2.025 17.075 2.925C17.975 3.825 18.6875 4.88333 19.2125 6.1C19.7375 7.31667 20 8.61667 20 10C20 11.3833 19.7375 12.6833 19.2125 13.9C18.6875 15.1167 17.975 16.175 17.075 17.075C16.175 17.975 15.1167 18.6875 13.9 19.2125C12.6833 19.7375 11.3833 20 10 20ZM10 18C12.2333 18 14.125 17.225 15.675 15.675C17.225 14.125 18 12.2333 18 10C18 7.76667 17.225 5.875 15.675 4.325C14.125 2.775 12.2333 2 10 2C7.76667 2 5.875 2.775 4.325 4.325C2.775 5.875 2 7.76667 2 10C2 12.2333 2.775 14.125 4.325 15.675C5.875 17.225 7.76667 18 10 18Z"/>
+							<TextBlock Text="{DynamicResource HomeView_Menu_Information}" Foreground="White" VerticalAlignment="Center"
+									   FontFamily="Segoe UI" FontWeight="SemiBold" FontSize="16" LineHeight="24"/>
+						</StackPanel>
+					</Button>
+				</StackPanel>
+			</Panel>
+		</Popup>
+	</Grid>
+</UserControl>

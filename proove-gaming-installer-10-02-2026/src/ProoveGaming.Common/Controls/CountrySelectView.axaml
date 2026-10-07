@@ -1,0 +1,154 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 x:Class="ProoveGaming.Common.Controls.CountrySelectView"
+			 ClipToBounds="False">
+	<UserControl.Styles>
+		<StyleInclude Source="avares://ProoveGaming.Common/Styles/SharedFieldBoxStyles.axaml" />
+		<!-- Declared after the include so the open state wins over the shared idle/filled/hover rules. -->
+		<Style Selector="Border#CountryContainer.open">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Button#CountryHeaderButton">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="19,0" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="VerticalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions" Value="{x:Null}" />
+		</Style>
+		<Style Selector="Button#CountryHeaderButton:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button#CountryHeaderButton:pressed /template/ ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="RenderTransform" Value="none" />
+		</Style>
+		<Style Selector="Panel#CountryDropdownOverlay Button">
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions" Value="{x:Null}" />
+			<Setter Property="CornerRadius" Value="0" />
+		</Style>
+		<Style Selector="Panel#CountryDropdownOverlay Button /template/ ContentPresenter">
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Transitions" Value="{x:Null}" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="Panel#CountryDropdownOverlay Button:pressed /template/ ContentPresenter">
+			<Setter Property="RenderTransform" Value="none" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="Panel#CountryDropdownOverlay Button:pointerover /template/ ContentPresenter">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+	</UserControl.Styles>
+
+	<Grid ClipToBounds="False">
+		<Border x:Name="CountryContainer"
+				Classes="pgFieldBox"
+				Height="55"
+				HorizontalAlignment="Stretch">
+			<Button x:Name="CountryHeaderButton">
+				<Grid ColumnDefinitions="24,16,*,Auto" VerticalAlignment="Center">
+					<Path Grid.Column="0"
+						  Width="18" Height="18" Stretch="Uniform"
+						  Fill="#80BEBCEA"
+						  HorizontalAlignment="Left" VerticalAlignment="Center"
+						  Data="M17.9,17.39C17.64,16.59 16.89,16 16,16H15V13A1,1 0 0,0 14,12H8V10H10A1,1 0 0,0 11,9V7H13A2,2 0 0,0 15,5V4.59C17.93,5.77 20,8.64 20,12C20,14.08 19.2,15.97 17.9,17.39M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A2,2 0 0,0 11,18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+					<TextBlock x:Name="CountrySelectedText"
+							   Grid.Column="2"
+							   FontFamily="Segoe UI"
+							   FontWeight="400"
+							   FontSize="16"
+							   LineHeight="24"
+							   Foreground="#B2BEBCEA"
+							   VerticalAlignment="Center"/>
+					<Grid Grid.Column="3"
+						  Width="12"
+						  Height="8"
+						  VerticalAlignment="Center">
+						<Path x:Name="CountryArrowDownIcon"
+							  Width="12" Height="8" Stretch="Uniform"
+							  Fill="#B2BEBCEA"
+							  Data="M6 7.4L0 1.4L1.4 0L6 4.6L10.6 0L12 1.4L6 7.4Z"/>
+						<Path x:Name="CountryArrowUpIcon"
+							  Width="12" Height="8" Stretch="Uniform"
+							  Fill="#B2BEBCEA"
+							  IsVisible="False"
+							  Data="M0 6L6 0L12 6L10.6 7.4L6 2.8L1.4 7.4L0 6Z"/>
+					</Grid>
+				</Grid>
+			</Button>
+		</Border>
+
+		<Popup x:Name="CountryDropdownPopup"
+			   PlacementTarget="{Binding #CountryContainer}"
+			   Placement="BottomEdgeAlignedLeft"
+			   IsLightDismissEnabled="True"
+			   WindowManagerAddShadowHint="False"
+			   OverlayDismissEventPassThrough="True">
+			<Panel x:Name="CountryDropdownOverlay"
+				   Width="{Binding #CountryContainer.Bounds.Width}"
+				   Margin="0,4,0,0">
+				<Panel.Effect>
+					<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="40" Color="#6357FF" Opacity="0.3" />
+				</Panel.Effect>
+				<Border Background="#000000"
+						BorderBrush="#6357FF"
+						BorderThickness="1"
+						Padding="8">
+					<ScrollViewer x:Name="CountryDropdownScroll"
+								  HorizontalScrollBarVisibility="Disabled"
+								  VerticalScrollBarVisibility="Visible"
+								  AllowAutoHide="False"
+								  MaxHeight="240">
+						<ScrollViewer.Styles>
+							<!-- Thin purple thumb, transparent track. Always visible for easy clicking. -->
+							<Style Selector="ScrollBar:vertical">
+								<Setter Property="Width" Value="6" />
+								<Setter Property="MinWidth" Value="6" />
+								<Setter Property="MaxWidth" Value="6" />
+								<Setter Property="Background" Value="#4DBEBCEA" />
+								<Setter Property="BorderThickness" Value="0" />
+							</Style>
+							<Style Selector="ScrollBar:vertical /template/ Border">
+								<Setter Property="Background" Value="#4DBEBCEA" />
+								<Setter Property="BorderBrush" Value="Transparent" />
+								<Setter Property="BorderThickness" Value="0" />
+							</Style>
+							<Style Selector="ScrollBar:vertical /template/ RepeatButton">
+								<Setter Property="Background" Value="Transparent" />
+								<Setter Property="BorderBrush" Value="Transparent" />
+								<Setter Property="BorderThickness" Value="0" />
+								<Setter Property="Opacity" Value="0" />
+							</Style>
+							<Style Selector="ScrollBar:vertical /template/ Thumb">
+								<Setter Property="Background" Value="#786DFF" />
+								<Setter Property="Opacity" Value="1" />
+								<Setter Property="CornerRadius" Value="0" />
+							</Style>
+							<Style Selector="ScrollBar:vertical /template/ Thumb /template/ Border">
+								<Setter Property="Background" Value="#786DFF" />
+								<Setter Property="BorderBrush" Value="Transparent" />
+								<Setter Property="Opacity" Value="1" />
+								<Setter Property="CornerRadius" Value="0" />
+								<Setter Property="BorderThickness" Value="0" />
+							</Style>
+							<Style Selector="ScrollBar:vertical /template/ Thumb:pointerover, ScrollBar:vertical /template/ Thumb:pressed">
+								<Setter Property="Background" Value="#786DFF" />
+								<Setter Property="Opacity" Value="1" />
+							</Style>
+						</ScrollViewer.Styles>
+						<StackPanel x:Name="CountryItemsStack" />
+					</ScrollViewer>
+				</Border>
+			</Panel>
+		</Popup>
+	</Grid>
+</UserControl>

@@ -1,0 +1,76 @@
+# T800 factory key matrix — profile 0, layer 0, read with GET_KEYMATRIX (0x8A).
+#
+# Captured from a physically connected T800 (VID 0x3151 / PID 0x502D) with:
+#   dotnet run --project ./src/ProoveGaming.Device.Testing -- keys
+#
+# Records are 4 bytes [Type, Code1, Code2, Code3]; the matrix is column-major
+# (column = slot / 6, row = slot % 6). See ../notes.md for the full derivation.
+# Input to decode-t800-matrix.py, which generates T800KeyCatalog.cs.
+slot   1: 00 00 29 00  Escape
+slot   2: 00 00 2B 00  Tab
+slot   3: 00 00 39 00  CapsLock
+slot   4: 00 00 E1 00  LeftShift
+slot   5: 00 00 E0 00  LeftCtrl
+slot   7: 00 00 1E 00  1
+slot   8: 00 00 14 00  Q
+slot   9: 00 00 04 00  A
+slot  11: 00 00 E3 00  LeftWin
+slot  13: 00 00 1F 00  2
+slot  14: 00 00 1A 00  W
+slot  15: 00 00 16 00  S
+slot  16: 00 00 1D 00  Z
+slot  17: 00 00 E2 00  LeftAlt
+slot  19: 00 00 20 00  3
+slot  20: 00 00 08 00  E
+slot  21: 00 00 07 00  D
+slot  22: 00 00 1B 00  X
+slot  25: 00 00 21 00  4
+slot  26: 00 00 15 00  R
+slot  27: 00 00 09 00  F
+slot  28: 00 00 06 00  C
+slot  31: 00 00 22 00  5
+slot  32: 00 00 17 00  T
+slot  33: 00 00 0A 00  G
+slot  34: 00 00 19 00  V
+slot  37: 00 00 23 00  6
+slot  38: 00 00 1C 00  Y
+slot  39: 00 00 0B 00  H
+slot  40: 00 00 05 00  B
+slot  41: 00 00 2C 00  Space
+slot  43: 00 00 24 00  7
+slot  44: 00 00 18 00  U
+slot  45: 00 00 0D 00  J
+slot  46: 00 00 11 00  N
+slot  49: 00 00 25 00  8
+slot  50: 00 00 0C 00  I
+slot  51: 00 00 0E 00  K
+slot  52: 00 00 10 00  M
+slot  55: 00 00 26 00  9
+slot  56: 00 00 12 00  O
+slot  57: 00 00 0F 00  L
+slot  58: 00 00 36 00  Comma
+slot  59: 00 00 E6 00  RightAlt
+slot  61: 00 00 27 00  0
+slot  62: 00 00 13 00  P
+slot  63: 00 00 33 00  Semicolon
+slot  64: 00 00 37 00  Period
+slot  65: 0A 01 00 00  FN
+slot  67: 00 00 2D 00  Minus
+slot  68: 00 00 2F 00  BracketLeft
+slot  69: 00 00 34 00  Quote
+slot  70: 00 00 38 00  Slash
+slot  71: 00 00 E4 00  RightCtrl
+slot  73: 00 00 2E 00  Equal
+slot  74: 00 00 30 00  BracketRight
+slot  76: 00 00 E5 00  RightShift
+slot  77: 00 00 50 00  Left
+slot  79: 00 00 2A 00  Backspace
+slot  80: 00 00 31 00  Backslash
+slot  81: 00 00 28 00  Enter
+slot  82: 00 00 52 00  Up
+slot  83: 00 00 51 00  Down
+slot  85: 00 00 4A 00  Home
+slot  86: 00 00 4C 00  Delete
+slot  87: 00 00 4B 00  PageUp
+slot  88: 00 00 4E 00  PageDown
+slot  89: 00 00 4F 00  Right

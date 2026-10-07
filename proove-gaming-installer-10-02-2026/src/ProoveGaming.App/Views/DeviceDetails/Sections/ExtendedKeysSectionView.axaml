@@ -1,0 +1,504 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 xmlns:controls="using:ProoveGaming.App.Controls"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.ExtendedKeysSectionView"
+			 Design.Width="336"
+			 Design.Height="800">
+	<UserControl.Styles>
+		<!-- "Add extended key" row: icon, mode label, ⓘ. A full-width flat row with the section's
+			 purple hover; :disabled (storage full) dims without hiding — same presenter trap as
+			 sectionActionButton. -->
+		<Style Selector="Button.extendedKeyModeRow">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="MinHeight" Value="48" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="Padding" Value="12,0" />
+			<Setter Property="Cursor" Value="Hand" />
+		</Style>
+		<Style Selector="Button.extendedKeyModeRow:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#1A6357FF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+		<Style Selector="Button.extendedKeyModeRow:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#1A6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+		<Style Selector="Button.extendedKeyModeRow:disabled">
+			<Setter Property="Cursor" Value="Arrow" />
+			<Setter Property="Opacity" Value="0.4" />
+		</Style>
+
+		<!-- Editor chip button: transparent host so the shared Border.extendedKeyChip draws the chip. -->
+		<Style Selector="Button.extendedKeyChipButton">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+		</Style>
+		<Style Selector="Button.extendedKeyChipButton /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+
+		<!-- Configured-list row and its trash button. -->
+		<Style Selector="Border.extendedKeyRow">
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Padding" Value="12,8" />
+			<Setter Property="MinHeight" Value="48" />
+		</Style>
+		<Style Selector="Button.extendedKeyDelete">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="6" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.extendedKeyDelete /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button.extendedKeyDelete:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+
+		<Style Selector="TextBlock.extendedKeysHeading">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="LineHeight" Value="22" />
+		</Style>
+		<Style Selector="TextBlock.extendedKeysNote">
+			<Setter Property="Foreground" Value="#B2BEBCEA" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="LineHeight" Value="20" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+		</Style>
+		<!-- SOCD priority cards: the wrapping label, and the favoured key on the absolute cards in
+			 the accent colour AND semibold (emphasis is never colour-only). -->
+		<Style Selector="TextBlock.socdPriorityLabel">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="13" />
+			<Setter Property="LineHeight" Value="18" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+		</Style>
+		<Style Selector="TextBlock.socdPriorityKey">
+			<Setter Property="Foreground" Value="#6357FF" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="13" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="LineHeight" Value="18" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+		</Style>
+		<!-- The "Absolute Priority" tag under the chip a SOCD pair favours: bold, and coloured from
+			 the row's badge brush (no hex restated here). -->
+		<Style Selector="TextBlock.extendedKeyPriorityTag">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="10" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="LineHeight" Value="12" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+		</Style>
+		<!-- Refusal text: colour plus weight, never colour alone. -->
+		<Style Selector="TextBlock.extendedKeysRefusal">
+			<Setter Property="Foreground" Value="#F5C77E" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="LineHeight" Value="20" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+		</Style>
+	</UserControl.Styles>
+
+	<!-- Same hidden-bar scrolling shell as ActuationSectionView (336 content + 12px bar zone). -->
+	<Grid IsVisible="{Binding IsExtendedKeysSection}" ClipToBounds="False">
+	<ScrollViewer VerticalScrollBarVisibility="Hidden"
+				  HorizontalScrollBarVisibility="Disabled"
+				  HorizontalAlignment="Left"
+				  Width="348"
+				  ClipToBounds="False"
+				  Padding="0,8,0,0">
+	<StackPanel Spacing="8" Width="336" HorizontalAlignment="Left" ClipToBounds="False"
+				IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+		<!-- Probe in flight (or the RPC failed — an older DeviceHost included): nothing editable yet. -->
+		<TextBlock Classes="extendedKeysNote"
+				   Text="{DynamicResource ExtendedKeys_Loading}"
+				   IsVisible="{Binding IsExtendedKeysProbePending}" />
+
+		<!-- The keyboard refused (or failed to verify) the last write; the list below was re-read
+			 from the device, and without this line the vanished row looks like a glitch. -->
+		<Border Classes="warningBanner"
+				IsVisible="{Binding ExtendedKeysWriteFailed}"
+				Margin="0,0,0,4">
+			<TextBlock Text="{DynamicResource ExtendedKeys_WriteFailed}" />
+		</Border>
+
+		<StackPanel Spacing="8" IsVisible="{Binding IsExtendedKeysSupported}">
+
+			<!-- Removes every configured record, after the shared confirm dialog (MainWindow). -->
+			<Button Classes="sectionActionButton"
+					Content="{DynamicResource DeviceDetails_Settings_DefaultSettings}"
+					Command="{Binding RestoreExtendedKeysDefaultsCommand}" />
+
+			<Border Height="8" Background="Transparent" IsHitTestVisible="False" />
+
+			<!-- Add extended key: one row per available mode. The editor below replaces this list
+				 while a record is being built. -->
+			<StackPanel Spacing="8" IsVisible="{Binding IsExtendedKeyModeListVisible}">
+				<TextBlock Classes="extendedKeysHeading" Text="{DynamicResource ExtendedKeys_AddHeading}" />
+
+				<TextBlock Classes="extendedKeysNote"
+						   Text="{DynamicResource ExtendedKeys_StorageFull}"
+						   IsVisible="{Binding IsExtendedKeyStorageFull}" />
+
+				<Button Classes="extendedKeyModeRow"
+						IsVisible="{Binding IsRapidSnapModeAvailable}"
+						IsEnabled="{Binding CanAddRapidSnap}"
+						Command="{Binding StartRapidSnapEditorCommand}">
+					<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+						<commonControls:SvgImageView Grid.Column="0"
+													 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Keyboard-Simple.svg"
+													 TintColor="#6357FF"
+													 Width="20" Height="20"
+													 Stretch="Uniform"
+													 VerticalAlignment="Center" />
+						<TextBlock Grid.Column="1" Margin="12,0"
+								   Text="{DynamicResource ExtendedKeys_Mode_RapidSnap}"
+								   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20"
+								   VerticalAlignment="Center" />
+						<!-- ⓘ carries the mode description as a plain-string hover tip; the window-level
+							 ToolTip template wraps long text (a TextBlock child rendered its type name). -->
+						<Panel Grid.Column="2" Width="20" Height="20" Background="Transparent"
+							   VerticalAlignment="Center" ToolTip.Tip="{DynamicResource ExtendedKeys_Mode_RapidSnap_Description}">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Info.svg"
+														 TintColor="#B2BEBCEA"
+														 Width="18" Height="18"
+														 Stretch="Uniform" />
+						</Panel>
+					</Grid>
+				</Button>
+
+				<Button Classes="extendedKeyModeRow"
+						IsVisible="{Binding IsSocdModeAvailable}"
+						IsEnabled="{Binding CanAddSocd}"
+						Command="{Binding StartSocdEditorCommand}">
+					<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+						<commonControls:SvgImageView Grid.Column="0"
+													 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Keyboard-Simple.svg"
+													 TintColor="#6357FF"
+													 Width="20" Height="20"
+													 Stretch="Uniform"
+													 VerticalAlignment="Center" />
+						<TextBlock Grid.Column="1" Margin="12,0"
+								   Text="{DynamicResource ExtendedKeys_Mode_Socd}"
+								   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20"
+								   VerticalAlignment="Center" />
+						<Panel Grid.Column="2" Width="20" Height="20" Background="Transparent"
+							   VerticalAlignment="Center" ToolTip.Tip="{DynamicResource ExtendedKeys_Mode_Socd_Description}">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Info.svg"
+														 TintColor="#B2BEBCEA"
+														 Width="18" Height="18"
+														 Stretch="Uniform" />
+						</Panel>
+					</Grid>
+				</Button>
+
+				<Button Classes="extendedKeyModeRow"
+						IsVisible="{Binding IsModTapModeAvailable}"
+						IsEnabled="{Binding CanAddModTap}"
+						Command="{Binding StartModTapEditorCommand}">
+					<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+						<commonControls:SvgImageView Grid.Column="0"
+													 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Keyboard-Simple.svg"
+													 TintColor="#6357FF"
+													 Width="20" Height="20"
+													 Stretch="Uniform"
+													 VerticalAlignment="Center" />
+						<TextBlock Grid.Column="1" Margin="12,0"
+								   Text="{DynamicResource ExtendedKeys_Mode_ModTap}"
+								   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20"
+								   VerticalAlignment="Center" />
+						<Panel Grid.Column="2" Width="20" Height="20" Background="Transparent"
+							   VerticalAlignment="Center" ToolTip.Tip="{DynamicResource ExtendedKeys_Mode_ModTap_Description}">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Info.svg"
+														 TintColor="#B2BEBCEA"
+														 Width="18" Height="18"
+														 Stretch="Uniform" />
+						</Panel>
+					</Grid>
+				</Button>
+
+				<Button Classes="extendedKeyModeRow"
+						IsVisible="{Binding IsToggleModeAvailable}"
+						IsEnabled="{Binding CanAddToggle}"
+						Command="{Binding StartToggleEditorCommand}">
+					<Grid ColumnDefinitions="Auto,*,Auto" VerticalAlignment="Center">
+						<commonControls:SvgImageView Grid.Column="0"
+													 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Keyboard-Simple.svg"
+													 TintColor="#6357FF"
+													 Width="20" Height="20"
+													 Stretch="Uniform"
+													 VerticalAlignment="Center" />
+						<TextBlock Grid.Column="1" Margin="12,0"
+								   Text="{DynamicResource ExtendedKeys_Mode_Toggle}"
+								   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" LineHeight="20"
+								   VerticalAlignment="Center" />
+						<Panel Grid.Column="2" Width="20" Height="20" Background="Transparent"
+							   VerticalAlignment="Center" ToolTip.Tip="{DynamicResource ExtendedKeys_Mode_Toggle_Description}">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Info.svg"
+														 TintColor="#B2BEBCEA"
+														 Width="18" Height="18"
+														 Stretch="Uniform" />
+						</Panel>
+					</Grid>
+				</Button>
+			</StackPanel>
+
+			<!-- The add editor. Pair modes (Rapid Snap, SOCD): Key 1 / Key 2 picked on the keyboard
+				 overlay, SOCD adding its Priority Settings under the chips. Single-key modes (Mod-Tap,
+				 Toggle): the physical key from the overlay, the output chip(s) from the Key Assignment
+				 dialog's pick purpose, and the Time (ms) slider. -->
+			<StackPanel Spacing="8" IsVisible="{Binding IsExtendedKeyEditorOpen}">
+				<TextBlock Classes="extendedKeysHeading" Text="{Binding ExtendedKeyEditorTitle}" />
+				<TextBlock Classes="extendedKeysNote" Text="{Binding ExtendedKeyEditorDescription}" />
+
+				<!-- Two chips; the active one (where the next click lands) carries the solid outline.
+					 Each chip clears with its ✕ (the shared macroUnassign glyph). -->
+				<Grid ColumnDefinitions="*,8,*" IsVisible="{Binding IsExtendedKeyEditorPair}">
+					<Button Grid.Column="0" Classes="extendedKeyChipButton"
+							Command="{Binding ActivateExtendedKeyEditorKey1Command}">
+						<Border Classes="extendedKeyChip" Classes.active="{Binding IsExtendedKeyEditorKey1Active}">
+							<Grid ColumnDefinitions="Auto,*,Auto">
+								<TextBlock Grid.Column="0" Text="{DynamicResource ExtendedKeys_Key1}"
+										   Foreground="#B2BEBCEA" TextDecorations="{x:Null}" Margin="0,0,6,0" />
+								<TextBlock Grid.Column="1" Text="{Binding ExtendedKeyEditorKey1Label}"
+										   IsVisible="{Binding HasExtendedKeyEditorKey1}" />
+								<Button Grid.Column="2" Classes="macroUnassign" Width="20" Height="20"
+										ToolTip.Tip="{DynamicResource ExtendedKeys_ClearKey}"
+										IsVisible="{Binding HasExtendedKeyEditorKey1}"
+										Command="{Binding ClearExtendedKeyEditorKey1Command}" />
+							</Grid>
+						</Border>
+					</Button>
+					<Button Grid.Column="2" Classes="extendedKeyChipButton"
+							Command="{Binding ActivateExtendedKeyEditorKey2Command}">
+						<Border Classes="extendedKeyChip" Classes.active="{Binding IsExtendedKeyEditorKey2Active}">
+							<Grid ColumnDefinitions="Auto,*,Auto">
+								<TextBlock Grid.Column="0" Text="{DynamicResource ExtendedKeys_Key2}"
+										   Foreground="#B2BEBCEA" TextDecorations="{x:Null}" Margin="0,0,6,0" />
+								<TextBlock Grid.Column="1" Text="{Binding ExtendedKeyEditorKey2Label}"
+										   IsVisible="{Binding HasExtendedKeyEditorKey2}" />
+								<Button Grid.Column="2" Classes="macroUnassign" Width="20" Height="20"
+										ToolTip.Tip="{DynamicResource ExtendedKeys_ClearKey}"
+										IsVisible="{Binding HasExtendedKeyEditorKey2}"
+										Command="{Binding ClearExtendedKeyEditorKey2Command}" />
+							</Grid>
+						</Border>
+					</Button>
+				</Grid>
+
+				<!-- Single-key editor. The physical chip is outlined while it waits for the overlay
+					 click and clears with its ✕; the output chips open the key picker — Hold / Tap for
+					 Mod-Tap, one "Toggled key" chip spanning both columns for Toggle. Time (ms): the
+					 shared section slider, value right-aligned, with the mode's threshold rule spelled
+					 out under it. -->
+				<StackPanel Spacing="8" IsVisible="{Binding IsExtendedKeyEditorSingleKey}">
+					<Border Classes="extendedKeyChip" Classes.active="{Binding IsExtendedKeyEditorPhysicalActive}">
+						<Grid ColumnDefinitions="Auto,*,Auto">
+							<TextBlock Grid.Column="0" Text="{DynamicResource ExtendedKeys_PhysicalKey}"
+									   Foreground="#B2BEBCEA" TextDecorations="{x:Null}" Margin="0,0,6,0" />
+							<TextBlock Grid.Column="1" Text="{Binding ExtendedKeyEditorKey1Label}"
+									   IsVisible="{Binding HasExtendedKeyEditorKey1}" />
+							<Button Grid.Column="2" Classes="macroUnassign" Width="20" Height="20"
+									ToolTip.Tip="{DynamicResource ExtendedKeys_ClearPhysicalKey}"
+									IsVisible="{Binding HasExtendedKeyEditorKey1}"
+									Command="{Binding ClearExtendedKeyEditorKey1Command}" />
+						</Grid>
+					</Border>
+
+					<Grid ColumnDefinitions="*,8,*">
+						<Button Grid.Column="0" Grid.ColumnSpan="{Binding ExtendedKeyEditorOutputChipSpan}"
+								Classes="extendedKeyChipButton"
+								Command="{Binding PickExtendedKeyHoldCommand}">
+							<Border Classes="extendedKeyChip">
+								<Grid ColumnDefinitions="Auto,*">
+									<TextBlock Grid.Column="0" Text="{Binding ExtendedKeyEditorOutputCaption}"
+											   Foreground="#B2BEBCEA" TextDecorations="{x:Null}" Margin="0,0,6,0" />
+									<TextBlock Grid.Column="1" Text="{Binding ExtendedKeyEditorHoldLabel}"
+											   IsVisible="{Binding HasExtendedKeyEditorHold}" />
+								</Grid>
+							</Border>
+						</Button>
+						<Button Grid.Column="2" Classes="extendedKeyChipButton"
+								IsVisible="{Binding ShowExtendedKeyEditorTapChip}"
+								Command="{Binding PickExtendedKeyTapCommand}">
+							<Border Classes="extendedKeyChip">
+								<Grid ColumnDefinitions="Auto,*">
+									<TextBlock Grid.Column="0" Text="{DynamicResource ExtendedKeys_Tap}"
+											   Foreground="#B2BEBCEA" TextDecorations="{x:Null}" Margin="0,0,6,0" />
+									<TextBlock Grid.Column="1" Text="{Binding ExtendedKeyEditorTapLabel}"
+											   IsVisible="{Binding HasExtendedKeyEditorTap}" />
+								</Grid>
+							</Border>
+						</Button>
+					</Grid>
+
+					<Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0" VerticalAlignment="Center">
+						<TextBlock Grid.Column="0" Classes="extendedKeysHeading"
+								   Text="{DynamicResource ExtendedKeys_TimeMs}" VerticalAlignment="Center" />
+						<TextBlock Grid.Column="1" Text="{Binding ExtendedKeyEditorTimeText}"
+								   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}" FontSize="16" LineHeight="22"
+								   VerticalAlignment="Center" />
+					</Grid>
+					<controls:PercentSliderControl Percent="{Binding ExtendedKeyEditorTimePct}"
+												   FractionChanged="OnTimeFractionChanged" />
+					<TextBlock Classes="extendedKeysNote" Text="{Binding ExtendedKeyEditorTimeHint}" />
+				</StackPanel>
+
+				<!-- SOCD only: Priority Settings, four radio cards in a 2x2 grid (the -8 margins eat
+					 the last column's / row's card gap). The absolute cards name the key they favour;
+					 each card's info icon carries the vendor's one-line rule as a wrapping tip. -->
+				<StackPanel Spacing="8" IsVisible="{Binding IsExtendedKeyEditorSocd}" Margin="0,8,0,0">
+					<TextBlock Classes="extendedKeysHeading" Text="{DynamicResource ExtendedKeys_Socd_PriorityHeading}" />
+					<TextBlock Classes="extendedKeysNote" Text="{DynamicResource ExtendedKeys_Socd_PriorityDescription}" />
+					<ItemsControl ItemsSource="{Binding SocdPriorityOptions}" Margin="0,0,-8,-8">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<UniformGrid Columns="2" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="viewmodels:SocdPriorityOptionViewModel">
+								<RadioButton Classes="optionCard" GroupName="SocdPriority" Margin="0,0,8,8"
+											 IsChecked="{Binding IsSelected, Mode=TwoWay}">
+									<Grid ColumnDefinitions="Auto,*,Auto" RowDefinitions="Auto,Auto">
+										<Panel Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Top" Margin="0,0,8,0">
+											<Ellipse Classes="macroRadioOuter" />
+											<Ellipse Classes="macroRadioInner" />
+										</Panel>
+										<TextBlock Grid.Column="1" Grid.Row="0" Classes="socdPriorityLabel" Text="{Binding Label}" />
+										<Panel Grid.Column="2" Grid.Row="0" Width="18" Height="18" Background="Transparent"
+											   VerticalAlignment="Top" Margin="6,0,0,0" ToolTip.Tip="{Binding Tooltip}">
+											<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Info.svg"
+																		 TintColor="#B2BEBCEA"
+																		 Width="16" Height="16"
+																		 Stretch="Uniform" />
+										</Panel>
+										<TextBlock Grid.Column="1" Grid.Row="1" Classes="socdPriorityKey"
+												   Text="{Binding KeyLabel}" IsVisible="{Binding HasKeyLabel}" />
+									</Grid>
+								</RadioButton>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</StackPanel>
+
+				<TextBlock Classes="extendedKeysNote" Text="{Binding ExtendedKeyEditorHint}"
+						   IsVisible="{Binding !HasExtendedKeyEditorMessage}" />
+				<TextBlock Classes="extendedKeysRefusal" Text="{Binding ExtendedKeyEditorMessage}"
+						   IsVisible="{Binding HasExtendedKeyEditorMessage}" />
+
+				<!-- Content-sized (MinWidth + Padding, as in ConfirmDialog): the uk labels are wider. -->
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="12" Margin="0,8,0,0">
+					<Button Classes="secondaryButton" MinWidth="105" Height="40" Padding="16,0" Cursor="Hand"
+							Command="{Binding CancelExtendedKeyEditorCommand}">
+						<TextBlock Text="{DynamicResource Button_Cancel}"
+								   FontFamily="{DynamicResource AppPixelFont}" FontWeight="250" FontSize="18" LetterSpacing="0" />
+					</Button>
+					<Button Classes="primaryButton" MinWidth="105" Height="40" Padding="16,0" Cursor="Hand"
+							IsEnabled="{Binding CanConfirmExtendedKey}"
+							Command="{Binding ConfirmExtendedKeyCommand}">
+						<TextBlock Text="{DynamicResource Button_Confirm}"
+								   FontFamily="{DynamicResource AppPixelFont}" FontWeight="250" FontSize="18" LetterSpacing="0" />
+					</Button>
+				</StackPanel>
+			</StackPanel>
+
+			<Border Height="8" Background="Transparent" IsHitTestVisible="False" />
+
+			<!-- Configured Extended Keys -->
+			<TextBlock Classes="extendedKeysHeading" Text="{DynamicResource ExtendedKeys_ConfiguredHeading}" />
+			<TextBlock Classes="extendedKeysNote" Text="{DynamicResource ExtendedKeys_Empty}"
+					   IsVisible="{Binding HasNoExtendedKeys}" />
+
+			<ItemsControl ItemsSource="{Binding ExtendedKeys}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Spacing="8" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="viewmodels:ExtendedKeyRowViewModel">
+						<!-- "E [RS] W  Last Input Priority  🗑" / "CAPS [MT] CTRL (L) ESC  150 ms  🗑" /
+							 "T [TGL] W  100 ms  🗑": chips around the badge, a single-key mode's output chip(s) after it, parameter
+							 text, trash. Badge colour comes from the row (one constant per mode). A
+							 SOCD pair with an absolute priority tags the favoured chip underneath
+							 instead of widening the row with parameter text. -->
+						<Border Classes="extendedKeyRow">
+							<Grid ColumnDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto" VerticalAlignment="Center">
+								<StackPanel Grid.Column="0" Spacing="2" VerticalAlignment="Center">
+									<Border Classes="extendedKeyChip" HorizontalAlignment="Center">
+										<TextBlock Text="{Binding Key1Label}" />
+									</Border>
+									<TextBlock Classes="extendedKeyPriorityTag" Foreground="{Binding BadgeBrush}"
+											   Text="{Binding Key1BadgeText}" IsVisible="{Binding HasKey1Badge}" />
+								</StackPanel>
+								<Border Grid.Column="1" Classes="extendedKeyBadge" Margin="8,0"
+										Background="{Binding BadgeBrush}">
+									<TextBlock Text="{Binding BadgeText}" />
+								</Border>
+								<StackPanel Grid.Column="2" Spacing="2" VerticalAlignment="Center" IsVisible="{Binding HasKey2}">
+									<Border Classes="extendedKeyChip" HorizontalAlignment="Center">
+										<TextBlock Text="{Binding Key2Label}" />
+									</Border>
+									<TextBlock Classes="extendedKeyPriorityTag" Foreground="{Binding BadgeBrush}"
+											   Text="{Binding Key2BadgeText}" IsVisible="{Binding HasKey2Badge}" />
+								</StackPanel>
+								<Border Grid.Column="3" Classes="extendedKeyChip" Margin="0,0,4,0" IsVisible="{Binding HasHoldLabel}">
+									<TextBlock Text="{Binding HoldLabel}" />
+								</Border>
+								<Border Grid.Column="4" Classes="extendedKeyChip" IsVisible="{Binding HasTapLabel}">
+									<TextBlock Text="{Binding TapLabel}" />
+								</Border>
+								<!-- Wraps to two lines before trimming: the uk priority names outgrow the
+									 column ("Пріоритет останнього натискання"). -->
+								<TextBlock Grid.Column="5" Classes="extendedKeysNote" Margin="12,0,8,0"
+										   Text="{Binding ParameterText}"
+										   IsVisible="{Binding HasParameterText}"
+										   VerticalAlignment="Center" TextTrimming="CharacterEllipsis" TextWrapping="Wrap" MaxLines="2" />
+								<Button Grid.Column="6" Classes="extendedKeyDelete"
+										ToolTip.Tip="{DynamicResource ExtendedKeys_Delete}"
+										Command="{Binding DeleteCommand}"
+										CommandParameter="{Binding}">
+									<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Delete-Small.svg"
+																 TintColor="#B2BEBCEA"
+																 Width="16" Height="16"
+																 Stretch="Uniform" />
+								</Button>
+							</Grid>
+						</Border>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+		</StackPanel>
+
+	</StackPanel>
+	</ScrollViewer>
+	</Grid>
+</UserControl>

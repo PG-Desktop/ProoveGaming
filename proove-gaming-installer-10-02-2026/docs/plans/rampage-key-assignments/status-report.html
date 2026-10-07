@@ -1,0 +1,485 @@
+<title>Rampage key assignments — status report</title>
+<style>
+  :root {
+    --ground: #F6F7F9;
+    --panel: #FFFFFF;
+    --ink: #14171B;
+    --ink-muted: #5A6470;
+    --ink-faint: #8A939E;
+    --rule: #DDE1E7;
+    --rule-strong: #C3CAD3;
+    --ok: #1B6E5F;
+    --ok-bg: #E4F0EC;
+    --fail: #B04A32;
+    --fail-bg: #F8E7E2;
+    --evidence-bg: #EEF1F4;
+    --mark: #FBE3A8;
+    --mark-ink: #6B4E07;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #131619;
+      --panel: #1A1E23;
+      --ink: #E7EAEE;
+      --ink-muted: #98A2AE;
+      --ink-faint: #6F7985;
+      --rule: #2A3038;
+      --rule-strong: #3A424C;
+      --ok: #6FC8B2;
+      --ok-bg: #17302B;
+      --fail: #E08A70;
+      --fail-bg: #33201A;
+      --evidence-bg: #202630;
+      --mark: #4A3A10;
+      --mark-ink: #F5D68A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #131619;
+    --panel: #1A1E23;
+    --ink: #E7EAEE;
+    --ink-muted: #98A2AE;
+    --ink-faint: #6F7985;
+    --rule: #2A3038;
+    --rule-strong: #3A424C;
+    --ok: #6FC8B2;
+    --ok-bg: #17302B;
+    --fail: #E08A70;
+    --fail-bg: #33201A;
+    --evidence-bg: #202630;
+    --mark: #4A3A10;
+    --mark-ink: #F5D68A;
+  }
+  :root[data-theme="light"] {
+    --ground: #F6F7F9;
+    --panel: #FFFFFF;
+    --ink: #14171B;
+    --ink-muted: #5A6470;
+    --ink-faint: #8A939E;
+    --rule: #DDE1E7;
+    --rule-strong: #C3CAD3;
+    --ok: #1B6E5F;
+    --ok-bg: #E4F0EC;
+    --fail: #B04A32;
+    --fail-bg: #F8E7E2;
+    --evidence-bg: #EEF1F4;
+    --mark: #FBE3A8;
+    --mark-ink: #6B4E07;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 60rem;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  header { display: flex; flex-direction: column; gap: 1rem; }
+
+  .eyebrow {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.9rem, 4.5vw, 2.7rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 650;
+    text-wrap: balance;
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  }
+
+  .verdict {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--fail);
+    padding: 1.5rem 1.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .verdict h2 { margin: 0; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; }
+  .verdict p { margin: 0; max-width: 62ch; }
+  .verdict strong { font-weight: 650; }
+
+  section { display: flex; flex-direction: column; gap: 1.1rem; }
+
+  h2.sec {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    display: flex;
+    align-items: baseline;
+    gap: 0.7rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule-strong);
+    text-wrap: balance;
+  }
+  h2.sec .num {
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+
+  h3 {
+    margin: 0.6rem 0 0;
+    font-size: 0.95rem;
+    font-weight: 650;
+    letter-spacing: -0.005em;
+  }
+
+  p { margin: 0; max-width: 68ch; }
+  p + p { margin-top: 0.7rem; }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--rule); background: var(--panel); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; min-width: 34rem; }
+  th, td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 650;
+    background: var(--ground);
+    white-space: nowrap;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num, th.num { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.rank { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; color: var(--ink-faint); width: 2.5rem; }
+
+  code {
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.86em;
+    background: var(--evidence-bg);
+    padding: 0.1em 0.35em;
+    border-radius: 2px;
+  }
+
+  .pill {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 650;
+    letter-spacing: 0.03em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .pill.ok { background: var(--ok-bg); color: var(--ok); }
+  .pill.no { background: var(--fail-bg); color: var(--fail); }
+
+  .evidence {
+    background: var(--evidence-bg);
+    border: 1px solid var(--rule);
+    padding: 1.1rem 1.2rem;
+    overflow-x: auto;
+  }
+  .evidence pre {
+    margin: 0;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: 0.85rem;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  mark { background: var(--mark); color: var(--mark-ink); font-weight: 700; padding: 0 0.15em; }
+
+  .note {
+    border-left: 2px solid var(--rule-strong);
+    padding-left: 1rem;
+    color: var(--ink-muted);
+    font-size: 0.92rem;
+  }
+  .note strong { color: var(--ink); font-weight: 650; }
+
+  footer {
+    border-top: 1px solid var(--rule);
+    padding-top: 1.5rem;
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+  }
+  footer p { max-width: 68ch; }
+
+  ol.steps { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: 0.35rem; }
+  ol.steps li { padding-left: 0.2rem; }
+
+  @media (max-width: 40rem) {
+    .wrap { padding: 2.5rem 1rem 4rem; gap: 2.25rem; }
+  }
+
+  /* Printing / Save as PDF. Force the light palette regardless of the viewer's theme —
+     a dark-mode PDF is unusable — and keep tables and sections off page breaks. */
+  @media print {
+    :root, :root[data-theme="dark"], :root[data-theme="light"] {
+      --ground: #FFFFFF;
+      --panel: #FFFFFF;
+      --ink: #000000;
+      --ink-muted: #3A424C;
+      --ink-faint: #5A6470;
+      --rule: #C3CAD3;
+      --rule-strong: #8A939E;
+      --ok: #14574A;
+      --ok-bg: #FFFFFF;
+      --fail: #8E3823;
+      --fail-bg: #FFFFFF;
+      --evidence-bg: #F2F4F6;
+      --mark: #FFF0BF;
+      --mark-ink: #4A3505;
+    }
+    body { font-size: 10.5pt; line-height: 1.5; }
+    .wrap { max-width: none; padding: 0; gap: 1.6rem; }
+    .scroll, .evidence { overflow-x: visible; }
+    table { min-width: 0; font-size: 9.5pt; }
+    .pill { border: 1px solid currentColor; }
+    section, .verdict { break-inside: avoid; }
+    tr, h2.sec, h3, .evidence { break-inside: avoid; }
+    h2.sec, h3 { break-after: avoid; }
+    footer { break-before: avoid; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Engineering status report</div>
+    <h1>Rampage key assignments</h1>
+    <div class="meta">
+      <span>29 July 2026</span>
+      <span>PG Rampage · VID 0x28E9 · PID 0x3258</span>
+      <span>features/Rampage-newkeysdoc</span>
+    </div>
+  </header>
+
+  <div class="verdict" style="border-color:#2e7d32">
+    <h2>Update — 4 August 2026: factory answered (RM1), fix confirmed on hardware</h2>
+    <p>Commands <code>0x10</code>/<code>0x11</code> must not be used at all, only <code>0x18</code> is sent, and the transfer must total exactly <strong>384 bytes</strong> (7 packets: 6 × 56 + 48). No previous attempt had ever sent that exact shape — the "392-byte" variant silently dropped its 7th packet. The write path was updated and re-tested on the physical keyboard: slot 33 Q → W verified on read-back <strong>and the physical key emitted <code>w</code> immediately</strong> — no replug, no commit command. Key remapping on Rampage <strong>works</strong>. The report below describes the state <strong>before</strong> this update and is kept for the record.</p>
+  </div>
+
+  <div class="verdict">
+    <h2>Bottom line</h2>
+    <p>Key remapping is <strong>blocked by the keyboard's firmware, not by our software</strong>. The device reports that it has <strong>zero remappable keys</strong> and silently discards every key-table write — while accepting and permanently storing configuration writes sent over the same connection in the same way.</p>
+    <p>That contrast is what proves our implementation is correct. The work is complete and tested; it cannot function until the vendor confirms whether key remapping is enabled in this firmware build.</p>
+  </div>
+
+  <section>
+    <h2 class="sec"><span class="num">01</span> Where it stood before</h2>
+    <p>An earlier attempt reached a wall and was parked.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Aspect</th><th>State before this work</th></tr></thead>
+        <tbody>
+          <tr><td>Implementation</td><td>Wrote 3 bytes per key to the keyboard</td></tr>
+          <tr><td>Result</td><td>Firmware acknowledged the write; the physical key kept its original value</td></tr>
+          <tr><td>Diagnosis at the time</td><td>Concluded an undocumented “commit” command must exist</td></tr>
+          <tr><td>Vendor request</td><td>Sent; never answered</td></tr>
+          <tr><td>Outcome</td><td>Nothing shipped; feature parked</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Two observations from that attempt turned out to be <strong>unreproducible</strong> — and its diagnosis had been built on both of them.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Earlier claim</th><th class="num">Verified now</th></tr></thead>
+        <tbody>
+          <tr><td>“Read-back returns the new value after a write”</td><td><span class="pill no">Does not reproduce</span></td></tr>
+          <tr><td>“Unplug and replug applies the new mapping”</td><td><span class="pill no">Does not reproduce</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Both came from a build whose read path had a packet-alignment defect, found and fixed in this round. The “staging buffer” theory rested entirely on those two observations, so it no longer stands.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">02</span> What we did this round</h2>
+    <p>New vendor material arrived: the factory key table, the key-type catalog, and six protocol capture screenshots. We rebuilt the protocol layer from the captures rather than the written documentation — and found four real errors in the latter.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Correction</th><th>Documentation said</th><th>Hardware shows</th></tr></thead>
+        <tbody>
+          <tr><td>Command direction</td><td class="num">0x17 = write, 0x18 = FN layer</td><td class="num">0x17 = <strong>read</strong>, 0x18 = <strong>write</strong></td></tr>
+          <tr><td>Checksum</td><td>CRC16/Modbus</td><td><strong>Additive sum</strong>, verified against 12+ captured packets</td></tr>
+          <tr><td>Transfer size</td><td class="num">7 packets / 384 bytes</td><td class="num"><strong>6 packets / 336 bytes</strong></td></tr>
+          <tr><td>Interface selection</td><td>Guess by report size</td><td class="num">usage 0x20 / page 0xFF87</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>We also fixed a defect of our own: the read matched replies by arrival order, but every reply on this protocol arrives one command behind. Replies are now matched by the address they echo back, which is self-correcting.</p>
+    <p><strong>Delivered:</strong> protocol layer, 86-key catalog derived from the vendor's factory table, on-screen keyboard layout, service contract, device-host handler, and app UI. <strong>434 automated tests pass.</strong></p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">03</span> What we were trying to do</h2>
+    <p>The vendor's own documented procedure, which we followed exactly:</p>
+    <ol class="steps">
+      <li>Read the current key table from the keyboard (<code>0x17</code>, six packets)</li>
+      <li>Change the three bytes belonging to the key being remapped</li>
+      <li>Send the entire table back (<code>0x18</code>, six packets)</li>
+      <li>Read it back to confirm</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">04</span> Why it does not work</h2>
+
+    <h3>Measurement A — the keyboard reports zero remappable keys</h3>
+    <div class="evidence">
+      <pre>Device Info (0x12)
+
+AA BB 58 32 80 08 <mark>00</mark> 00 00 03 00 01 04 04 04 02 …
+                  ↑
+                  actual key count</pre>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Field</th><th class="num">Value</th><th class="num">Expected</th><th class="num">&nbsp;</th></tr></thead>
+        <tbody>
+          <tr><td>Validity marker</td><td class="num">AA BB</td><td class="num">AA BB</td><td><span class="pill ok">OK</span></td></tr>
+          <tr><td>Product ID</td><td class="num">0x3258</td><td class="num">0x3258</td><td><span class="pill ok">OK</span></td></tr>
+          <tr><td>Key-matrix size</td><td class="num">384 B</td><td class="num">384 B</td><td><span class="pill ok">OK</span></td></tr>
+          <tr><td>Macro space</td><td class="num">2048 B</td><td class="num">2048 B</td><td><span class="pill ok">OK</span></td></tr>
+          <tr><td><strong>Actual key count</strong></td><td class="num"><strong>0</strong></td><td class="num"><strong>96</strong></td><td><span class="pill no">WRONG</span></td></tr>
+          <tr><td>Device type</td><td class="num">3 · USB+BLE+2.4G</td><td class="num">3</td><td><span class="pill ok">OK</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Every other field decodes correctly, so the block is being read and interpreted correctly. The device simply declares that it has no keys available for remapping — while returning a complete, valid 96-key table when asked for one.</p>
+
+    <h3>Measurement B — writes work, but only non-table writes</h3>
+    <p>After sending a lighting configuration command with known values, reading the configuration block returns them byte for byte:</p>
+    <div class="evidence">
+      <pre>Configuration block (0x14)
+
+00 <mark>0A</mark> <mark>3B</mark> <mark>03</mark> 00 00 <mark>76</mark> <mark>20</mark> <mark>EE</mark> 07 …
+   10  59   3        118  32  238
+
+   mode 10 · brightness 59 · speed 3 · RGB(118, 32, 238)   — exactly what we sent</pre>
+    </div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Write type</th><th class="num">Command</th><th class="num">Acknowledged</th><th class="num">Persists</th></tr></thead>
+        <tbody>
+          <tr><td>Configuration / lighting settings</td><td class="num">0x15</td><td><span class="pill ok">Yes</span></td><td><span class="pill ok">Yes</span></td></tr>
+          <tr><td>Key matrix</td><td class="num">0x18</td><td><span class="pill ok">Yes</span></td><td><span class="pill no">No</span></td></tr>
+          <tr><td>Per-key lighting table</td><td class="num">0x19</td><td><span class="pill ok">Yes</span></td><td><span class="pill no">No</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note"><strong>This is the decisive control.</strong> A successful write round trip over the same connection, in the same session style, with the same checksum, proves our transport, checksum, framing, interface selection and read path are all correct. Nothing on our side is at fault.</p>
+
+    <h3>Conclusion</h3>
+    <p>The device accepts configuration writes, rejects table writes, and reports zero remappable keys. The straightforward reading is that <strong>key remapping is not enabled in this firmware build</strong>. The 96-key table we can read is the factory default compiled into the firmware; the feature that would let it be changed appears to be switched off.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">05</span> What has been ruled out</h2>
+    <p>Every one of these was tried on the hardware. All were acknowledged by the firmware; none changed the key table.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Variable</th><th>Variants tried</th></tr></thead>
+        <tbody>
+          <tr><td>Transfer size</td><td>336 bytes (6 packets), 384 bytes (7 packets), 54-byte aligned packets, single 3-byte write</td></tr>
+          <tr><td>Commit step</td><td>With and without a profile-reselect after the write</td></tr>
+          <tr><td>Session structure</td><td>Read and write in one session; in separate sessions</td></tr>
+          <tr><td>Timing</td><td>Packet gaps 3 ms – 500 ms; settle delays up to 500 ms</td></tr>
+          <tr><td>Acknowledgements</td><td>With and without consuming each packet's acknowledgement</td></tr>
+          <tr><td>Verification</td><td>Both read commands — byte-identical in every case</td></tr>
+          <tr><td>Power cycle</td><td>Unplug and replug after writing — no effect</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">06</span> What we need from the customer</h2>
+    <p>In priority order. <strong>Any one of the first three unblocks the feature.</strong></p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th class="num">#</th><th>Request</th><th>Why it unblocks</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="rank">1</td>
+            <td><strong>Confirm whether key remapping is enabled in our firmware build.</strong> Device Info byte 6 (key count) reads <code>0</code> — should it be 96? If not, which firmware version enables it, and can existing units be updated?</td>
+            <td>Directly explains both measurements</td>
+          </tr>
+          <tr>
+            <td class="rank">2</td>
+            <td><strong>A USB packet capture</strong> of the vendor's own configuration tool performing one key remap — both directions, timestamped, from clicking Apply until the key changes</td>
+            <td>A single trace answers every remaining question at once</td>
+          </tr>
+          <tr>
+            <td class="rank">3</td>
+            <td><strong>The vendor configuration tool itself</strong></td>
+            <td>We capture the traffic ourselves; costs the vendor no engineering time</td>
+          </tr>
+          <tr>
+            <td class="rank">4</td>
+            <td>Why does the configuration write persist while the two table writes are acknowledged and discarded? Are table writes gated on the key count, or on a separate write-enable?</td>
+            <td>Would confirm or refute the diagnosis</td>
+          </tr>
+          <tr>
+            <td class="rank">5</td>
+            <td>Is there a status or error code for a rejected write? Every packet returns success regardless</td>
+            <td>A discarded write is currently indistinguishable from an accepted one</td>
+          </tr>
+          <tr>
+            <td class="rank">6</td>
+            <td>The documentation says a full 384 bytes must be sent; the vendor's own capture shows 336. Which is correct?</td>
+            <td>Removes a contradiction in the source material</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note"><strong>Cheap check on our side first:</strong> if a second Rampage unit is available, reading its Device Info tells us whether the zero key count is specific to this sample — a firmware or reflash issue — or common to the batch, a build issue. That is a two-minute test and worth doing before the vendor is contacted.</p>
+  </section>
+
+  <section>
+    <h2 class="sec"><span class="num">07</span> State of the code</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Component</th><th class="num">Status</th></tr></thead>
+        <tbody>
+          <tr><td>Protocol layer, checksum, framing</td><td><span class="pill ok">Complete · verified on hardware</span></td></tr>
+          <tr><td>Key catalog (86 keys) and on-screen layout</td><td><span class="pill ok">Complete</span></td></tr>
+          <tr><td>Service contract, device-host handler, app UI</td><td><span class="pill ok">Complete</span></td></tr>
+          <tr><td>Reading the keyboard's current assignments</td><td><span class="pill ok">Works correctly</span></td></tr>
+          <tr><td>Writing an assignment</td><td><span class="pill no">Blocked by firmware</span></td></tr>
+          <tr><td>Automated tests</td><td><span class="pill ok">434 passing</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The interface deliberately refuses to show a remap it cannot confirm, so nothing misreports success to a user. Before merge we recommend removing the investigation-only diagnostics and hiding the Key assignments section for Rampage behind a flag until the firmware question is answered. The protocol layer, the interface-selection fix and the corrected documentation are valuable independently of the remap feature.</p>
+  </section>
+
+  <footer>
+    <p>Supporting detail lives in the repository: the full technical request to the vendor, the complete record of everything measured on the device, and the corrected protocol reference — all under <code>docs/knowledge-base/rampage-keyboard-protocol/</code>.</p>
+  </footer>
+
+</div>

@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.AudioSectionView"
+			 Design.Width="336"
+			 Design.Height="400">
+
+	<ScrollViewer IsVisible="{Binding IsAudioSection}">
+		<StackPanel Margin="0,16,0,0" Spacing="24" Width="336" HorizontalAlignment="Left"
+					Classes="bluetoothLocked"
+					IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+			<!-- Output volume -->
+			<StackPanel IsVisible="{Binding HasOutputVolume}" Spacing="8">
+				<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+					<TextBlock Grid.Column="0"
+							   Text="{DynamicResource DeviceDetails_Audio_OutputVolume}"
+							   Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
+							   VerticalAlignment="Center" />
+					<TextBlock Grid.Column="1"
+							   Text="{Binding OutputVolumeSetting.DisplayValue}"
+							   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+				</Grid>
+				<TextBlock Text="{DynamicResource DeviceDetails_Audio_OutputVolume_Subtitle}"
+						   Foreground="#BEBCEA" FontSize="14" Opacity="0.7" TextWrapping="Wrap" />
+				<Grid Name="OutputVolumeSliderGrid" Height="32" ClipToBounds="False"
+					  PointerPressed="OnOutputVolumePointerPressed"
+					  PointerMoved="OnOutputVolumePointerMoved"
+					  Cursor="Hand">
+					<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+					<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<Rectangle.Width>
+							<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+								<Binding Path="OutputVolumeSetting.SliderPct" />
+								<Binding ElementName="OutputVolumeSliderGrid" Path="Bounds.Width" />
+							</MultiBinding>
+						</Rectangle.Width>
+					</Rectangle>
+					<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<Rectangle.Margin>
+							<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+								<Binding Path="OutputVolumeSetting.SliderPct" />
+								<Binding ElementName="OutputVolumeSliderGrid" Path="Bounds.Width" />
+							</MultiBinding>
+						</Rectangle.Margin>
+					</Rectangle>
+				</Grid>
+			</StackPanel>
+
+			<!-- Microphone volume -->
+			<StackPanel IsVisible="{Binding HasMicrophoneVolume}" Spacing="8">
+				<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+					<TextBlock Grid.Column="0"
+							   Text="{DynamicResource DeviceDetails_Audio_MicrophoneVolume}"
+							   Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
+							   VerticalAlignment="Center" />
+					<TextBlock Grid.Column="1"
+							   Text="{Binding MicrophoneVolumeSetting.DisplayValue}"
+							   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+				</Grid>
+				<TextBlock Text="{DynamicResource DeviceDetails_Audio_MicrophoneVolume_Subtitle}"
+						   Foreground="#BEBCEA" FontSize="14" Opacity="0.7" TextWrapping="Wrap" />
+				<Grid Name="MicrophoneVolumeSliderGrid" Height="32" ClipToBounds="False"
+					  PointerPressed="OnMicrophoneVolumePointerPressed"
+					  PointerMoved="OnMicrophoneVolumePointerMoved"
+					  Cursor="Hand">
+					<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+					<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<Rectangle.Width>
+							<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+								<Binding Path="MicrophoneVolumeSetting.SliderPct" />
+								<Binding ElementName="MicrophoneVolumeSliderGrid" Path="Bounds.Width" />
+							</MultiBinding>
+						</Rectangle.Width>
+					</Rectangle>
+					<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+						<Rectangle.Margin>
+							<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+								<Binding Path="MicrophoneVolumeSetting.SliderPct" />
+								<Binding ElementName="MicrophoneVolumeSliderGrid" Path="Bounds.Width" />
+							</MultiBinding>
+						</Rectangle.Margin>
+					</Rectangle>
+				</Grid>
+			</StackPanel>
+
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>

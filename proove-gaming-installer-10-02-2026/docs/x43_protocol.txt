@@ -1,0 +1,1043 @@
+            Gaming Mouse SPEC
+
+  Date      Version                      Content  Author
+
+2021/07/20     1.0    mouse protocol              Easen
+
+
+1 . Application program function list:
+    8 Profiles in Flash.
+    8Macro Stage (G0~G48),each macro 250byte(125 actions) length for all profile.
+    Macro Loop= 1~65535.
+    All standard keys can change key map (Assign a key).
+    Send macro key or send key on boot protocol with USB key code format.
+    All standard keys can be configured to fire key
+    1/2/4/8mSec report rate.
+    Can be set to a maximum of 8 DPI stage
+
+.Driver Release Package:
+
+    Setup Package
+    INF Package ( WHQL )
+
+USB Protocol:
+
+   1. Use SetFeatureReport command for issuing command.
+   2. Use GetFeatureReport command for getting results.
+   3. Use EP5 for data. Report size 64Byte.
+   4. Use EP6 for data. Report 64 Byte.
+   5.SetFeatureReport checksum  
+
+         CS = (Byte0+Byte1+ ......+Byte6+Byte7) XOR (10101010B)
+6.Vendor Page 0FF01H,Vendor Usage 022H.
+
+ Get firmware version (80H) :  F/W 
+
+              Byte 0 Byte 1  Byte 2  Byte 3 Byte 4 Byte 5          Byte 6  Byte 7
+                               00                                    08      00
+Setup 21               09      00    03      02      00              00      CS
+                               00                                    08      00
+OUT 80                 00            00      00      00              00      00
+                             L-Ver
+Setup A1               01            03      02      00
+
+IN            80 H-Ver               mcu_type sensor_type key_sum
+
+mcu_type:
+
+mcu                          
+                               9
+50343             01H          9
+                               7
+52341             02H          9
+                               9
+571               03H
+                               7
+572               04H          9
+                               9
+574               05H
+
+553               06H
+
+560               07H
+
+541               08H
+
+                  FFH
+
+sensor_type:
+
+sensor                       
+
+3050              01H
+
+3205              02H
+
+3325              03H
+
+3327              04H
+
+3336              05H
+
+3337              06H
+
+3360              07H
+
+3389              08H
+
+4090              09H
+
+OM36              21H
+
+OM37              22H
+
+ Set current profile#(01H)
+
+              Byte 0 Byte 1  Byte 2  Byte 3  Byte 4  Byte 5        Byte 6  Byte 7
+                               00      03      02      00            08      00
+Setup         21       09      00      00      00      00            00      CS
+
+OUT           01 Profile#
+
+Profile range:0~5
+ Read current profile#(81H)
+
+          Byte 0 Byte 1      Byte 2  Byte 3  Byte 4  Byte 5  Byte 6  Byte 7
+                               00      03      02      00      08      00
+Setup     21     09            00      00      00      00      00      CS
+                               00      03      02      00      08      00
+OUT       81     00            00      00      00      00      00      00
+
+Setup A1         01
+
+IN        81 Profile#
+
+Profile# profile
+
+ Set parameter_0(02H)
+
+          Byte 0 Byte 1 Byte 2 Byte 3 Byte 4 Byte 5          Byte 6  Byte 7
+                                                               08      00
+Setup     21           09    00      03      02      00        01      CS
+
+OUT       02 Profile# 00             00      00      00
+
+OUT(EP6)                     total 64-byte parameter 0 data
+
+Profile#   profile 0~5( 5 
+
+01 data  64byte
+
+Data:
+
+Byte0 reportrate-(1ms 2ms 4ms 8ms)
+
+Byte1 dpi_stage-DPI (0~7)
+
+Byte2 ledEffect-
+
+Byte3 ledBrightness-
+
+Byte4 ledSpeed-
+
+Byte5 ledColor-
+
+Byte6 ledOption-
+
+Byte7-byte63:
+
+          Type         Brightness    Speed              Color      Option    
+          00H              xx          xx                 xx         xx
+          01H                                                       0&1
+          02H            00--FF      01--07          0--7(7:loop)    xx
+          03H            00--FF      01--07                          xx
+          04H            00--FF      01--07          0--7(7:loop)    xx
+                         00--FF      01--07          0--7(7:loop)
+          05H                                        0--7(7:loop)    xx
+          06H            00--FF      01--07                          xx
+          07H            00--FF      01--07          0--7(7:loop)   0&1
+          08H            00--FF      01--07          0--7(7:loop)    xx
+                         00--FF      01--07          0--7(7:loop)
+                                                     0--7(7:loop)
+            09H             00--FF      01--07      0--7(7:loop) xx
+          0a~9FH
+
+ Read parameter_0(82H)
+
+          Byte 0 Byte 1     Byte 2  Byte 3 Byte 4 Byte 5            Byte 6  Byte 7
+                              00                                      08      00
+Setup     21      09          00    03          02  00                00      CS
+                              00                                      08      00
+OUT       82                  00    00          00  00                01      00
+
+Setup A1          01                03          02  00
+
+IN        82 Profile#               00          00  00
+
+IN(EP5)                             total 64-byte parameter 0 data
+
+Profile#   profile 0~5( 5 
+01 data  64byte
+
+ Set parameter_1(03H)
+
+          Byte 0 Byte 1 Byte 2 Byte 3 Byte 4 Byte 5 Byte 6                  Byte 7
+                                                                              00
+Setup     21            09  00      03          02  00              08        CS
+
+OUT       03 Profile# index 00                  00 status times
+
+OUT(EP6)                    total (64*3)byte parameter 1 data
+
+Profile#   profile 0~5( 5 
+
+times data  64byte 3*64=192 byte
+
+index: (index*64)
+
+Status: bit0-1  1  64BYTE 
+
+       bit0-2  2  64BYTE 
+
+       bit0-3  3  64BYTE 
+
+Data:
+
+Byte0  btn_debounce- (ms) 50ms
+
+Byte1  wheel_debounce- ms
+
+Byte2  sonser_config-       sensor  
+
+Byte3 sonser_lift-          sensor 2mm && 3mm
+
+Byte4  dpiStage_Max-        DPI  8 
+
+Byte5~6 scale_x-            DPI x scale_x/100
+
+Byte7~8 scale_y-            DPI y scale_y/100
+
+Byte9~24 dpi_x_value[8] 8  DPI x 16 bit 
+
+  Byte0       Byte 1        ......      Byte14                      Byte15
+
+value[0]  value[0]  ...... value[7]                            value[7] 
+
+Byte25~40 dpi_y_value[8] 8  DPI y 
+PS X 
+
+Byte41~63 reserve_var[23]-  23 
+
+//-----------------------------------------------------------------------------------------------------------------
+
+Byte64~87: dpi RGB Color DPI  RGB 
+
+Byte0    Byte 1           Byte2 ...... Byte21 Byte22 Byte23
+
+color[0][0] color[0][1] color[0][2] ...... color[7][0] color[7][1] color[7][2]
+
+Byte88~111 : LED_RGB_Color  RGB 
+
+PS: DPI RGB Color
+
+Byte112~127 reserve_var[16]-  16 
+
+//----------------------------------------------------------------------------------------------------------------------
+
+Byte128~191: KEY_maxtrix_table  KEY  4  byte  16  KEY
+
+                            Type
+                          
+KEY0                      
+KEY1                      
+KEY2                       B4
+KEY3                       B5
+KEY4
+
+KEY5                      
+KEY6                      
+KEY7                      
+KEY7~15                   
+
+ Read parameter_1(82H) //
+
+         Byte 0 Byte 1 Byte 2 Byte 3 Byte 4 Byte 5 Byte 6                       Byte 7
+                                                                                  00
+Setup    21           09  00      03      02      00             08               CS
+                                                                                  00
+OUT      83               00      00      00      00             00               00
+
+Setup A1              01  00      03      02      00             08
+
+IN       83 Profile# 00           00      00      00             04
+
+IN(EP5)                       total (64*4)byte parameter 1 data
+
+Profile#   profile 0~5( 5 
+04 data  64byte
+
+ Set macro key (04H)
+
+         Byte 0 Byte 1    Byte 2  Byte 3  Byte 4  Byte 5         Byte 6         Byte 7
+                             00     03      02      00             08             00
+Setup    21           09            00      00      00             02             CS
+                          Macro#
+OUT      04 Profile#
+OUT(EP6)                     total 128-byte macro key data for each
+
+Macro# = 0~47.
+ Read macro key(84H)
+
+          Byte 0 Byte 1      Byte 2 Byte 3 Byte 4 Byte 5               Byte 6  Byte 7
+                                                                         08      00
+Setup     21             09  00     03  02        00                     00      CS
+                                                                         08      00
+OUT       84             00  00     00  00        00                     02      00
+
+Setup A1                 01  00     03  02        00
+
+IN        84 Profile#        Macro# 00  00        00
+
+IN(EP5)                      total (64*2)byte macro key data for each
+
+04 data  64byte
+
+ Set USB String (05H) //
+
+          Byte 0 Byte 1 Byte 2 Byte 3 Byte 4      Byte 5               Byte 6  Byte 7
+                                                    00                   08      00
+Setup     21             09  00     03  02          00                   08      CS
+
+OUT       05             00  00     00  00
+
+OUT(EP6)                            total (64*8)
+
+08 data  64byte
+
+PS: Manufacture String  100bytelength  unicode  0 
+
+         Product String  SerialNum "ABC" length=3*2+23  3*2
+    length  type,+2.
+Manufacture String, 100 byte ,  49 
+
+Manufacture String format :
+
+Byte1 Byte2 Byte3 Byte4                 Byte...                        Byte98 Byte999
+
+Length Type Unicode Char                ....                           Unicode Char
+
+Length = string length*2+2
+
+   Type = fixed 0x03
+Product String, 100 byte ,  49 
+
+Product String format :
+
+Byte1 Byte2 Byte3 Byte4                 Byte...                        Byte98 Byte99
+
+Length Type Unicode Char                ....                           Unicode Char
+
+Length = string length*2+2
+
+   Type = fixed 0x03
+SerialNumber String, 100byte,  49 
+
+SerialNumber String format:
+
+Byte1 Byte2 Byte3 Byte4                 Byte...                        Byte98 Byte99
+
+Length Type Unicode Char                ....                           Unicode Char
+
+Length = string length*2+2
+
+Type = fixed 0x03
+, 100byte,  49                                        Byte...          Byte98 Byte99
+ SerialNumber String format:                            ....             Unicode Char
+
+    Byte1 Byte2 Byte3 Byte4
+    Length Type Unicode Char
+    Length = string length*2+2
+    Type = fixed 0x03
+
+ Read USB String(85H) //
+
+         Byte 0 Byte 1 Byte 2      Byte 3 Byte 4               Byte 5  Byte 6  Byte 7
+                                                                 00      08      00
+Setup    21          09  00         03                02         00      00      CS
+                                                                 00      08      00
+OUT      85          00  00         00                00         00      08      00
+
+Setup A1             01  00         03                02
+
+IN       85          00  00         00                00
+
+IN(EP5)                              total (64*8)
+
+.Profile structure summary:
+
+      Key matrix (index table) structure:
+      There are at most 16 keys in gaming keyboard or mouse. Every key has corresponding 4-byte space
+      that stores the key mode and the mapping data to the Host. Profile has an index table that records the
+      function definition for each key. The firmware needs to read out the function definition of each key,
+      and to parse by corresponding key mode. Then send out the right data sequence to the Host.
+
+The format of the key index table is shown as below:
+
+       Byte34th          Byte23rd                     Byte12nd                 Byte01st
+                                                             --                       --
+         Null (00H)          --
+                                                         Code#1                   Code#0
+    KeyBoard(01H)        Code#2                              --                    Code
+                                                                                  Code#0
+Mouse Button(02H)            --                          Code#1                    Code
+                                                             --                Macro Index
+Multi-media key(03H)         --                              --
+                                                                                  Code#0
+    ACPI Key(04H)            --                              --                   Code#0
+                                                         Code#1                   Code#0
+    Macro Key(05H)       Macro Type                     FireTimes
+                                                                                  Code#0
+       06-09)                                            Code#1
+
+LED Control(0AH)             --
+
+DPI settings(0BH)        Code#2
+
+    Fire Key(0CH)        Fire type
+
+       0F-7F)
+
+Special Key(F0H)             type
+Vendor key(F1H)            Code#2     Code#1                                     Code#0
+
+There are several key modes for the 4th byte of index table, as follow:
+
+1. Keyboard key :
+   For Keyboard key, the Key mode =01H, the 1st ,The 2nd and the 3rd byte indicate the keyboard key USB
+   output key code (Please refer to attached table for keyboard key).
+
+2. Mouse Button:
+   For Mouse Button, the mode = 02H, the 1st byte indicate the button key USB output key code (Please
+   refer to attached table for button key)
+
+3. Multi-media key:
+   For Multi-media key, the Key mode = 03H, the multi-key key code is stored in the 1st byte and the 2nd
+   byte respectively (Please refer to attached table for Multi-key).
+
+4. ACPI key:
+   For ACPI key, the Key mode = 04H, the 1st byte indicate the ACPI key USB output keycode (Please
+   refer to attached table for ACPI key)
+
+5. Macro key :
+   For Macro key, the key mode =05H, the 3rd byte represent macro key type, the2nd byte represent the
+   index of the macro key. There is a table of index for all macro keys. The firmware will look up the
+   corresponding macro key codes from the macro key definition buffer.
+
+6. LED Control:
+   For LED settings key, the Key mode = 0AH,fucnctions define as follows table:
+
+3rd Byte         1st byte                Function
+   00             03H                 
+                 
+
+7. DPI switch key :
+   For DPI switch key, the key mode = 0BH, fucnctions define as follows table:
+
+1st byte                   Function
+ 01H                          DPI+
+ 02H                          DPI-
+ 03H
+                           DPI+ loop
+
+8. Fire Key :
+Byte3              Byte2           Byte1               Byte0
+0x0C          Repeat number        Delay                XX
+
+XX  KEY_A(0x04)  Mouse Scroll down(0xF8).
+
+Delay Time = Delay (1~255)* Time base(10ms)
+Send Press Delay * Time base Send Release  Delay * Time base
+Repeat number = 00, repeat stop for release button key
+Repeat number = xx, repeat stop for counter repeat number
+
+9. Special switch key :
+   For Special key, the key mode = F0H, fucnctions define as follows table:
+
+       3rd           2nd           1st byte                   Function
+                                                                  Fn
+      00             --                     --
+                                                         Profile number +
+      01             --            01H                    Profile number -
+                                                       Profile number Loop
+      01             --            02H                 Profile number value
+
+      01             --            03H                     Report rate +
+                                                            Report rate -
+      01             value         04H                   Report rate loop
+                                                         Report rate value
+      02             --            01H
+                                                                snipe
+      02             --            02H
+                                                            TAB Function
+      02             --            03H
+
+      02             value         03H
+
+      03      DPIValue_H           DPIValue_L
+
+      04      Delay time           Modify key
+
+TAB Function
+
+Byte1         Byte2         Byte3               Byte4
+
+0xF0          04H           Delay time Modify key
+
+Modify key code = ALT(0xE2) or Win(0xE3).
+
+Delay time (1~255)= Modify key Release Delay time (Time base = 10ms).
+Send Modify+Tab  release Tab  delay release modify key.
+
+10. Vendor Hot key:
+   For Vendor Hot key, the Key mode = F1H.
+
+. Macro Key Data Format :
+Macro Number  48  macro  250 Bytes 2  byte  macro code repeat counter, 2 
+
+Bytes  action, 2  byte  00  macro code , action
+
+Macro code type for Key matrix
+
+Function 
+
+0x00      1. Normal macro code, repeat counter .
+
+          2.  button  macro code.
+
+0x01      1. Always repeat macro code, repeat counter .
+
+          2.  button  macro code.
+
+0x02      1. Always repeat  Button Release 
+
+There are long M * (2 + P*2) bytes buffer for all macro keys definitions. Every macro key has maxi. P key
+
+actions (P*2 bytes) and two bytes for repeat time. The macro buffer locate after the index buffer in the
+
+Flash. Every Macro key define as follow:.
+
+a. Ability to define delay in milliseconds between keys' press-and-release
+
+b. Example: Key "A" is defined as "Shift+W" 150 millisecond delay "Release W" 100 millisecond delay
+
+"Release Shift"
+
+c. The mapping data is shown below:
+
+Macro:
+
+          Byte1                 Byte2
+
+      Repeat Low byte      Repeat High byte
+
+where : This provide a range of values from 1 to 65535 repeat number.
+
+      Byte3        Byte4   Byte5             Byte6  ....   Byte2*n Byte2*n+1
+
+      Attribute1 Code No.1 Attribute2 Code No.2     ....   Attribute n Code No.n
+
+Macro Key Example :
+
+ Macro key  123  Byte 15  00
+
+      Byte1 Byte2
+
+      00     02
+
+      Byte3 Byte4 Byte5 Byte6 Byte7          Byte8  Byte9  Byte10 Byte11 Byte12
+                                               1F     81
+      01     1E        81       1E     01      ..     ..   1F          01   20
+                                               ..     ..
+      Byte13 Byte14 Byte15 Byte16 ..                       .. Byte2*n Byte2*n+1
+
+      81     20        00       00     ..                  ..          00   00
+
+Where:
+1. Key Code No: refer to Key Code in FLASH Table
+2. The content of macro key cannot be multi-media key.
+3. Attribute: includes make/break key flag and delay time.
+
+   Bit 7: 0 indicates make key; 1 indicates break key.
+   Bit 0~6: indicate delay time. This provides a range of values from 0.01 to 1.27 seconds, with a 10
+   millisecond resolution. So really delay time = Delay Time * 10 millisecond. If the delay is equal to 0,
+   then the next action.
+Special key code                                    Function
+       0F5H                    Send wheel data, next active for wheel value
+       0F6H                    Send wheel data, next active for wheel value
+       0F7H                    Send AC Pan, next active for AC Pan value
+       0F8H                    Send AC Pan, next active for AC Pan value
+       0F9H
+      0FAH                       Send 8 bit X data ,next active for x value
+                                 Send 8 bit Y data ,next active for y value
+
+. Vendor Code Definition:
+
+      Vendor code report format total 11 byte.
+
+To send 11 byte data according the following data format to inform host
+
+when Parameter change by the endpoint 2 of the inteface 1.(REPORT ID-0x05)
+
+Byte0                 Byte1    Byte2                Byte3           Byte 4         Byte 5   Byte 6
+                                                                                            
+ID-0x04               Profile  reportrate dpi_stage ledEffect                      
+
+                      Number
+
+Byte 7                Byte 8   Byte 9               Byte 10
+
+                               Code                 Type
+
+                Type                   Code                                        
+                FEH                     02H                              Set param_0 succeed
+                FEH                     03H                              Set param_1 succeed
+                FEH                     04H                                Set macro succeed
+                FEH                     05H                               Set strings succeed
+                0xFF                     00                          profile 
+                0xF1               Vendor code
+                                                                                 AP 
+
+. Key Code Table:
+
+                               For Macro Key                                For Key Matrix
+
+ Key defined        Key        Key mode Key code             Byte3          Byte2  Byte1    Byte0
+   No Event     Normal key                                     00                             00
+                Normal key     00 00(macro end)                             00     00
+Overrun Error   Normal key                                     00                             04
+   POST Fail    Normal key     00 01(delay only)               00                             05
+                Normal key                                     00                             06
+ErrorUndefined  Normal key     00 02(delay only)               00                             07
+       aA       Normal key                                     00                             08
+       bB       Normal key     00 03(delay only)               00                             09
+       cC       Normal key                                     00                            0A
+       dD       Normal key     00               04                          00     00
+       eE       Normal key
+       fF                      00               05                          00     00
+       gG
+                               00               06                          00     00
+
+                               00               07                          00     00
+
+                               00               08                          00     00
+
+                               00               09                          00     00
+
+                               00               0A                          00     00
+hH                 Normal key  00  0B  00  00  00  0B
+
+iI                 Normal key  00  0C  00  00  00  0C
+
+jJ                 Normal key  00  0D  00  00  00  0D
+
+kK                 Normal key  00  0E  00  00  00  0E
+
+lL                 Normal key  00  0F  00  00  00  0F
+
+mM                 Normal key  00  10  00  00  00  10
+
+nN                 Normal key  00  11  00  00  00  11
+
+oO                 Normal key  00  12  00  00  00  12
+
+pP                 Normal key  00  13  00  00  00  13
+
+qQ                 Normal key  00  14  00  00  00  14
+
+rR                 Normal key  00  15  00  00  00  15
+
+sS                 Normal key  00  16  00  00  00  16
+
+tT                 Normal key  00  17  00  00  00  17
+
+uU                 Normal key  00  18  00  00  00  18
+
+vV                 Normal key  00  19  00  00  00  19
+
+wW                 Normal key  00  1A  00  00  00  1A
+
+xX                 Normal key  00  1B  00  00  00  1B
+
+yY                 Normal key  00  1C  00  00  00  1C
+
+zZ                 Normal key  00  1D  00  00  00  1D
+
+1!                 Normal key  00  1E  00  00  00  1E
+
+2@                 Normal key  00  1F  00  00  00  1F
+
+3#                 Normal key  00  20  00  00  00  20
+
+4$                 Normal key  00  21  00  00  00  21
+
+5%                 Normal key  00  22  00  00  00  22
+
+6^                 Normal key  00  23  00  00  00  23
+
+7&                 Normal key  00  24  00  00  00  24
+
+8*                 Normal key  00  25  00  00  00  25
+
+9(                 Normal key  00  26  00  00  00  26
+
+0)                 Normal key  00  27  00  00  00  27
+
+Return             Normal key  00  28  00  00  00  28
+
+Escape             Normal key  00  29  00  00  00  29
+
+Backspace          Normal key  00  2A  00  00  00  2A
+
+Tab                Normal key  00  2B  00  00  00  2B
+
+Space              Normal key  00  2C  00  00  00  2C
+
+-_                 Normal key  00  2D  00  00  00  2D
+
+=+                 Normal key  00  2E  00  00  00  2E
+
+[{                 Normal key  00  2F  00  00  00  2F
+
+]}                 Normal key  00  30  00  00  00  30
+
+\|                 Normal key  00  31  00  00  00  31
+
+Europe 1 (Note 2)  Normal key  00  32  00  00  00  32
+
+;:                 Normal key  00  33  00  00  00  33
+
+'"                 Normal key  00  34  00  00  00  34
+
+`~                 Normal key  00  35  00  00  00  35
+
+,<                 Normal key  00  36  00  00  00  36
+
+.>                 Normal key  00  37  00  00  00  37
+
+/?                 Normal key  00  38  00  00  00  38
+
+Caps Lock          Normal key  00  39  00  00  00  39
+
+F1                 Normal key  00  3A  00  00  00  3A
+
+F2                 Normal key  00  3B  00  00  00  3B
+
+F3                 Normal key  00  3C  00  00  00  3C
+
+F4                 Normal key  00  3D  00  00  00  3D
+
+F5                 Normal key  00  3E  00  00  00  3E
+
+F6                 Normal key  00  3F  00  00  00  3F
+
+F7                 Normal key  00  40  00  00  00  40
+
+F8                 Normal key  00  41  00  00  00  41
+
+F9                 Normal key  00  42  00  00  00  42
+
+F10                Normal key  00  43  00  00  00  43
+
+F11                Normal key  00  44  00  00  00  44
+F12                   Normal key  00  45  00  00  00  45
+
+Print Screen          Normal key  00  46  00  00  00  46
+
+Scroll Lock           Normal key  00  47  00  00  00  47
+
+Break (Ctrl-Pause)    Normal key  00  48  00  00  00  48
+
+Pause                 Normal key  00  48  00  00  00  48
+
+Insert                Normal key  00  49  01  00  00  49
+
+Home                  Normal key  00  4A  00  00  00  4A
+
+Page Up               Normal key  00  4B  00  00  00  4B
+
+Delete                Normal key  00  4C  00  00  00  4C
+
+End                   Normal key  00  4D  00  00  00  4D
+
+Page Down             Normal key  00  4E  00  01  01  4E
+
+Right Arrow           Normal key  00  4F  00  00  00  4F
+
+Left Arrow            Normal key  00  50  00  00  00  50
+
+Down Arrow            Normal key  00  51  00  00  00  51
+
+Up Arrow              Normal key  00  52  00  00  00  52
+
+Num Lock              Normal key  00  53  00  00  00  53
+
+Keypad /              Normal key  00  54  00  00  00  54
+
+Keypad *              Normal key  00  55  00  00  00  55
+
+Keypad -              Normal key  00  56  00  00  00  56
+
+Keypad +              Normal key  00  57  00  00  00  57
+
+Keypad Enter          Normal key  00  58  00  00  00  58
+
+Keypad 1 End          Normal key  00  59  00  00  00  59
+
+Keypad 2 Down         Normal key  00  5A  00  00  00  5A
+
+Keypad 3 PageDn       Normal key  00  5B  00  00  00  5B
+
+Keypad 4 Left         Normal key  00  5C  00  00  00  5C
+
+Keypad 5              Normal key  00  5D  00  00  00  5D
+
+Keypad 6 Right        Normal key  00  5E  00  00  00  5E
+
+Keypad 7 Home         Normal key  00  5F  00  00  00  5F
+
+Keypad 8 Up           Normal key  00  60  00  00  00  60
+
+Keypad 9 PageUp       Normal key  00  61  00  00  00  61
+
+Keypad 0 Insert       Normal key  00  62  00  00  00  62
+
+Keypad . Delete       Normal key  00  63  00  00  00  63
+
+Europe 2              Normal key  00  64  00  00  00  64
+
+App                   Normal key  00  65  00  00  00  65
+
+Keyboard Power        Normal key  00  66  00  00  00  66
+
+Keypad =              Normal key  00  67  00  00  00  67
+
+F13                   Normal key  00  68  00  00  00  68
+
+F14                   Normal key  00  69  00  00  00  69
+
+F15                   Normal key  00  6A  00  00  00  6A
+
+F16                   Normal key  00  6B  00  00  00  6B
+
+F17                   Normal key  00  6C  00  00  00  6C
+
+F18                   Normal key  00  6D  00  00  00  6D
+
+F19                   Normal key  00  6E  00  00  00  6E
+
+F20                   Normal key  00  6F  00  00  00  6F
+
+F21                   Normal key  00  70  00  00  00  70
+
+F22                   Normal key  00  71  00  00  00  71
+
+F23                   Normal key  00  72  00  00  00  72
+
+F24                   Normal key  00  73  00  00  00  73
+
+      Keypad ,        Normal key  00  85  00  00  00  85
+(Brazilian Keypad .)
+
+Keyboard Int'l 1
+
+                      Normal key  00  87  00  00  00  87
+
+(Ro)
+
+Keyboard Intl'2
+
+
+
+                      Normal key  00  88  00  00  00  88
+
+
+
+(Katakana/Hiragana)
+Keyboard Int'l 2
+
+¥                    Normal key       00  89  00  00  00     89
+
+(Yen)
+
+Keyboard Int'l 4
+     
+
+ ()                  Normal key       00  8A  00  00  00     8A
+
+
+
+(Henkan)
+
+Keyboard Int'l 5
+
+                     Normal key       00  8B  00  00  00     8B
+
+(Muhenkan)
+
+Keyboard Lang 1
+
+/                    Normal key       00  90  00  00  00     90
+
+(Hanguel/English)
+
+Left Control         Normal key       00  E0  00  00  00     E0
+
+Left Shift           Normal key       00  E1  00  00  00     E1
+
+Left Alt             Normal key       00  E2  00  00  00     E2
+
+Left GUI             Normal key       00  E3  00  00  00     E3
+
+Right Control        Normal key       00  E4  00  00  00     E4
+
+Right Shift          Normal key       00  E5  00  00  00     E5
+
+Right Alt            Normal key       00  E6  00  00  00     E6
+
+Right GUI            Normal key       00  E7  00  00  00     E7
+
+Mouse L Button       Mouse button     00  F0  02  00  00     F0
+
+Mouse R Button       Mouse button     00  F1  02  00  00     F1
+
+Mouse M Button       Mouse button     00  F2  02  00  00     F2
+
+Mouse B4 Button      Mouse button     00  F3  02  00  00     F3
+
+Mouse B5 Button      Mouse button     00  F4  02  00  00     F4
+
+Mouse wheel up       Mouse button     00  F5  02  00  Value  F5
+
+Mouse wheel dowm Mouse button         00  F6  02  00  Value  F6
+
+Mouse AC Pan left Mouse button        00  F7  02  00  Value  F7
+
+Mouse AC Pan right Mouse button       00  F8  02  00  Value  F8
+
+System Power         ACPI                     04  00  00     01
+System Sleep         ACPI
+System Wake          ACPI                     04  00  00     02
+
+                                              04  00  00     04
+
+  Scan Next Track    Multi-media key          03  00  00     B5
+Scan Previous Track  Multi-media key
+                     Multi-media key          03  00  00     B6
+         Stop        Multi-media key
+     Play/ Pause     Multi-media key          03  00  00     B7
+                     Multi-media key
+         Mute        Multi-media key          03  00  00     CD
+     Volume Up       Multi-media key
+   Volume Down       Multi-media key          03  00  00     E2
+    Media Select     Multi-media key
+                     Multi-media key          03  00  00     E9
+         Mail        Multi-media key
+      Calculator     Multi-media key          03  00  00     EA
+   My Computer       Multi-media key
+   WWW Search        Multi-media key          03  00  02     83
+    WWW Home         Multi-media key
+    WWW Back         Multi-media key          03  00  02     8A
+  WWW Forward        Multi-media key
+     WWW Stop                                 03  00  02     92
+   WWW Refresh
+  WWW Favorites                               03  00  02     94
+
+                                              03  00  02     21
+
+                                              03  00  02     23
+
+                                              03  00  02     24
+
+                                              03  00  02     25
+
+                                              03  00  02     26
+
+                                              03  00  02     27
+
+                                              03  00  02     2A
+Vendor code                       F1  XX    YY         ZZ
+
+ Macro Key           Macro        05  Type  00         Index
+
+ DPI switch          DPI+         0B  00    00         01
+ DPI switch           DPI-
+ DPI switch       DPI+ loop       0B  00    00         02
+ DPI switch       DPI Value
+                                  0B  00    00         03
+Special Key            Fn
+Special Key         Profile+      0B  Value_H Value_L  04
+Special Key         Profile-
+Special Key      Profile+ loop    F0  00    00         00
+Special Key      Profile value
+Special Keyh     Report rate +    F0  01    00         01
+Special Key      Report rate -
+Special Key   Report rate + loop  F0  01    00         02
+Special Key   Report rate Value
+Special Key                       F0  01    00         03
+Special Key         snipe
+               Tab Function       F0  01    value      04
+  Fire Key
+                  Fire mode       F0  02    01         00
+  RGB Key
+  RGB Key        Effect Loop      F0  02    02         00
+  RGB Key          Effect Inc
+  RGB Key         Effect Dec      F0  02    03         00
+  RGB Key        Effect Value
+  RGB Key      Brightness Loop    F0  02    Value      04
+  RGB Key       Brightness Inc
+  RGB Key      Brightness Dec     F0  03    Value_H Value_L
+  RGB Key     Brightness Value
+  RGB Key        Speed Loop       F0  04    Delay time Alt or Win
+  RGB Key          Speed Inc
+  RGB Key         Speed Dec       0C  repeat delaytime code
+  RGB Key        Speed Value
+  RGB Key         Color Loop      0A  00    00         03
+  RGB Key          Color Inc
+  RGB Key         Color Dec       0A  00    00         01
+  RGB Key        Color Value
+  RGB Key        Option Loop      0A  00    00         02
+  RGB Key         Option Inc
+  RGB Key         Option Dec      0A  00    Value      04
+                Option Value
+                                  0A  01    00         03
+
+                                  0A  01    00         01
+
+                                  0A  01    00         02
+
+                                  0A  01    Value      04
+
+                                  0A  02    00         03
+
+                                  0A  02    00         01
+
+                                  0A  02    00         02
+
+                                  0A  02    Value      04
+
+                                  0A  03    00         03
+
+                                  0A  03    00         01
+
+                                  0A  03    00         02
+
+                                  0A  03    Value      04
+
+                                  0A  04    00         03
+
+                                  0A  04    00         01
+
+                                  0A  04    00         02
+
+                                  0A  04    Value      04
+

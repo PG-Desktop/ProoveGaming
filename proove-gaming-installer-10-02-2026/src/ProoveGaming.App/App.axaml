@@ -1,0 +1,991 @@
+<Application xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.App.App"
+			 xmlns:local="using:ProoveGaming.App"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 RequestedThemeVariant="Default">
+
+	<Application.Resources>
+		<ResourceDictionary>
+			<FontFamily x:Key="BaseAppFont">Segoe UI, Inter</FontFamily>
+			<FontFamily x:Key="AppPixelFont">avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7, Inter</FontFamily>
+			<!-- The 56x56 cut-corner frame motif (8px chamfers) used for square icon hover/selection
+			     frames across Home, Profile, MainWindow and DeviceDetails. Squares of any size can
+			     reuse it with Stretch="Fill" — uniform scaling keeps the chamfer in proportion. -->
+			<StreamGeometry x:Key="CutCornerFrameGeometry">M48 8H56V48H48V56H8V48H0V8H8V0H48V8Z</StreamGeometry>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceInclude Source="avares://ProoveGaming.App/Resources/Strings.en.axaml"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Application.Resources>
+
+	<Application.DataTemplates>
+		<local:ViewLocator/>
+	</Application.DataTemplates>
+
+	<Application.Styles>
+		<FluentTheme />
+		<StyleInclude Source="avares://ProoveGaming.Common/Styles/SharedCheckboxStyles.axaml"/>
+		<StyleInclude Source="avares://ProoveGaming.Common/Styles/SharedActionButtonStyles.axaml"/>
+		<StyleInclude Source="avares://ProoveGaming.Common/Styles/SharedLegalDocumentStyles.axaml"/>
+		<StyleInclude Source="avares://ProoveGaming.Common/Styles/SharedFieldBoxStyles.axaml"/>
+
+		<!-- Text-input host border: same normal/hover/selected colours as the sign-up (Welcome) inputs.
+		     Apply to the Border that wraps a search box or dialog TextBox. :pointerover is declared
+		     after :focus-within so hover wins while hovering a focused field (matches the sign-up flow). -->
+		<Style Selector="Border.pgInputHost">
+			<Setter Property="BorderBrush" Value="#4DBEBCEA" />
+		</Style>
+		<!-- A field that holds content keeps the accent border even unfocused (Contact Us
+		     filled-state mockup). Opt-in: toggle the class from a "has text" binding. Declared
+		     before the focus/hover states so those still win while the field is interacted with. -->
+		<Style Selector="Border.pgInputHost.filled">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+		</Style>
+		<Style Selector="Border.pgInputHost:focus-within">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+		</Style>
+		<Style Selector="Border.pgInputHost:pointerover">
+			<Setter Property="BorderBrush" Value="#786DFF" />
+		</Style>
+
+		<!-- Design scrollbar: thin 4px bar on a full-height white 10% track, with a square
+		     #BEBCEA thumb at 30% opacity that turns accent (#786DFF) while hovered or dragged.
+		     Apply the pgScrollViewer class to any ScrollViewer whose vertical bar should be
+		     visible (Home device grid, macro steps) — or to a TextBox (Contact Us message):
+		     the selectors are class-only, and descendant matching reaches the ScrollBar inside
+		     the TextBox template's own ScrollViewer. -->
+		<Style Selector=".pgScrollViewer ScrollBar:vertical">
+			<Setter Property="Width" Value="4" />
+			<Setter Property="MinWidth" Value="4" />
+			<Setter Property="MaxWidth" Value="4" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<!-- The 10% white lives in the Fill's alpha (#1A), not in Opacity: the Fluent template
+		     animates TrackRect.Opacity for its expand/collapse fade, so a value set there would
+		     fight the theme's own expanded-state style. -->
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ Rectangle#TrackRect">
+			<Setter Property="Fill" Value="#1AFFFFFF" />
+			<Setter Property="Stroke" Value="Transparent" />
+			<Setter Property="StrokeThickness" Value="0" />
+			<Setter Property="RadiusX" Value="0" />
+			<Setter Property="RadiusY" Value="0" />
+		</Style>
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ Thumb">
+			<Setter Property="Background" Value="#BEBCEA" />
+			<Setter Property="Opacity" Value="0.3" />
+			<Setter Property="CornerRadius" Value="0" />
+		</Style>
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ Thumb /template/ Border">
+			<Setter Property="Background" Value="#BEBCEA" />
+			<Setter Property="BorderBrush" Value="#BEBCEA" />
+			<Setter Property="Opacity" Value="0.3" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ Thumb:pointerover, .pgScrollViewer ScrollBar:vertical /template/ Thumb:pressed">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ Thumb:pointerover /template/ Border, .pgScrollViewer ScrollBar:vertical /template/ Thumb:pressed /template/ Border">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+		<!-- The design bar has no arrow/page buttons: hide the repeat buttons the Fluent
+		     template shows in the expanded state, and collapse the line buttons' reserved
+		     height so the thumb track spans the full bar. -->
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ RepeatButton">
+			<Setter Property="Opacity" Value="0" />
+		</Style>
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_PageUpButton, .pgScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_PageDownButton">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector=".pgScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_LineUpButton, .pgScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_LineDownButton">
+			<Setter Property="IsVisible" Value="False" />
+			<Setter Property="Height" Value="0" />
+			<Setter Property="MinHeight" Value="0" />
+		</Style>
+		<!-- TextBox host (Contact Us message): without AllowAutoHide=False the overlay bar
+		     materialises only under the pointer, which reads as "no scroll here". The call
+		     site sets the attached ScrollViewer.AllowAutoHide/-Visibility on the TextBox —
+		     the Fluent template forwards those onto PART_ScrollViewer at Template priority,
+		     which OUTRANKS these Style setters (review R1 S1). This block stays only as the
+		     fallback for a template that does not forward them; do not rely on it alone. -->
+		<Style Selector="TextBox.pgScrollViewer /template/ ScrollViewer#PART_ScrollViewer">
+			<Setter Property="AllowAutoHide" Value="False" />
+			<Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+		</Style>
+
+		<!-- Section lists: the bar tracks the ROWS, not the whole viewport — its top starts at
+		     the list's first control (the viewport's own bottom margin gives the shared bottom
+		     edge). Presets' first row sits below the "Всього / ІГРИ" header (74). The Macros
+		     list starts at the "+ НОВИЙ МАКРОС" button: header slot 38 + 8 spacing on top of
+		     the device-dependent content padding (MacrosContentPadding: 14 keyboard / 0 mouse),
+		     i.e. 60 on a keyboard and 46 on a mouse — the view toggles the mouseDevice class
+		     to pick the right one. -->
+		<Style Selector="ScrollViewer.pgPresetsScroll ScrollBar:vertical">
+			<Setter Property="Margin" Value="0,74,0,0" />
+		</Style>
+		<Style Selector="ScrollViewer.pgMacrosScroll ScrollBar:vertical">
+			<Setter Property="Margin" Value="0,60,0,0" />
+		</Style>
+		<Style Selector="ScrollViewer.pgMacrosScroll.mouseDevice ScrollBar:vertical">
+			<Setter Property="Margin" Value="0,46,0,0" />
+		</Style>
+
+		<!-- Macro kebab menu (Edit/Remove), styled like the device-card dots menu on Home.
+		     Defined app-level so the styles reach the flyout popup, which is a separate
+		     visual root from the view that opens it. -->
+		<Style Selector="FlyoutPresenter.macroMenuPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="MinWidth" Value="0" />
+			<Setter Property="CornerRadius" Value="0" />
+		</Style>
+		<Style Selector="Button.macroMenuItem">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Left" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="Padding" Value="12,0,0,0" />
+			<Setter Property="Cursor" Value="Hand" />
+		</Style>
+		<Style Selector="Button.macroMenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4D6357FF" />
+		</Style>
+		<Style Selector="Button.macroMenuItemDelete:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4DFF383C" />
+		</Style>
+		<Style Selector="TextBlock">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="LineHeight" Value="24" />
+		</Style>
+		<Style Selector="Button">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="FontSize" Value="16" />
+		</Style>
+		<Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="TextBox">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="FontSize" Value="16" />
+		</Style>
+		<Style Selector="CheckBox">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="FontSize" Value="16" />
+		</Style>
+		<Style Selector="ComboBox">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="FontSize" Value="16" />
+		</Style>
+
+		<Style Selector="TextBox /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="BoxShadow" Value="none" />
+		</Style>
+		<Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox /template/ TextBlock#PART_Watermark">
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+		</Style>
+		<Style Selector="TextBox /template/ TextBlock#PART_PlaceholderText">
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+		</Style>
+
+		<Style Selector="Button.linkButton">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+		</Style>
+		<Style Selector="Button.linkButton /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button.linkButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button.linkButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+
+		<Style Selector="TextBlock.tab">
+			<Setter Property="Foreground" Value="#FFFFFF"/>
+		</Style>
+
+		<Style Selector="TextBlock.stepTitle">
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontSize" Value="36" />
+			<Setter Property="FontWeight" Value="250" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="LineHeight" Value="32" />
+			<Setter Property="LetterSpacing" Value="0" />
+			<Setter Property="TextAlignment" Value="Center" />
+		</Style>
+
+		<!-- Full-width action button at the top of a device-details section: "Random lighting",
+		     "Recommendations", "Default settings". Set Background per section if it differs.
+		     The :pointerover rule re-states BorderBrush/BorderThickness because the default theme
+		     styles this same presenter on hover and would otherwise repaint the purple outline. -->
+		<Style Selector="Button.sectionActionButton">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Background" Value="#110F32" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="FontWeight" Value="Light" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Padding" Value="0,4,0,0" />
+		</Style>
+		<Style Selector="Button.sectionActionButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#231E5A" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<!-- Same presenter trap on :disabled: the theme's dark disabled resources melt the button
+		     into the panel, so it reads as HIDDEN rather than disabled. Colours per the
+		     Bluetooth-locked mock — no fill, 10% purple outline, 30% label. -->
+		<Style Selector="Button.sectionActionButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#1A6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="#4DBEBCEA" />
+		</Style>
+		<!-- Unreachable today (Actuation ships on wired-only boards), but the trap is the same:
+		     the day an actuation board gains Bluetooth, these mode buttons would melt exactly
+		     like the section buttons above did (PR #124 m8). -->
+		<Style Selector="Button.sectionModeButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#1A6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="#4DBEBCEA" />
+		</Style>
+
+		<!-- Two-state mode selector at the top of a device-details section (Actuation's
+		     "All keys" / "Per-key"). Same family as sectionActionButton; the active variant is
+		     not colour-only — the filled background pairs with a semibold label. -->
+		<Style Selector="Button.sectionModeButton">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Background" Value="#110F32" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="FontWeight" Value="Light" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Padding" Value="0,4,0,0" />
+		</Style>
+		<Style Selector="Button.sectionModeButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#231E5A" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<!-- Selection is carried by the filled background alone — the face must not change
+		     (a SemiBold jump here made the selected tab read as a different font). -->
+		<Style Selector="Button.sectionModeButton.active">
+			<Setter Property="Background" Value="#6357FF" />
+		</Style>
+		<Style Selector="Button.sectionModeButton.active:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#6357FF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+
+		<!-- Extended Keys: the key chip and the mode badge, shared by the configured-list rows and
+		     the add editor in ExtendedKeysSectionView (second-copy rule). The chip's label is
+		     underlined as in the design; the editor's active chip adds a solid outline so the target
+		     of the next click is not colour-only. Badge colour is bound per row (one constant per
+		     mode in ExtendedKeyRowViewModel), so no hex is restated here. -->
+		<Style Selector="Border.extendedKeyChip">
+			<Setter Property="Background" Value="#1A6357FF" />
+			<Setter Property="BorderBrush" Value="#336357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="2" />
+			<Setter Property="Padding" Value="10,4" />
+			<Setter Property="MinWidth" Value="36" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Border.extendedKeyChip TextBlock">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="LineHeight" Value="20" />
+			<!-- No text underline: on a single capital the decoration fuses with the glyph, so a
+				 chip reading "T" showed as "I" (QA, 2026-09-09). The design's accent bar is a
+				 follow-up; a legible label wins over it. -->
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Border.extendedKeyChip.active">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="Border.extendedKeyBadge">
+			<Setter Property="CornerRadius" Value="2" />
+			<Setter Property="Padding" Value="6,2" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Border.extendedKeyBadge TextBlock">
+			<Setter Property="Foreground" Value="#0B0A1E" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="11" />
+			<Setter Property="FontWeight" Value="Bold" />
+			<Setter Property="LineHeight" Value="14" />
+		</Style>
+
+		<!-- Content-sized bordered radio card (Extended Keys: the SOCD "Priority Settings" 2x2 grid).
+		     The sibling of RadioButton.macroItemRow — same 5% background, 2px purple border when
+		     :checked, purple tint on hover — without its fixed 56px height: the label wraps, so the
+		     card grows with the uk text instead of clipping it. Content lays itself out; the card
+		     only draws the frame. -->
+		<Style Selector="RadioButton.optionCard">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="VerticalAlignment" Value="Stretch" />
+			<Setter Property="MinHeight" Value="56" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Padding" Value="10,8" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							Padding="{TemplateBinding Padding}">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="Stretch"
+										  VerticalContentAlignment="Stretch" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="RadioButton.optionCard:checked">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+		</Style>
+		<Style Selector="RadioButton.optionCard:pointerover:not(:checked)">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+
+		<!-- Amber warning banner inside a device-details section (key-assignment read failure,
+		     macro upload failure). Colour is never the only cue: the border and the semibold
+		     weight carry the emphasis too. Margin is per call site. -->
+		<Style Selector="Border.warningBanner">
+			<Setter Property="Background" Value="#26E8A33D" />
+			<Setter Property="BorderBrush" Value="#E8A33D" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="CornerRadius" Value="4" />
+			<Setter Property="Padding" Value="12,10" />
+		</Style>
+		<Style Selector="Border.warningBanner TextBlock">
+			<Setter Property="Foreground" Value="#F5C77E" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="13" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="LineHeight" Value="18" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+		</Style>
+
+		<!-- Device-details section content while the live transport is Bluetooth: each section's
+		     root carries IsEnabled={Binding !Device.HasBluetooth}, and this class sits on the
+		     DIMMABLE blocks inside it — never on a subtree that contains a styled button. Opacity
+		     composites over the whole subtree, so a button whose :disabled colours are the mock's
+		     absolute 10%/30% alphas would render at half of that again (PR #124 M1: Recommendations
+		     and NEW MACRO were at ~5%/15%). Buttons stay outside the class and rely on their own
+		     :disabled presenter re-states. Shared here because seven section views use it — never
+		     copy it per view. -->
+		<Style Selector=":is(Control).bluetoothLocked:disabled">
+			<Setter Property="Opacity" Value="0.5" />
+		</Style>
+
+		<Style Selector="Button.primaryButton">
+			<Setter Property="Background" Value="#6357FF" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontWeight" Value="Light" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Height" Value="56" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.primaryButton:pointerover">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="BorderBrush" Value="#786DFF" />
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="Button.primaryButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="BorderBrush" Value="#786DFF" />
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="Button.primaryButton:disabled">
+			<Setter Property="Background" Value="#1A6357FF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="Button.primaryButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#1A6357FF" />
+			<Setter Property="Foreground" Value="#4DBEBCEA" />
+		</Style>
+		<!-- A disabled primary button dims its svg icon too (the + in NEW PRESET): the presenter's
+		     Foreground can't reach an SvgImageView, so the tint carries the 30% label colour. -->
+		<Style Selector="Button.primaryButton:disabled commonControls|SvgImageView">
+			<Setter Property="TintColor" Value="#4DBEBCEA" />
+		</Style>
+
+		<Style Selector="Button.secondaryButton">
+			<Setter Property="Background" Value="#1A6357FF" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontWeight" Value="Light" />
+			<Setter Property="FontStyle" Value="Normal" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Height" Value="56" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.secondaryButton:pointerover">
+			<Setter Property="Background" Value="#4D786DFF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="Button.secondaryButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4D786DFF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="Button.secondaryButton:disabled">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#1A6357FF" />
+			<Setter Property="Foreground" Value="#4DBEBCEA" />
+		</Style>
+		<Style Selector="Button.secondaryButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#1A6357FF" />
+			<Setter Property="Foreground" Value="#4DBEBCEA" />
+		</Style>
+
+		<!-- Server-generated nickname suggestion chip + its "Recommended nicknames" divider.
+		     Shared by the registration step (ChooseNicknameView) and the profile Change-nickname
+		     dialog so the two rows stay visually identical. -->
+		<Style Selector="Button.suggestionButton">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="#33BEBCEA" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Padding" Value="12,0" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<!-- Nicknames may legitimately contain '_' (server rule: [A-Za-z0-9_]). The Fluent Button
+		     template presents string content through AccessText, which eats the underscore as an
+		     access-key marker and underlines the next character — the chip would read "Sad855"
+		     while the field it fills in says "Sad_855". Chips show data, never a mnemonic. -->
+		<Style Selector="Button.suggestionButton /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="RecognizesAccessKey" Value="False" />
+		</Style>
+		<Style Selector="Button.suggestionButton:pointerover">
+			<Setter Property="BorderBrush" Value="#786DFF" />
+			<Setter Property="Foreground" Value="#B2BEBCEA" />
+		</Style>
+		<Style Selector="Button.suggestionButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#336357FF" />
+			<Setter Property="BorderBrush" Value="#786DFF" />
+			<Setter Property="Foreground" Value="#B2BEBCEA" />
+		</Style>
+		<Style Selector="Button.suggestionButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#266357FF" />
+		</Style>
+
+		<Style Selector="Path.suggestionDivider">
+			<Setter Property="Data" Value="M 0,0 H 1000" />
+			<Setter Property="Stroke" Value="#1AFFFFFF" />
+			<Setter Property="StrokeDashArray" Value="2,2" />
+			<Setter Property="StrokeThickness" Value="1" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+		</Style>
+		<Style Selector="TextBlock.suggestionDividerLabel">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="Foreground" Value="#66908EB0" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="Margin" Value="16,0" />
+		</Style>
+
+		<Style Selector="Button#ProfileButton:pointerover Path#ProfileBg">
+			<Setter Property="Fill" Value="#786DFF" />
+		</Style>
+		<Style Selector="Button#ProfileButton:pressed Path#ProfileBg">
+			<Setter Property="Fill" Value="#4D44CC" />
+		</Style>
+
+		<Style Selector="Button#GuestButton:pointerover Path#GuestBg">
+			<Setter Property="Fill" Value="#8A7FFF" />
+		</Style>
+		<Style Selector="Button#GuestButton:pressed Path#GuestBg">
+			<Setter Property="Fill" Value="#6357FF" />
+		</Style>
+
+		<Style Selector="Button.linkButton:pointerover TextBlock.tab">
+			<Setter Property="Foreground" Value="#786DFF" />
+		</Style>
+
+		<Style Selector="Path#SearchBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button#SearchButton:pointerover Path#SearchBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="Path#HelpBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button#HelpButton:pointerover Path#HelpBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="Path#NotifBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button#NotifButton:pointerover Path#NotifBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="Path#SettingsBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button#SettingsButton:pointerover Path#SettingsBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<!-- Back-button hover plate for the page headers (ProfileView, SettingsView). -->
+		<Style Selector="Path#NavBackBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button#NavBackButton:pointerover Path#NavBackBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- Sizing lives here, not at the call sites: content width + side padding, with the
+		     design's 105px only as a floor. A fixed Width clipped the longer uk strings
+		     ("СКАСУВАТИ") flush against the border — localized text must always keep its inset. -->
+		<!-- Foreground is restated on every state of both delete buttons, and on the CONTENT
+		     PRESENTER as well as the button. Fluent paints PART_ContentPresenter's Foreground on
+		     :pointerover and :pressed, and a label that only inherits from the button would take the
+		     theme's colour there — the label must stay white on the red fill and on the outlined
+		     cancel in all states. Call sites therefore do not need their own Foreground (the
+		     device-delete dialog in MainWindow still sets one inline; it is now redundant). -->
+		<Style Selector="Button.cancelDelete">
+			<Setter Property="Background" Value="#1A6357FF"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="BorderBrush" Value="#6357FF"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="CornerRadius" Value="0"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="Padding" Value="16,0"/>
+			<Setter Property="MinWidth" Value="105"/>
+			<Setter Property="Height" Value="40"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+		<Style Selector="Button.cancelDelete:pointerover">
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+		<!-- BorderBrush/BorderThickness are restated alongside Background, not left to the base
+		     setter: Fluent styles PART_ContentPresenter on :pointerover and :pressed, so a hover rule
+		     that sets only Background lets the theme repaint the border — the visible symptom is the
+		     cancel button's outline vanishing under the pointer. -->
+		<Style Selector="Button.cancelDelete:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#336357FF"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="BorderBrush" Value="#6357FF"/>
+			<Setter Property="BorderThickness" Value="1"/>
+		</Style>
+		<Style Selector="Button.cancelDelete:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#336357FF"/>
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="BorderBrush" Value="#6357FF"/>
+			<Setter Property="BorderThickness" Value="1"/>
+		</Style>
+
+		<Style Selector="Button.confirmDelete">
+			<Setter Property="Foreground" Value="White"/>
+			<Setter Property="BorderThickness" Value="0"/>
+			<Setter Property="CornerRadius" Value="0"/>
+			<Setter Property="Cursor" Value="Hand"/>
+			<Setter Property="Padding" Value="16,0"/>
+			<Setter Property="MinWidth" Value="105"/>
+			<Setter Property="Height" Value="40"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+		</Style>
+		<Style Selector="Button.confirmDelete /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#FF383C"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+		<Style Selector="Button.confirmDelete:pointerover">
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+		<Style Selector="Button.confirmDelete:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#FF5559"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+		<Style Selector="Button.confirmDelete:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#FF5559"/>
+			<Setter Property="Foreground" Value="White"/>
+		</Style>
+
+		<Style Selector="Button.closeButton:pointerover /template/ Path#PART_Bg">
+			<Setter Property="Fill" Value="#786DFF"/>
+		</Style>
+		<Style Selector="Button.closeButton:pointerover /template/ Path#PART_Icon">
+			<Setter Property="Fill" Value="White"/>
+		</Style>
+
+		<Style Selector="Button.profileMenuItem">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment" Value="Left" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Margin" Value="16,0" />
+			<Setter Property="Cursor" Value="Hand" />
+		</Style>
+		<Style Selector="Button.profileMenuItem /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="Button.profileMenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4D6357FF" />
+		</Style>
+
+		<!-- Information page legal documents (the six Views/Information content views).
+		     Matches the designer's content mock: body #BEBCEA @70%, section headings and
+		     the document title white SemiBold, the effective-date line white regular —
+		     emphasis pairs weight/size with colour so it never relies on colour alone. -->
+		<Style Selector="TextBlock.legalDocRoot">
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="LineHeight" Value="24" />
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+			<Setter Property="TextWrapping" Value="Wrap" />
+		</Style>
+		<Style Selector="Run.legalDocTitle">
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="FontSize" Value="20" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="Run.legalDocHeading">
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="Run.legalDocDate">
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="Run.legalDocText">
+			<Setter Property="FontWeight" Value="Normal" />
+			<Setter Property="FontSize" Value="16" />
+		</Style>
+
+		<!-- Macros/Key Assignment Dialog shared list chrome. These four families used to live in
+		     MacrosSectionView; the Key Assignment Dialog renders the same tab strip, search field
+		     and macro rows, so the styles moved here rather than being copied (second-copy rule). -->
+
+		<!-- Tab Button: transparent shell, no chrome — children define the visual. Active state
+		     is a VM-bound class (.tabActive), not a RadioButton group, so the default sticks. -->
+		<Style Selector="Button.macroTab">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="VerticalContentAlignment" Value="Stretch" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="Transparent">
+						<ContentPresenter Background="Transparent"
+										  Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+										  VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<!-- Tab main fill: only visible when the tab is active. The fill is a three-column
+		     grid (15px slant polygons + a stretching rectangle), so the tab takes its width
+		     from the label instead of a hardcoded per-caption width — localized captions
+		     stay inside the parallelogram. -->
+		<Style Selector="Button.macroTab Grid.macroTabFill">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button.macroTab.tabActive Grid.macroTabFill">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<!-- Tab label: dimmed when inactive, white when active -->
+		<Style Selector="TextBlock.macroTabLabel">
+			<Setter Property="Foreground" Value="#80FFFFFF" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.macroTab.tabActive TextBlock.macroTabLabel">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+
+		<!-- Search field shell (48h, 1px hairline border) -->
+		<!-- Border colour (normal/hover/selected) comes from the shared pgInputHost style above;
+		     don't set BorderBrush here or this setter would override the hover/focus states. -->
+		<Style Selector="Border.macroSearchHost">
+			<Setter Property="Height" Value="48" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="1" />
+		</Style>
+		<Style Selector="TextBox.macroSearchInput">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="PlaceholderForeground" Value="#B2BEBCEA" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="14" />
+			<Setter Property="Padding" Value="52,0,16,0" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="TextBox.macroSearchInput /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox.macroSearchInput:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="TextBox.macroSearchInput:focus /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+
+		<!-- Macro item row — 56h, white 5% bg, 2px purple border when :checked. Hand cursor: both
+		     consumers (the Macros page's inspection list and the dialog's MACROS tab) are
+		     clickable rows, and the row body otherwise gives no pointer affordance. -->
+		<Style Selector="RadioButton.macroItemRow">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Height" Value="56" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="Stretch"
+										  VerticalContentAlignment="Stretch" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="RadioButton.macroItemRow:checked">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+		</Style>
+		<Style Selector="RadioButton.macroItemRow:pointerover:not(:checked)">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+
+		<!-- Command row (Key Assignment Dialog SYSTEM tab) — the same 56h/5% row as
+		     macroItemRow, but a plain Button with a VM-bound .selected class. A grouped
+		     RadioButton keeps its own local checked state on click, which fights
+		     SyncAssignmentTargetSelection's multi-row IsSelected sweep — the same reason the
+		     old inline target list used a Button (review r2-S3). -->
+		<Style Selector="Button.commandOptionRow">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Height" Value="56" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="Stretch"
+										  VerticalContentAlignment="Stretch" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="Button.commandOptionRow.selected">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+		</Style>
+		<Style Selector="Button.commandOptionRow:pointerover:not(.selected)">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+
+		<!-- Macro radio (outer ring + inner dot) — reused for both lists -->
+		<Style Selector="Ellipse.macroRadioOuter">
+			<Setter Property="Width" Value="18" />
+			<Setter Property="Height" Value="18" />
+			<Setter Property="Stroke" Value="#4DBEBCEA" />
+			<Setter Property="StrokeThickness" Value="2" />
+			<Setter Property="Fill" Value="Transparent" />
+		</Style>
+		<Style Selector="RadioButton:checked Ellipse.macroRadioOuter">
+			<Setter Property="Stroke" Value="#6357FF" />
+		</Style>
+		<Style Selector="Ellipse.macroRadioInner">
+			<Setter Property="Width" Value="12" />
+			<Setter Property="Height" Value="12" />
+			<Setter Property="Fill" Value="#6357FF" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="RadioButton:checked Ellipse.macroRadioInner">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<!-- Declared AFTER the base ellipse styles: for equal specificity the later style wins,
+		     so putting these before the base's IsVisible=False would leave the dot invisible. -->
+		<Style Selector="Button.commandOptionRow.selected Ellipse.macroRadioOuter">
+			<Setter Property="Stroke" Value="#6357FF" />
+		</Style>
+		<Style Selector="Button.commandOptionRow.selected Ellipse.macroRadioInner">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- Unassign (✕) for a bound macro: small transparent hit target with the octagon hover
+		     frame revealed on :pointerover. Shared by the Macros-page mouse hotspots, the Key
+		     Assignment Dialog's macro rows and the keyboard overlay's hover-tip ✕ — the whole
+		     visual is the TEMPLATE here, so a call site is one bare
+		     <Button Classes="macroUnassign" Command="..."/> and the views cannot drift apart
+		     (they had already diverged once as inline copies). -->
+		<!-- Width/Height are style setters rather than being pinned in the template, and the
+		     template scales to them through the Viewbox, so a call site can resize the whole ✕
+		     without forking the visual. The hover tip needs that: it is drawn inside the key
+		     overlay's Viewbox, where a fixed 28px lands at ~11px on screen, so it sizes the ✕
+		     in canvas units from code. The other call sites set nothing and keep the 28px
+		     below. -->
+		<Style Selector="Button.macroUnassign">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Width" Value="28" />
+			<Setter Property="Height" Value="28" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="ToolTip.Tip" Value="{DynamicResource Macros_Unassign}" />
+			<Setter Property="AutomationProperties.Name" Value="{DynamicResource Macros_Unassign}" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Viewbox Stretch="Uniform">
+						<Panel Width="28" Height="28" Background="Transparent">
+							<Path Classes="unassignHoverFrame"
+								  Data="M24 4H28V24H24V28H4V24H0V4H4V0H24V4Z"
+								  Fill="#3F339C" />
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Close.svg"
+										 TintColor="#9894D3"
+										 Width="16"
+										 Height="16"
+										 Stretch="Uniform"
+										 HorizontalAlignment="Center"
+										 VerticalAlignment="Center" />
+						</Panel>
+					</Viewbox>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="Path.unassignHoverFrame">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button.macroUnassign:pointerover Path.unassignHoverFrame">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<!-- While the gate is closed (an assignment is still being written) the button must not
+		     advertise interactivity: no hover frame, no hand cursor, dimmed icon. The icon dims
+		     through TintColor — a styled property on SvgImageView — because Opacity would be
+		     ignored (Avalonia.Svg.Skia paints its own picture; see RgbKeyboardView.DimOpacity). -->
+		<Style Selector="Button.macroUnassign:disabled Path.unassignHoverFrame">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button.macroUnassign:disabled">
+			<Setter Property="Cursor" Value="Arrow" />
+		</Style>
+		<Style Selector="Button.macroUnassign:disabled commonControls|SvgImageView">
+			<Setter Property="TintColor" Value="#5A5878" />
+		</Style>
+
+		<!-- Bordered value-box chrome, shared by the RGB picker's closed-state HEX readout and the
+		     DPI section's custom-value input. Both are "a purple-outlined box with a grey unit mark
+		     and one value on one line", and the second copy is where CLAUDE.md says to extract
+		     rather than duplicate.
+		     No Width: the box sizes from its content, so a longer localized caption beside it cannot
+		     push the value against the border.
+		     This border is the ONLY chrome such a box gets — whatever sits inside it (a TextBlock in
+		     the picker, a TextBox in the DPI section) must be borderless, or the two 1px strokes
+		     stack into a visible double outline. -->
+		<Style Selector="Border.rgbHexInputHost">
+			<Setter Property="Height" Value="40" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Padding" Value="12,0" />
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+
+	</Application.Styles>
+</Application>

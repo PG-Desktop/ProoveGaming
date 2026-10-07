@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 mc:Ignorable="d"
+			 x:Name="Root"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.RgbKeyboardView">
+
+	<!-- Layered keyboard for any board with split artwork (see RgbKeyboardArtCatalog).
+
+		 The backlight is only visible in the gaps between keycaps, so it has to sit BETWEEN
+		 the chassis and the caps. Each keyboard's SVG is therefore split into a _base (chassis)
+		 and _keys (keycaps + legends, transparent background) layer, with the glow drawn as a
+		 plain Path in between. Tinting the SVG itself is not an option: SvgImageView's
+		 TintColor is a SrcIn blend that recolours every pixel.
+
+		 All layers sit in one Canvas sized to that keyboard's viewBox and are scaled together
+		 by the Viewbox, so they stay registered at any size regardless of artwork dimensions
+		 (which differ per keyboard - Aress is near-square, Cyrex is wide and short). Constrain
+		 only one of Width/Height at the call site and the other follows the artwork's aspect.
+
+		 Everything binds to properties on Root rather than the DataContext, so this renders
+		 the same on the details pages and on the home card. -->
+
+	<Viewbox Stretch="Uniform">
+		<Canvas Width="{Binding #Root.Art.Width}"
+				Height="{Binding #Root.Art.Height}">
+
+			<!-- 1. chassis. No Path binding: code-behind assigns the PRELOADED SvgSource from the
+				 art record (prewarmed by HomeViewModel — see RgbKeyboardArt.EnsureSourcesAsync),
+				 so the board renders assembled on its first frame instead of decoding on open. -->
+			<Svg x:Name="ChassisSvg"
+				 Canvas.Left="0" Canvas.Top="0"
+				 Width="{Binding #Root.Art.Width}"
+				 Height="{Binding #Root.Art.Height}" />
+
+			<!-- 2. unlit bed. The key wells were inpainted to plate colour when the baked-in
+				 backlight was stripped from the artwork, which reads as "no LEDs" rather than
+				 "LEDs off". Black underneath makes the resting state match a static colour at
+				 0% brightness and gives every tint something dark to sit on. -->
+			<Path x:Name="UnlitBed"
+				  Canvas.Left="0" Canvas.Top="0"
+				  Fill="Black"
+				  IsHitTestVisible="False"
+				  Data="{Binding #Root.Art.Glow}" />
+
+			<!-- 3. backlight - covered by the keycaps, so only the gaps show. Hidden when
+				 ShowBacklight is false, leaving the black bed visible: same keyboard, unlit. -->
+			<Path x:Name="Backlight"
+				  Canvas.Left="0" Canvas.Top="0"
+				  Fill="{Binding #Root.GlowBrush}"
+				  IsHitTestVisible="False"
+				  IsVisible="{Binding #Root.ShowBacklight}"
+				  Data="{Binding #Root.Art.Glow}" />
+
+			<!-- 4. keycaps. Nothing tinted may sit above this layer EXCEPT the legends below:
+				 the caps themselves must never pick up the colour. The original artwork also
+				 blurred a copy of the glow over the caps; that is deliberately not reproduced,
+				 because the backlight should only show in the gaps. -->
+			<Svg x:Name="KeycapsSvg"
+				 Canvas.Left="0" Canvas.Top="0"
+				 Width="{Binding #Root.Art.Width}"
+				 Height="{Binding #Root.Art.Height}" />
+
+			<!-- 5-7. Legends. These are printed ON the keycaps and are lit by the same LEDs as the
+				 gaps, so they follow the backlight rather than sitting at a fixed colour. The
+				 artwork carried them in a #text-solid group whose fill came from a CSS variable
+				 pinned to one brand colour; they were extracted to a path asset (see
+				 RgbKeyboardArt.Legends) precisely so the fill can be a live brush — changing the
+				 SVG variable would mean re-parsing ~800 KB per animation frame.
+
+				 Layers 5 and 6 reproduce the artwork's own halo-plus-glyph construction, so a lit
+				 legend reads as backlit rather than merely coloured. Layer 7 is the unlit case:
+				 the board is a click target on Key Assignments and Macros, where legends must stay
+				 legible, so they keep the colour the artwork fixed them at.
+
+				 A board whose artwork has no separable legends (T800) has no geometry here, and
+				 all three layers simply draw nothing. -->
+			<Path x:Name="LegendHalo"
+				  Canvas.Left="0" Canvas.Top="0"
+				  Fill="{Binding #Root.GlowBrush}"
+				  Effect="blur(1.6)"
+				  IsHitTestVisible="False"
+				  IsVisible="{Binding #Root.ShowBacklight}"
+				  Data="{Binding #Root.Art.Legends}" />
+
+			<Path x:Name="LegendGlyph"
+				  Canvas.Left="0" Canvas.Top="0"
+				  Fill="{Binding #Root.GlowBrush}"
+				  IsHitTestVisible="False"
+				  IsVisible="{Binding #Root.ShowBacklight}"
+				  Data="{Binding #Root.Art.Legends}" />
+
+			<Path x:Name="LegendUnlit"
+				  Canvas.Left="0" Canvas.Top="0"
+				  Fill="{Binding #Root.Art.UnlitLegendBrush}"
+				  IsHitTestVisible="False"
+				  IsVisible="{Binding !#Root.ShowBacklight}"
+				  Data="{Binding #Root.Art.Legends}" />
+
+			<!-- 8. Fade-out scrim, above everything. Driven by DimOpacity and normally invisible;
+				 the home card uses it to grey a disconnected board.
+
+				 This exists because setting Opacity on the control does NOT fade it: the chassis and
+				 keycap layers are Avalonia.Svg.Skia Svg controls, which paint their SKPicture through
+				 their own draw operation and ignore an ancestor's opacity. Compositing black over the
+				 art is equivalent on the card's near-black background — 0.3 x art either way — and
+				 does not depend on how any layer chooses to paint. Sized to the artwork rather than
+				 the control so it scales with the Viewbox and never bleeds past the board. -->
+			<Rectangle Canvas.Left="0" Canvas.Top="0"
+					   Width="{Binding #Root.Art.Width}"
+					   Height="{Binding #Root.Art.Height}"
+					   Fill="Black"
+					   IsHitTestVisible="False"
+					   Opacity="{Binding #Root.DimOpacity}" />
+
+		</Canvas>
+	</Viewbox>
+</UserControl>

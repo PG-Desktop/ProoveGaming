@@ -1,0 +1,24 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:common="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 x:Class="ProoveGaming.Installer.Views.SplashStepView">
+	<Grid>
+		<Border Background="Transparent"
+				CornerRadius="8"
+				ClipToBounds="True">
+			<StackPanel HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						Spacing="18">
+				<Image x:Name="LogoImage"
+					   Width="281"
+					   Height="180"
+					   Stretch="Uniform"
+					   HorizontalAlignment="Center" />
+
+				<common:AnimatedLoadingBarView x:Name="SplashLoadingBar"
+											   HorizontalAlignment="Center"
+											   Margin="0,64,0,0"/>
+			</StackPanel>
+		</Border>
+	</Grid>
+</UserControl>

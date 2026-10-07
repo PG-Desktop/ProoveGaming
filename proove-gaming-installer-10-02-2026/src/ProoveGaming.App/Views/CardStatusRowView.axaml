@@ -1,0 +1,144 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:common="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceCardViewModel"
+			 x:Class="ProoveGaming.App.Views.CardStatusRowView">
+	<UserControl.Styles>
+		<!-- NO CONNECTION label colour. Lives with its only consumer (this row), not in the
+			 host cards: after the extraction neither card file contained a statusText element,
+			 so a host-side copy looked dead there and a cleanup — or a third host that forgot
+			 to copy it — would silently drop the colour. SingleCard used to carry a #4DBEBCEA
+			 inactive override too, but it was never live: its UserControl.inactive selector
+			 matches the concrete UserControl type, not the SingleCard subclass, so both cards
+			 always rendered this base colour (DoubleCard documented that before the move). -->
+		<Style Selector="TextBlock.statusText">
+			<Setter Property="Foreground" Value="#B2BEBCEA"/>
+		</Style>
+	</UserControl.Styles>
+	<!-- The device card's status row (transports / audio mute / battery / NO CONNECTION),
+		 shared by SingleCard and DoubleCard. Extracted verbatim from the single card's row:
+		 a centered StackPanel re-centers whatever combination is visible, which is the fix
+		 for the double card's fixed-coordinate layout (icons tuned for the widest
+		 combination sat left of center for any shorter one). The panel itself carries the
+		 connection tooltip — Background="Transparent" keeps it hit-testable. -->
+	<StackPanel Orientation="Horizontal"
+				HorizontalAlignment="Center"
+				Spacing="10"
+				Background="Transparent"
+				ToolTip.Tip="{Binding ConnectionTooltip}"
+				ToolTip.Placement="Bottom"
+				ToolTip.VerticalOffset="8">
+
+		<!-- Transport icons are sized as ONE row: the separator bindings
+			 (HasBluetooth && (HasWire || HasDongle)) exist because these icons can
+			 show side by side, so they share a single size rather than being set
+			 individually. 16x16 throughout.
+
+			 The wire icon is raw geometry with no intrinsic box — it is drawn in a
+			 12 unit space — so it needs Stretch plus an explicit size. It gets 14
+			 rather than 16 because it FILLS whatever box it is given, while the two
+			 SVGs sit with padding inside theirs (their glyphs measure ~13 tall in a
+			 16 viewBox). Matching the boxes made the wire read as the biggest icon
+			 in the row; matching the glyphs is what actually looks even. -->
+		<Path
+			  Fill="#B2BEBCEA"
+			  Width="14" Height="14" Stretch="Uniform"
+			  IsVisible="{Binding HasWire}"
+			  Data="M1.33333 12C1.14444 12 0.986111 11.9361 0.858333 11.8083C0.730556 11.6806 0.666667 11.5222 0.666667 11.3333V10.6667H0V8C0 7.81111 0.0638889 7.65278 0.191667 7.525C0.319444 7.39722 0.477778 7.33333 0.666667 7.33333H1.33333V2.66667C1.33333 1.93333 1.59444 1.30556 2.11667 0.783333C2.63889 0.261111 3.26667 0 4 0C4.73333 0 5.36111 0.261111 5.88333 0.783333C6.40556 1.30556 6.66667 1.93333 6.66667 2.66667V9.33333C6.66667 9.7 6.79722 10.0139 7.05833 10.275C7.31944 10.5361 7.63333 10.6667 8 10.6667C8.36667 10.6667 8.68056 10.5361 8.94167 10.275C9.20278 10.0139 9.33333 9.7 9.33333 9.33333V4.66667H8.66667C8.47778 4.66667 8.31944 4.60278 8.19167 4.475C8.06389 4.34722 8 4.18889 8 4V1.33333H8.66667V0.666667C8.66667 0.477778 8.73056 0.319444 8.85833 0.191667C8.98611 0.0638889 9.14444 0 9.33333 0H10.6667C10.8556 0 11.0139 0.0638889 11.1417 0.191667C11.2694 0.319444 11.3333 0.477778 11.3333 0.666667V1.33333H12V4C12 4.18889 11.9361 4.34722 11.8083 4.475C11.6806 4.60278 11.5222 4.66667 11.3333 4.66667H10.6667V9.33333C10.6667 10.0667 10.4056 10.6944 9.88333 11.2167C9.36111 11.7389 8.73333 12 8 12C7.26667 12 6.63889 11.7389 6.11667 11.2167C5.59444 10.6944 5.33333 10.0667 5.33333 9.33333V2.66667C5.33333 2.3 5.20278 1.98611 4.94167 1.725C4.68056 1.46389 4.36667 1.33333 4 1.33333C3.63333 1.33333 3.31944 1.46389 3.05833 1.725C2.79722 1.98611 2.66667 2.3 2.66667 2.66667V7.33333H3.33333C3.52222 7.33333 3.68056 7.39722 3.80833 7.525C3.93611 7.65278 4 7.81111 4 8V10.6667H3.33333V11.3333C3.33333 11.5222 3.26944 11.6806 3.14167 11.8083C3.01389 11.9361 2.85556 12 2.66667 12H1.33333Z"/>
+
+		<Svg
+			 Width="1" Height="16"
+			 IsVisible="{Binding HasDongleSeparator}"
+			 Path="/Assets/VerticalSeparator.svg"/>
+
+		<Svg
+			 Width="16" Height="16"
+			 IsVisible="{Binding HasDongle}"
+			 Path="/Assets/Dongle.svg"/>
+
+		<Svg
+			 Width="1" Height="16"
+			 IsVisible="{Binding HasBluetoothSeparator}"
+			 Path="/Assets/VerticalSeparator.svg"/>
+
+		<Svg
+		     Width="16" Height="16"
+		     IsVisible="{Binding HasBluetooth}"
+		     Path="/Assets/Bluetooth.svg"/>
+
+		<!-- Audio + microphone mute, identical to the device-details connectivity bar
+			 and bound to the same card properties so the two can never disagree.
+			 The group is gated as a whole: gating each icon on its own mute flag
+			 would show the unmuted pair on every mouse and keyboard. -->
+		<StackPanel Orientation="Horizontal" Spacing="6" VerticalAlignment="Center"
+					IsVisible="{Binding HasAudioIndicators}">
+			<Svg Path="/Assets/VerticalSeparator.svg" />
+			<common:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Volume Up.svg"
+								 Width="16" Height="16" TintColor="#B2BEBCEA"
+								 IsVisible="{Binding !IsOutputSilent}" />
+			<common:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Volume Off.svg"
+								 Width="16" Height="16" TintColor="#FF383C"
+								 IsVisible="{Binding IsOutputSilent}" />
+			<!-- Every indicator is separated by a rule, same as connection/battery. -->
+			<Svg Path="/Assets/VerticalSeparator.svg" />
+			<common:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Mic.svg"
+								 Width="16" Height="16" TintColor="#B2BEBCEA"
+								 IsVisible="{Binding !IsMicrophoneSilent}" />
+			<common:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Mic Off.svg"
+								 Width="16" Height="16" TintColor="#FF383C"
+								 IsVisible="{Binding IsMicrophoneSilent}" />
+		</StackPanel>
+
+		<Svg
+			 IsVisible="{Binding HasBatteryIndicator}"
+			 Path="/Assets/VerticalSeparator.svg"/>
+
+		<Path Fill="#00CE4F"
+			  Margin="0,4,0,0"
+			  IsVisible="{Binding BatteryIconKind, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=Full}"
+			  Data="M2 8C1.44444 8 0.972222 7.80556 0.583333 7.41667C0.194444 7.02778 0 6.55556 0 6V2C0 1.44444 0.194444 0.972222 0.583333 0.583333C0.972222 0.194444 1.44444 0 2 0H11C11.5556 0 12.0278 0.194444 12.4167 0.583333C12.8056 0.972222 13 1.44444 13 2V6C13 6.55556 12.8056 7.02778 12.4167 7.41667C12.0278 7.80556 11.5556 8 11 8H2ZM2 6.66667H11C11.1889 6.66667 11.3472 6.60278 11.475 6.475C11.6028 6.34722 11.6667 6.18889 11.6667 6V2C11.6667 1.81111 11.6028 1.65278 11.475 1.525C11.3472 1.39722 11.1889 1.33333 11 1.33333H2C1.81111 1.33333 1.65278 1.39722 1.525 1.525C1.39722 1.65278 1.33333 1.81111 1.33333 2V6C1.33333 6.18889 1.39722 6.34722 1.525 6.475C1.65278 6.60278 1.81111 6.66667 2 6.66667ZM13.6667 5.66667V2.33333H14C14.1889 2.33333 14.3472 2.39722 14.475 2.525C14.6028 2.65278 14.6667 2.81111 14.6667 3V5C14.6667 5.18889 14.6028 5.34722 14.475 5.475C14.3472 5.60278 14.1889 5.66667 14 5.66667H13.6667ZM2 6V2H11V6H2Z"/>
+
+		<Path Fill="#00CE4F"
+			  IsVisible="{Binding BatteryIconKind, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=Normal}"
+			  Data="M2.66602 12C2.11046 12 1.63824 11.8056 1.24935 11.4167C0.86046 11.0278 0.666016 10.5556 0.666016 10V6C0.666016 5.44444 0.86046 4.97222 1.24935 4.58333C1.63824 4.19444 2.11046 4 2.66602 4H11.666C12.2216 4 12.6938 4.19444 13.0827 4.58333C13.4716 4.97222 13.666 5.44444 13.666 6V10C13.666 10.5556 13.4716 11.0278 13.0827 11.4167C12.6938 11.8056 12.2216 12 11.666 12H2.66602ZM2.66602 10.6667H11.666C11.8549 10.6667 12.0132 10.6028 12.141 10.475C12.2688 10.3472 12.3327 10.1889 12.3327 10V6C12.3327 5.81111 12.2688 5.65278 12.141 5.525C12.0132 5.39722 11.8549 5.33333 11.666 5.33333H2.66602C2.47713 5.33333 2.31879 5.39722 2.19102 5.525C2.06324 5.65278 1.99935 5.81111 1.99935 6V10C1.99935 10.1889 2.06324 10.3472 2.19102 10.475C2.31879 10.6028 2.47713 10.6667 2.66602 10.6667ZM14.3327 9.66667V6.33333H14.666C14.8549 6.33333 15.0132 6.39722 15.141 6.525C15.2688 6.65278 15.3327 6.81111 15.3327 7V9C15.3327 9.18889 15.2688 9.34722 15.141 9.475C15.0132 9.60278 14.8549 9.66667 14.666 9.66667H14.3327ZM2.66602 10V6H10.666V10H2.66602Z"/>
+
+		<Path Fill="#F4C802"
+			  IsVisible="{Binding BatteryIconKind, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=Low}"
+			  Data="M2.66602 12C2.11046 12 1.63824 11.8056 1.24935 11.4167C0.86046 11.0278 0.666016 10.5556 0.666016 10V6C0.666016 5.44444 0.86046 4.97222 1.24935 4.58333C1.63824 4.19444 2.11046 4 2.66602 4H11.666C12.2216 4 12.6938 4.19444 13.0827 4.58333C13.4716 4.97222 13.666 5.44444 13.666 6V10C13.666 10.5556 13.4716 11.0278 13.0827 11.4167C12.6938 11.8056 12.2216 12 11.666 12H2.66602ZM2.66602 10.6667H11.666C11.8549 10.6667 12.0132 10.6028 12.141 10.475C12.2688 10.3472 12.3327 10.1889 12.3327 10V6C12.3327 5.81111 12.2688 5.65278 12.141 5.525C12.0132 5.39722 11.8549 5.33333 11.666 5.33333H2.66602C2.47713 5.33333 2.31879 5.39722 2.19102 5.525C2.06324 5.65278 1.99935 5.81111 1.99935 6V10C1.99935 10.1889 2.06324 10.3472 2.19102 10.475C2.31879 10.6028 2.47713 10.6667 2.66602 10.6667ZM14.3327 9.66667V6.33333H14.666C14.8549 6.33333 15.0132 6.39722 15.141 6.525C15.2688 6.65278 15.3327 6.81111 15.3327 7V9C15.3327 9.18889 15.2688 9.34722 15.141 9.475C15.0132 9.60278 14.8549 9.66667 14.666 9.66667H14.3327ZM2.66602 10V6H7.99935V10H2.66602Z"/>
+
+		<Path Fill="#FF383C"
+			  IsVisible="{Binding BatteryIconKind, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=Critical}"
+			  Data="M2.66602 12C2.11046 12 1.63824 11.8056 1.24935 11.4167C0.86046 11.0278 0.666016 10.5556 0.666016 10V6C0.666016 5.44444 0.86046 4.97222 1.24935 4.58333C1.63824 4.19444 2.11046 4 2.66602 4H11.666C12.2216 4 12.6938 4.19444 13.0827 4.58333C13.4716 4.97222 13.666 5.44444 13.666 6V10C13.666 10.5556 13.4716 11.0278 13.0827 11.4167C12.6938 11.8056 12.2216 12 11.666 12H2.66602ZM2.66602 10.6667H11.666C11.8549 10.6667 12.0132 10.6028 12.141 10.475C12.2688 10.3472 12.3327 10.1889 12.3327 10V6C12.3327 5.81111 12.2688 5.65278 12.141 5.525C12.0132 5.39722 11.8549 5.33333 11.666 5.33333H2.66602C2.47713 5.33333 2.31879 5.39722 2.19102 5.525C2.06324 5.65278 1.99935 5.81111 1.99935 6V10C1.99935 10.1889 2.06324 10.3472 2.19102 10.475C2.31879 10.6028 2.47713 10.6667 2.66602 10.6667ZM14.3327 9.66667V6.33333H14.666C14.8549 6.33333 15.0132 6.39722 15.141 6.525C15.2688 6.65278 15.3327 6.81111 15.3327 7V9C15.3327 9.18889 15.2688 9.34722 15.141 9.475C15.0132 9.60278 14.8549 9.66667 14.666 9.66667H14.3327ZM2.66602 10V6H3.99935V10H2.66602Z"/>
+
+		<Svg
+			IsVisible="{Binding BatteryIconKind, Converter={x:Static converters:EnumEqualsConverter.Instance}, ConverterParameter=Charging}"
+			Path="/Assets/BatteryCharging.svg"/>
+
+		<TextBlock Text="{Binding BatteryText}"
+				   Foreground="{Binding BatteryColor}"
+				   FontFamily="{DynamicResource BaseAppFont}"
+				   FontStyle="Normal"
+				   FontSize="12"
+				   LineHeight="16"
+				   IsVisible="{Binding HasBattery}" />
+
+		<!-- DynamicResource, not a VM string: the label must follow a runtime
+		     language switch, which re-resolves resources but re-reads no
+		     bindings (the raw "NO CONNECTION" here shipped untranslated). -->
+		<TextBlock
+				Classes="statusText"
+				Text="{DynamicResource Card_NoConnection}"
+				IsVisible="{Binding !Connected}"
+				TextAlignment="Center"
+				FontFamily="avares://ProoveGaming.Common/Assets/Fonts#Pixel Font7"
+				FontStyle="Normal"
+				FontSize="14"
+				LineHeight="14"/>
+
+	</StackPanel>
+</UserControl>

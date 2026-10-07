@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+ xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+ xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+ xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+ mc:Ignorable="d"
+ x:DataType="viewmodels:DeviceDetailsViewModel"
+ x:Class="ProoveGaming.App.Views.DeviceDetailsSections.BluetoothModeBannerView"
+ IsVisible="{Binding Device.IsBluetoothConfigLocked, FallbackValue=False}"
+ IsHitTestVisible="False"
+ MaxWidth="628">
+<!-- "BLUETOOTH MODE" info banner over the device-preview panel: shown for a Bluetooth link that
+     cannot carry configuration (catalog SupportsConfiguration=false — the details page is
+     read-only there, see IsDeviceConfigurable), and without this banner the live-looking controls
+     silently do nothing. NOT "any Bluetooth link": headsets configure fine over Bluetooth (their
+     audio targets the OS endpoint) and never show it — see
+     docs/plans/remove-headset-bluetooth-lock/remove-headset-bluetooth-lock-plan.md.
+
+     Visibility sits on the UserControl itself, not an inner panel, so a hidden banner contributes
+     no size at all — the Key Assignments call site stacks it above the read-failed warning, and an
+     inner-panel collapse would still push that warning down by this control's margin.
+     FallbackValue is required: Device is null during navigation, and a failed binding would leave
+     IsVisible at its default TRUE. -->
+<!-- 628 is the design SVG's width — the same 628 the device images render at — so the banner
+     caps there and centers on wider panels; below the cap the call sites' 82px side margins
+     (42px chrome rail + the design's 40px content inset) take over. -->
+<Panel MinHeight="84">
+	<!-- Design fill is #6357FF at fill-opacity 0.1, mapped separately per the SVG convention. -->
+	<Rectangle Fill="#6357FF" Opacity="0.1" />
+	<!-- Inner rhythm per the Figma inspect: 12px side padding (content 604 at the 628 cap), a
+	     36px header band with icon+title centered in it, the 40px (2×20) body right below, 8px
+	     bottom padding — 36+40+8 = the design's 84. -->
+	<StackPanel Margin="12,0,12,8">
+		<StackPanel Orientation="Horizontal" Spacing="12" Height="36">
+			<!-- Warning triangle from the design SVG (absolute coords, translated to 19x16). -->
+			<Canvas Width="19" Height="16" VerticalAlignment="Center">
+				<Path Fill="#6357FF">
+					<Path.RenderTransform><TranslateTransform X="-12.834" Y="-9.666"/></Path.RenderTransform>
+					<Path.Data>M12.834 25.4993L22.0007 9.66602L31.1673 25.4993H12.834ZM15.709 23.8327H28.2923L22.0007 12.9993L15.709 23.8327ZM22.5944 22.7598C22.7541 22.6 22.834 22.4021 22.834 22.166C22.834 21.9299 22.7541 21.732 22.5944 21.5723C22.4347 21.4125 22.2368 21.3327 22.0007 21.3327C21.7645 21.3327 21.5666 21.4125 21.4069 21.5723C21.2472 21.732 21.1673 21.9299 21.1673 22.166C21.1673 22.4021 21.2472 22.6 21.4069 22.7598C21.5666 22.9195 21.7645 22.9993 22.0007 22.9993C22.2368 22.9993 22.4347 22.9195 22.5944 22.7598ZM21.1673 20.4993H22.834V16.3327H21.1673V20.4993Z</Path.Data>
+				</Path>
+			</Canvas>
+			<!-- Emphasis is not colour-only: the icon, uppercase text and weight carry it too. -->
+			<TextBlock Text="{DynamicResource DeviceDetails_BluetoothMode_Title}"
+					   Foreground="#6357FF"
+					   FontFamily="{DynamicResource BaseAppFont}"
+					   FontSize="14"
+					   LineHeight="16"
+					   FontWeight="SemiBold"
+					   VerticalAlignment="Center" />
+		</StackPanel>
+		<TextBlock Text="{DynamicResource DeviceDetails_BluetoothMode_Message}"
+				   Foreground="#B2BEBCEA"
+				   FontFamily="{DynamicResource BaseAppFont}"
+				   FontSize="14"
+				   LineHeight="20"
+				   TextWrapping="Wrap" />
+	</StackPanel>
+</Panel>
+</UserControl>

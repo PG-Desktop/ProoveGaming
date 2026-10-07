@@ -1,0 +1,20 @@
+<Styles xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<!-- Border chrome shared by every boxed profile input: the profile text fields, the date
+	     picker header and the country selector header. Declaration order is load-bearing —
+	     `.filled` comes before `:pointerover` so hovering a filled field still lightens its
+	     border instead of keeping the filled purple. -->
+	<Style Selector="Border.pgFieldBox">
+		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="BorderBrush" Value="#4CBEBCEA" />
+		<Setter Property="BorderThickness" Value="1" />
+	</Style>
+
+	<Style Selector="Border.pgFieldBox.filled">
+		<Setter Property="BorderBrush" Value="#6357FF" />
+	</Style>
+
+	<Style Selector="Border.pgFieldBox:pointerover">
+		<Setter Property="BorderBrush" Value="#786DFF" />
+	</Style>
+</Styles>

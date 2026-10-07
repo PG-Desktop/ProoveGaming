@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.App.Views.Dialogs.ConfirmDialog"
+			 x:CompileBindings="False"
+			 Width="620" Height="220"
+			 HorizontalAlignment="Center" VerticalAlignment="Center"
+			 ClipToBounds="False">
+
+	<Panel x:Name="PART_Root">
+		<Panel.Effect>
+			<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="100" Color="#6357FF" Opacity="0.35"/>
+		</Panel.Effect>
+		<Canvas Width="620" Height="220">
+			<Path Fill="#E6000000" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+			<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="110.792" Fill="#E6000000"/>
+			<Path Fill="#E6000000" Data="M22.591 206.598L22.591 154.677L0 132.099H42V220H36L22.591 206.598Z"/>
+			<Rectangle Canvas.Left="42" Canvas.Top="0" Width="536" Height="220" Fill="#E6000000"/>
+			<Path Fill="#E6000000" Data="M584 0L584 50L620 86L620 0Z"/>
+			<Path Fill="#E6000000" Data="M578 95.367L578 54L620 95.357Z"/>
+			<Rectangle Canvas.Left="578" Canvas.Top="95.367" Width="42" Height="103.318" Fill="#E6000000"/>
+			<Path Fill="#E6000000" Data="M620 198.686L598.354 220H578L578.001 198.686H620Z"/>
+		</Canvas>
+
+		<Grid ColumnDefinitions="42,*,42">
+			<Grid Grid.Column="1" Margin="4,36,0,32" RowDefinitions="Auto,*,Auto">
+				<StackPanel Grid.Row="0" Spacing="8">
+					<TextBlock Text="{Binding Title}"
+							   Foreground="White"
+							   FontFamily="{DynamicResource AppPixelFont}"
+							   FontWeight="250"
+							   FontStyle="Normal"
+							   FontSize="28"
+							   LineHeight="28"
+							   LetterSpacing="0"
+							   TextWrapping="Wrap"/>
+					<TextBlock Text="{Binding Body}"
+							   Foreground="#B2BEBCEA"
+							   FontFamily="Segoe UI"
+							   FontWeight="400"
+							   FontStyle="Normal"
+							   FontSize="16"
+							   LineHeight="24"
+							   LetterSpacing="0"
+							   TextWrapping="Wrap"/>
+				</StackPanel>
+
+				<StackPanel Grid.Row="2" Orientation="Horizontal"
+							HorizontalAlignment="Right" Spacing="12">
+					<!-- MinWidth + padding, same as the confirm button beside it: the uk
+						 "СКАСУВАТИ" outgrows the en-sized 105 and must keep its inset. -->
+					<!-- Class pair toggled by IsDestructive, never both: the two styles set the same
+					     properties, so leaving one applied alongside the other would leave the
+					     winner to style-declaration order rather than to intent. -->
+					<Button Classes.secondaryButton="{Binding !IsDestructive}"
+							Classes.cancelDelete="{Binding IsDestructive}"
+							MinWidth="105" Height="40" Padding="16,0"
+							Cursor="Hand"
+							Command="{Binding CancelCommand}">
+						<TextBlock Text="{DynamicResource Button_Cancel}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontStyle="Normal"
+								   FontSize="18"
+								   LetterSpacing="0"/>
+					</Button>
+					<!-- MinWidth stays 94 in both variants: it is only a floor, and Padding is what
+					     guarantees a longer localized label keeps its inset. -->
+					<Button Classes.primaryButton="{Binding !IsDestructive}"
+							Classes.confirmDelete="{Binding IsDestructive}"
+							MinWidth="94" Height="40" Padding="16,0"
+							Cursor="Hand"
+							Command="{Binding ConfirmCommand}">
+						<TextBlock Text="{Binding ConfirmText}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontStyle="Normal"
+								   FontSize="18"
+								   LetterSpacing="0"/>
+					</Button>
+				</StackPanel>
+			</Grid>
+
+			<Button Grid.Column="2"
+					Classes="closeButton"
+					HorizontalAlignment="Stretch" VerticalAlignment="Top"
+					Height="86"
+					Background="Transparent" BorderThickness="0" Padding="0"
+					Cursor="Hand"
+					Command="{Binding CancelCommand}">
+				<Button.Template>
+					<ControlTemplate>
+						<Canvas Width="42" Height="86">
+							<Path x:Name="PART_Bg"
+								  Fill="Transparent"
+								  Data="M6 0L6 50L42 86L42 0Z"/>
+							<Path x:Name="PART_Icon"
+								  Fill="#B2BEBCEA"
+								  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+						</Canvas>
+					</ControlTemplate>
+				</Button.Template>
+			</Button>
+		</Grid>
+	</Panel>
+</UserControl>

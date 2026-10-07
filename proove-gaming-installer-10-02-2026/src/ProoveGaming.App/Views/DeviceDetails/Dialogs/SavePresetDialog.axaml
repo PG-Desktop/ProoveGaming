@@ -1,0 +1,286 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsDialogs.SavePresetDialog"
+			 x:CompileBindings="False"
+			 Width="620" Height="580"
+			 HorizontalAlignment="Center" VerticalAlignment="Center"
+			 ClipToBounds="False">
+
+	<Panel>
+		<Panel.Effect>
+			<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="100" Color="#6357FF" Opacity="0.35"/>
+		</Panel.Effect>
+		<Canvas Width="620" Height="580">
+			<Path Fill="Black" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+			<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="470.792" Fill="Black"/>
+			<Path Fill="Black" Data="M22.591 566.598L22.591 514.677L0 492.099H42V580H36L22.591 566.598Z"/>
+			<Rectangle Canvas.Left="42" Canvas.Top="0" Width="536" Height="580" Fill="Black"/>
+			<Path Fill="Black" Data="M584 0L584 50L620 86L620 0Z"/>
+			<Path Fill="Black" Data="M578 95.367L578 54L620 95.357Z"/>
+			<Rectangle Canvas.Left="578" Canvas.Top="95.367" Width="42" Height="463.318" Fill="Black"/>
+			<Path Fill="Black" Data="M620 558.686L598.354 580L578 580L578.001 558.686H620Z"/>
+		</Canvas>
+
+		<Grid ColumnDefinitions="42,*,42">
+
+			<Grid Grid.Column="1" Margin="0,32,0,32" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+
+				<TextBlock Grid.Row="0"
+						   Text="{DynamicResource SavePreset_Title}"
+						   Foreground="#FFFFFF"
+						   FontFamily="{DynamicResource AppPixelFont}"
+						   FontWeight="250"
+						   FontSize="28"
+						   LineHeight="28"
+						   LetterSpacing="0" />
+
+				<TextBlock Grid.Row="1"
+						   Text="{DynamicResource SavePreset_Subtitle}"
+						   Foreground="#B2BEBCEA"
+						   FontFamily="Segoe UI"
+						   FontWeight="Normal"
+						   FontSize="16"
+						   LineHeight="24"
+						   LetterSpacing="0"
+						   TextWrapping="Wrap"
+						   Margin="0,8,0,0" />
+
+				<Border Grid.Row="2"
+						Height="40"
+						BorderBrush="#4DBEBCEA"
+						BorderThickness="1"
+						Margin="0,32,0,12">
+					<Grid ColumnDefinitions="Auto,*" Margin="11,0,11,0">
+						<Path Grid.Column="0"
+							  Width="18" Height="18"
+							  Stretch="Uniform"
+							  Fill="#BEBCEA" Opacity="0.5"
+							  VerticalAlignment="Center"
+							  Margin="0,0,10,0"
+							  Data="M17.6 18L11.3 11.7C10.8 12.1 10.225 12.417 9.575 12.65C8.925 12.883 8.233 13 7.5 13C5.683 13 4.146 12.371 2.888 11.113C1.629 9.854 1 8.317 1 6.5C1 4.683 1.629 3.146 2.888 1.888C4.146 0.629 5.683 0 7.5 0C9.317 0 10.854 0.629 12.113 1.888C13.371 3.146 14 4.683 14 6.5C14 7.233 13.883 7.925 13.65 8.575C13.417 9.225 13.1 9.8 12.7 10.3L19 16.6L17.6 18ZM7.5 11C8.75 11 9.812 10.562 10.688 9.688C11.562 8.812 12 7.75 12 6.5C12 5.25 11.562 4.188 10.688 3.312C9.812 2.438 8.75 2 7.5 2C6.25 2 5.188 2.438 4.312 3.312C3.438 4.188 3 5.25 3 6.5C3 7.75 3.438 8.812 4.312 9.688C5.188 10.562 6.25 11 7.5 11Z" />
+						<TextBox Grid.Column="1"
+								 Text="{Binding SavePresetSearchQuery, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+								 Background="Transparent"
+								 BorderThickness="0"
+								 Foreground="#FFFFFF"
+								 PlaceholderForeground="#B2BEBCEA"
+								 CaretBrush="#B2BEBCEA"
+								 PlaceholderText="{DynamicResource SavePreset_SearchPlaceholder}"
+								 FontFamily="Segoe UI"
+								 FontWeight="Normal"
+								 FontSize="16"
+								 Padding="0"
+								 VerticalContentAlignment="Center">
+							<TextBox.Styles>
+								<Style Selector="TextBox /template/ Border#PART_BorderElement">
+									<Setter Property="Background" Value="Transparent" />
+									<Setter Property="BorderBrush" Value="Transparent" />
+									<Setter Property="BorderThickness" Value="0" />
+								</Style>
+								<Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+									<Setter Property="Background" Value="Transparent" />
+									<Setter Property="BorderBrush" Value="Transparent" />
+								</Style>
+								<Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+									<Setter Property="Background" Value="Transparent" />
+									<Setter Property="BorderBrush" Value="Transparent" />
+								</Style>
+							</TextBox.Styles>
+						</TextBox>
+					</Grid>
+				</Border>
+
+				<TextBlock Grid.Row="3"
+						   Text="{Binding PresetsCountLabel}"
+						   Foreground="#80BEBCEA"
+						   FontFamily="Segoe UI"
+						   FontWeight="Normal"
+						   FontSize="14"
+						   LineHeight="18"
+						   Margin="0,0,0,12" />
+
+				<ScrollViewer Grid.Row="4"
+							  VerticalScrollBarVisibility="Auto"
+							  HorizontalScrollBarVisibility="Disabled"
+							  Padding="0,0,4,0">
+					<ItemsControl ItemsSource="{Binding FilteredSavePresets}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel Spacing="8" />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="viewmodels:PresetViewModel">
+								<RadioButton GroupName="SavePresetTarget"
+											 HorizontalAlignment="Stretch"
+											 Height="56"
+											 Cursor="Hand"
+											 Padding="0"
+											 IsChecked="{Binding IsSaveTarget, Mode=TwoWay}"
+											 Command="{Binding $parent[UserControl].DataContext.SelectSavePresetTargetCommand}"
+											 CommandParameter="{Binding}">
+									<RadioButton.Template>
+										<ControlTemplate>
+											<Border>
+												<ContentPresenter Content="{TemplateBinding Content}"
+																  ContentTemplate="{TemplateBinding ContentTemplate}"
+																  HorizontalContentAlignment="Stretch"
+																  VerticalContentAlignment="Stretch" />
+											</Border>
+										</ControlTemplate>
+									</RadioButton.Template>
+									<RadioButton.Styles>
+										<Style Selector="RadioButton /template/ Border">
+											<Setter Property="Background" Value="#0DFFFFFF" />
+											<Setter Property="BorderBrush" Value="Transparent" />
+											<Setter Property="BorderThickness" Value="2" />
+										</Style>
+										<Style Selector="RadioButton:pointerover /template/ Border">
+											<Setter Property="BorderBrush" Value="#4D6357FF" />
+										</Style>
+										<Style Selector="RadioButton:checked /template/ Border">
+											<Setter Property="BorderBrush" Value="#6357FF" />
+										</Style>
+									</RadioButton.Styles>
+									<Grid ColumnDefinitions="Auto,*,Auto" Margin="17,0,17,0" VerticalAlignment="Center">
+										<Grid Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center">
+											<Ellipse Classes="presetRadioOuter" />
+											<Ellipse Classes="presetRadioInner" />
+										</Grid>
+										<StackPanel Grid.Column="1"
+												    Orientation="Horizontal"
+												    Spacing="12"
+												    Margin="14,0,0,0"
+												    VerticalAlignment="Center">
+											<TextBlock Classes="presetRowName"
+													   Text="{Binding Name}"
+													   FontFamily="{DynamicResource BaseAppFont}"
+													   FontSize="16"
+													   FontWeight="Normal"
+													   LineHeight="20"
+													   VerticalAlignment="Center"
+													   TextTrimming="CharacterEllipsis" />
+											<TextBlock Text="{Binding Description}"
+													   Foreground="#7FBEBCEA"
+													   FontFamily="Segoe UI"
+													   FontWeight="Normal"
+													   FontSize="14"
+													   LineHeight="20"
+													   VerticalAlignment="Center"
+													   TextTrimming="CharacterEllipsis"
+													   IsVisible="{Binding Description, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+										</StackPanel>
+										<StackPanel Grid.Column="2"
+												    Orientation="Horizontal"
+												    Spacing="9"
+												    VerticalAlignment="Center">
+											<Path Fill="#B2BEBCEA"
+												  Width="24" Height="24"
+												  Data="M4.668,18 V16.6667 H19.335 V18 H4.668 Z M6.668,16 C6.301,16 5.987,15.8694 5.726,15.6083 C5.465,15.3472 5.335,15.0333 5.335,14.6667 V7.3333 C5.335,6.9667 5.465,6.6528 5.726,6.3917 C5.987,6.1306 6.301,6 6.668,6 H17.335 C17.701,6 18.015,6.1306 18.276,6.3917 C18.537,6.6528 18.668,6.9667 18.668,7.3333 V14.6667 C18.668,15.0333 18.537,15.3472 18.276,15.6083 C18.015,15.8694 17.701,16 17.335,16 H6.668 Z M6.668,14.6667 H17.335 V7.3333 H6.668 V14.6667 Z"
+												  VerticalAlignment="Center" />
+											<TextBlock Text="{DynamicResource Presets_Item_App}"
+													   Foreground="#B2BEBCEA"
+													   FontFamily="Segoe UI"
+													   FontWeight="Normal"
+													   FontSize="14"
+													   LineHeight="18"
+													   VerticalAlignment="Center" />
+										</StackPanel>
+									</Grid>
+								</RadioButton>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+
+				<!-- Local styles for the row radio dots so the dialog is self-contained
+				     (the section's UserControl.Styles aren't visible over here). -->
+				<Grid.Styles>
+					<Style Selector="Ellipse.presetRadioOuter">
+						<Setter Property="Width" Value="18" />
+						<Setter Property="Height" Value="18" />
+						<Setter Property="Stroke" Value="#4DBEBCEA" />
+						<Setter Property="StrokeThickness" Value="2" />
+						<Setter Property="Fill" Value="Transparent" />
+					</Style>
+					<Style Selector="RadioButton:checked Ellipse.presetRadioOuter">
+						<Setter Property="Stroke" Value="#6357FF" />
+					</Style>
+					<Style Selector="Ellipse.presetRadioInner">
+						<Setter Property="Width" Value="12" />
+						<Setter Property="Height" Value="12" />
+						<Setter Property="Fill" Value="#6357FF" />
+						<Setter Property="HorizontalAlignment" Value="Center" />
+						<Setter Property="VerticalAlignment" Value="Center" />
+						<Setter Property="IsVisible" Value="False" />
+					</Style>
+					<Style Selector="RadioButton:checked Ellipse.presetRadioInner">
+						<Setter Property="IsVisible" Value="True" />
+					</Style>
+					<Style Selector="TextBlock.presetRowName">
+						<Setter Property="Foreground" Value="#FFFFFF" />
+					</Style>
+					<Style Selector="RadioButton:checked TextBlock.presetRowName">
+						<Setter Property="FontWeight" Value="SemiBold" />
+					</Style>
+				</Grid.Styles>
+
+				<!-- Buttons pinned to the bottom of the modal body -->
+				<StackPanel Grid.Row="5"
+							Orientation="Horizontal"
+							HorizontalAlignment="Right"
+							Spacing="12"
+							VerticalAlignment="Bottom"
+							Margin="0,20,0,0">
+					<Button Classes="secondaryButton"
+							Height="40"
+							Cursor="Hand"
+							Command="{Binding CancelSavePresetCommand}">
+						<TextBlock Text="{DynamicResource NewPreset_Cancel}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontSize="18"
+								   LetterSpacing="0"
+								   Margin="16,0"/>
+					</Button>
+					<Button Classes="primaryButton"
+							Height="40"
+							Cursor="Hand"
+							Command="{Binding ConfirmSavePresetCommand}">
+						<TextBlock Text="{DynamicResource SavePreset_Confirm}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontSize="18"
+								   LetterSpacing="0"
+								   Margin="16,0"/>
+					</Button>
+				</StackPanel>
+
+			</Grid>
+
+			<!-- Top-right close X -->
+			<Button Grid.Column="2"
+					Classes="closeButton"
+					HorizontalAlignment="Stretch" VerticalAlignment="Top"
+					Height="86"
+					Background="Transparent" BorderThickness="0" Padding="0"
+					Cursor="Hand"
+					Command="{Binding CancelSavePresetCommand}">
+				<Button.Template>
+					<ControlTemplate>
+						<Canvas Width="42" Height="86">
+							<Path x:Name="PART_Bg"
+								  Fill="Transparent"
+								  Data="M6 0L6 50L42 86L42 0Z"/>
+							<Path x:Name="PART_Icon"
+								  Fill="#B2BEBCEA"
+								  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+						</Canvas>
+					</ControlTemplate>
+				</Button.Template>
+			</Button>
+
+		</Grid>
+	</Panel>
+</UserControl>

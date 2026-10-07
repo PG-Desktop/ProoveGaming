@@ -1,0 +1,80 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+		xmlns:commonControls="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+		xmlns:views="clr-namespace:ProoveGaming.Uninstaller.Views"
+		x:Class="ProoveGaming.Uninstaller.Views.MainWindow"
+		Icon="avares://ProoveGaming.Uninstaller/Assets/PG_Favicon_128x128.ico"
+		Height="900"
+		Width="1440"
+		Background="Transparent"
+		CanResize="True"
+		WindowDecorations="None"
+		CornerRadius="0"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterScreen"
+		Title="{DynamicResource Window_Title}">
+	<Window.Styles>
+		<Style Selector="Button.windowControlButton">
+			<Setter Property="Width" Value="40" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Opacity" Value="0.7" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.windowControlButton:pointerover">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+	</Window.Styles>
+	<commonLayouts:BackgroundLayoutView>
+		<commonLayouts:BackgroundLayoutView.LayoutContent>
+			<Grid RowDefinitions="Auto,*">
+				<Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+					<Border Grid.Column="0"
+							Background="Transparent"
+							PointerPressed="OnTitleBarPointerPressed">
+						<TextBlock Text="{DynamicResource Window_Title}"
+								   Margin="12,0,0,0"
+								   VerticalAlignment="Center"
+								   Foreground="#BEBCEA"
+								   FontSize="14" />
+					</Border>
+					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+						<Button x:Name="MinimizeButton"
+								Classes="windowControlButton"
+								Click="OnMinimizeClick">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Remove.svg"
+														 Width="16"
+														 Height="16" />
+						</Button>
+						<Button x:Name="MaximizeButton"
+								Classes="windowControlButton"
+								Click="OnMaximizeClick">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Square.svg"
+														 Width="16"
+														 Height="16" />
+						</Button>
+						<Button x:Name="CloseWindowButton"
+								Classes="windowControlButton"
+								Click="OnCloseWindowClick">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Close.svg"
+														 Width="16"
+														 Height="16" />
+						</Button>
+					</StackPanel>
+				</Grid>
+
+				<Grid Grid.Row="1" Margin="24,0,24,40">
+					<views:WelcomeStepView x:Name="WelcomeStep" IsVisible="True" />
+					<views:ProgressStepView x:Name="ProgressStep" IsVisible="False" />
+					<views:CompleteStepView x:Name="CompleteStep" IsVisible="False" />
+				</Grid>
+			</Grid>
+		</commonLayouts:BackgroundLayoutView.LayoutContent>
+	</commonLayouts:BackgroundLayoutView>
+</Window>

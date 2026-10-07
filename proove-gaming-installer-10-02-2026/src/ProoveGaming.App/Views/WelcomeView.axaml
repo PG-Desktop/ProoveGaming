@@ -1,0 +1,683 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:Avalonia.Data.Converters"
+			 x:Class="ProoveGaming.App.Views.WelcomeView"
+			 x:DataType="viewmodels:WelcomeViewModel">
+	<UserControl.Styles>
+		<Style Selector="Button#SignInTabButton TextBlock">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="Button#SignUpTabButton TextBlock">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+
+		<Style Selector="Path.passwordToggleBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button:pointerover Path.passwordToggleBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<Style Selector="CheckBox#RememberMeCheckBox /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+		</Style>
+		<Style Selector="CheckBox#RememberMeCheckBox:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+		</Style>
+		<Style Selector="CheckBox#RememberMeCheckBox /template/ Path#OuterFrame">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="CheckBox#RememberMeCheckBox:pointerover /template/ Path#OuterFrame">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="CheckBox#RememberMeCheckBox:checked /template/ Rectangle#UncheckedBorder">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="CheckBox#RememberMeCheckBox:checked /template/ Rectangle#CheckedFill">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="CheckBox#RememberMeCheckBox:checked /template/ Path#CheckMark">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="Button#ForgotPasswordButton:pointerover TextBlock">
+			<Setter Property="TextDecorations" Value="Underline" />
+		</Style>
+		<Style Selector="Button#ForgotPasswordButton:pressed TextBlock">
+			<Setter Property="TextDecorations" Value="Underline" />
+		</Style>
+		<Style Selector="Button#ContinueButton:pointerover TextBlock">
+			<Setter Property="TextDecorations" Value="Underline" />
+		</Style>
+		<Style Selector="Button#ContinueButton:pressed TextBlock">
+			<Setter Property="TextDecorations" Value="Underline" />
+		</Style>
+	</UserControl.Styles>
+
+	<Border x:Name="WelcomeContentBlock"
+			VerticalAlignment="Top"
+			HorizontalAlignment="Center"
+			Width="640"
+			Margin="0,59,0,0">
+		<StackPanel>
+
+			<!-- Tab control header -->
+			<StackPanel Orientation="Horizontal"
+						Height="56"
+						HorizontalAlignment="Center"
+						IsVisible="{Binding !IsForgotPassword}">
+				<Grid x:Name="SignInTabContainer">
+					<Polygon x:Name="SignInTabBg"
+							 Fill="#4D6357FF"
+							 HorizontalAlignment="Left"
+							 VerticalAlignment="Top"
+							 IsVisible="{Binding IsSignIn}" />
+					<Polygon x:Name="SignInTabHoverBg"
+							 Fill="#336357FF"
+							 HorizontalAlignment="Left"
+							 VerticalAlignment="Top"
+							 IsVisible="False" />
+					<Button x:Name="SignInTabButton"
+							Height="56"
+							MinWidth="150"
+							Padding="30,0"
+							Classes="linkButton"
+							Command="{Binding SignInTabCommand}"
+							SizeChanged="OnSignInTabButtonSizeChanged"
+							PointerEntered="OnSignInTabPointerEntered"
+							PointerExited="OnSignInTabPointerExited">
+						<TextBlock x:Name="SignInTabText"
+								   Text="{DynamicResource WelcomeView_Tab_SignIn}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="18"
+								   FontWeight="Regular"
+								   HorizontalAlignment="Center"
+								   VerticalAlignment="Center" />
+					</Button>
+				</Grid>
+				<Grid x:Name="SignUpTabContainer">
+					<Polygon x:Name="SignUpTabBg"
+							 Fill="#4D6357FF"
+							 HorizontalAlignment="Left"
+							 VerticalAlignment="Top"
+							 IsVisible="{Binding !IsSignIn}" />
+					<Polygon x:Name="SignUpTabHoverBg"
+							 Fill="#336357FF"
+							 HorizontalAlignment="Left"
+							 VerticalAlignment="Top"
+							 IsVisible="False" />
+					<Button x:Name="SignUpTabButton"
+							Height="56"
+							MinWidth="150"
+							Padding="30,0"
+							Classes="linkButton"
+							Command="{Binding SignUpTabCommand}"
+							SizeChanged="OnSignUpTabButtonSizeChanged"
+							PointerEntered="OnSignUpTabPointerEntered"
+							PointerExited="OnSignUpTabPointerExited">
+						<TextBlock x:Name="SignUpTabText"
+								   Text="{DynamicResource WelcomeView_Tab_SignUp}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="18"
+								   FontWeight="Regular"
+								   HorizontalAlignment="Center"
+								   VerticalAlignment="Center" />
+					</Button>
+				</Grid>
+			</StackPanel>
+
+			<!-- ═══ SIGN IN / SIGN UP PANEL WRAPPER ═══ -->
+			<Grid MinHeight="460">
+
+				<!-- ═══ SIGN IN PANEL ═══ -->
+				<StackPanel x:Name="SignInPanel" IsVisible="{Binding IsSignInPanelVisible}" VerticalAlignment="Top">
+
+					<!-- Attempts indicator - shown after first failed attempt -->
+					<StackPanel x:Name="AttemptsBlock"
+								IsVisible="{Binding AttemptsBlockVisible}"
+								Margin="0,40,0,40"
+								Width="599"
+								HorizontalAlignment="Center">
+						<TextBlock x:Name="AttemptsText"
+								   Text="{Binding AttemptsText}"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="14"
+								   Foreground="White"
+								   TextAlignment="Center"
+								   HorizontalAlignment="Center"
+								   TextWrapping="Wrap" />
+						<Canvas Width="240" Height="17" Margin="0,8,0,0">
+							<Path x:Name="AttemptSlot1"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="0" />
+							<Path x:Name="AttemptSlot2"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="24" />
+							<Path x:Name="AttemptSlot3"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="48" />
+							<Path x:Name="AttemptSlot4"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="72" />
+							<Path x:Name="AttemptSlot5"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="96" />
+							<Path x:Name="AttemptSlot6"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="120" />
+							<Path x:Name="AttemptSlot7"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="144" />
+							<Path x:Name="AttemptSlot8"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="168" />
+							<Path x:Name="AttemptSlot9"  Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="192" />
+							<Path x:Name="AttemptSlot10" Data="M9.739,0 H24 L14.289,17 H0 Z" Fill="#33BEBCEA" Canvas.Left="216" />
+						</Canvas>
+					</StackPanel>
+
+					<Border x:Name="SignInEmailBorder"
+							Margin="0,125,0,0"
+							Width="599"
+							Height="56"
+							HorizontalAlignment="Center"
+							BorderBrush="#4DBEBCEA"
+							BorderThickness="1"
+							Background="Transparent"
+							PointerEntered="OnBorderPointerEntered"
+							PointerExited="OnBorderPointerExited">
+						<Grid ColumnDefinitions="Auto,*">
+							<commonControls:SvgImageView Grid.Column="0"
+														 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Mail.svg"
+														 Width="24" Height="24"
+														 Stretch="Uniform"
+														 Margin="16,0,8,0"
+														 Opacity="0.5"
+														 VerticalAlignment="Center" />
+							<TextBox Grid.Column="1"
+									 x:Name="SignInEmailTextBox"
+									 Text="{Binding SignInEmail}"
+									 PlaceholderText="{DynamicResource WelcomeView_Placeholder_Email}"
+									 PlaceholderForeground="#BEBCEA"
+									 Background="Transparent"
+									 BorderThickness="0"
+									 Foreground="#FFFFFF"
+									 CaretBrush="#BEBCEA"
+									 VerticalAlignment="Center"
+									 VerticalContentAlignment="Center"
+									 Padding="0"
+									 LostFocus="OnEmailLostFocus"
+									 GotFocus="OnEmailGotFocus"
+									 TextChanged="OnSignInEmailTextChanged" />
+						</Grid>
+					</Border>
+
+					<Grid Margin="0,4,0,0" Width="599" HorizontalAlignment="Center"
+						  IsVisible="{Binding SignInEmailError}">
+						<TextBlock x:Name="SignInEmailErrorText"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="12"
+								   Foreground="#FF383C"
+								   Text="{DynamicResource WelcomeView_Error_Email}" />
+					</Grid>
+
+					<Border x:Name="SignInPasswordBorder"
+							Margin="0,24,0,0"
+							Width="599"
+							Height="56"
+							HorizontalAlignment="Center"
+							BorderBrush="#4DBEBCEA"
+							BorderThickness="1"
+							Background="Transparent"
+							PointerEntered="OnBorderPointerEntered"
+							PointerExited="OnBorderPointerExited">
+						<Grid ColumnDefinitions="Auto,*,Auto">
+							<commonControls:SvgImageView Grid.Column="0"
+														 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Lock.svg"
+														 Width="24" Height="24"
+														 Stretch="Uniform"
+														 Margin="16,0,8,0"
+														 Opacity="0.5"
+														 VerticalAlignment="Center" />
+							<TextBox Grid.Column="1"
+									 x:Name="SignInPasswordTextBox"
+									 Text="{Binding SignInPassword}"
+									 PlaceholderText="{DynamicResource WelcomeView_Placeholder_Password}"
+									 PasswordChar="•"
+									 Background="Transparent"
+									 PlaceholderForeground="#BEBCEA"
+									 BorderThickness="0"
+									 Foreground="#FFFFFF"
+									 CaretBrush="#BEBCEA"
+									 VerticalAlignment="Center"
+									 VerticalContentAlignment="Center"
+									 Padding="0"
+									 GotFocus="OnSignInPasswordGotFocus"
+									 LostFocus="OnSignInPasswordLostFocus"
+									 TextChanged="OnSignInPasswordTextChanged" />
+							<Button Grid.Column="2"
+									Classes="linkButton"
+									Margin="8,0,16,0"
+									VerticalAlignment="Center"
+									Cursor="Hand"
+									Command="{Binding ToggleSignInPasswordCommand}">
+								<Grid Width="40" Height="40">
+									<Path Classes="passwordToggleBg"
+										  Data="M34.2857 5.71429H40V34.2857H34.2857V40H5.71429V34.2857H0V5.71429H5.71429V0H34.2857V5.71429Z"
+										  Fill="#4D6357FF" />
+									<commonControls:SvgImageView x:Name="SignInVisibilityOffIcon"
+																 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Visibility%20Off.svg"
+																 Width="24" Height="24"
+																 Stretch="Uniform"
+																 Opacity="0.5" />
+									<commonControls:SvgImageView x:Name="SignInVisibilityOnIcon"
+																 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Visibility.svg"
+																 Width="24" Height="24"
+																 Stretch="Uniform"
+																 Opacity="0.5"
+																 IsVisible="False" />
+								</Grid>
+							</Button>
+						</Grid>
+					</Border>
+
+					<Grid Height="20" Margin="0,4,0,0" Width="599" HorizontalAlignment="Center">
+						<TextBlock x:Name="SignInErrorText"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="12"
+								   Foreground="#FF383C"
+								   Text="{DynamicResource WelcomeView_Error_SignIn}"
+								   IsVisible="{Binding SignInCredentialsError}" />
+					</Grid>
+
+					<TextBlock Margin="0,4,0,0"
+							   Width="599"
+							   HorizontalAlignment="Center"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="12"
+							   Foreground="#FF383C"
+							   Text="{Binding SignInApiError}"
+							   IsVisible="{Binding SignInApiError, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}" />
+
+					<Grid Margin="0,0,0,0"
+						  Width="599"
+						  HorizontalAlignment="Center"
+						  ColumnDefinitions="*,Auto">
+						<CheckBox Grid.Column="0"
+								  x:Name="RememberMeCheckBox"
+								  Classes="pgCheckbox"
+								  IsChecked="{Binding IsRememberMeChecked}"
+								  HorizontalAlignment="Left"
+								  FontSize="14">
+							<CheckBox.Content>
+								<TextBlock Foreground="#B3BEBCEA"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   Text="{DynamicResource WelcomeView_RememberMe}" />
+							</CheckBox.Content>
+						</CheckBox>
+						<Button Grid.Column="1"
+								x:Name="ForgotPasswordButton"
+								Foreground="#6357FF"
+								VerticalAlignment="Center"
+								Cursor="Hand"
+								Classes="linkButton"
+								Command="{Binding EnterForgotPasswordCommand}">
+							<Button.Resources>
+								<SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#6357FF" />
+							</Button.Resources>
+							<TextBlock Text="{DynamicResource WelcomeView_ForgotPassword}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"
+									   Foreground="#6357FF" />
+						</Button>
+					</Grid>
+
+					<Button x:Name="SignInButton"
+							Margin="0,45,0,0"
+							Width="292"
+							HorizontalAlignment="Center"
+							Content="{DynamicResource WelcomeView_Button_SignIn}"
+							Classes="primaryButton"
+							Command="{Binding SignInCommand}" />
+
+				</StackPanel>
+
+				<!-- ═══ SIGN UP PANEL ═══ -->
+				<StackPanel x:Name="SignUpPanel" IsVisible="{Binding IsSignUpPanelVisible}" VerticalAlignment="Top">
+
+					<Border x:Name="SignUpEmailBorder"
+							Margin="0,72,0,0"
+							Width="599"
+							Height="56"
+							HorizontalAlignment="Center"
+							BorderBrush="#4DBEBCEA"
+							BorderThickness="1"
+							Background="Transparent"
+							PointerEntered="OnBorderPointerEntered"
+							PointerExited="OnBorderPointerExited">
+						<Grid ColumnDefinitions="Auto,*">
+							<commonControls:SvgImageView Grid.Column="0"
+														 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Mail.svg"
+														 Width="24" Height="24"
+														 Stretch="Uniform"
+														 Margin="16,0,8,0"
+														 Opacity="0.5"
+														 VerticalAlignment="Center" />
+							<TextBox Grid.Column="1"
+									 x:Name="SignUpEmailTextBox"
+									 Text="{Binding SignUpEmail}"
+									 PlaceholderText="{DynamicResource WelcomeView_Placeholder_Email}"
+									 PlaceholderForeground="#BEBCEA"
+									 Background="Transparent"
+									 BorderThickness="0"
+									 Foreground="#FFFFFF"
+									 CaretBrush="#BEBCEA"
+									 VerticalAlignment="Center"
+									 VerticalContentAlignment="Center"
+									 Padding="0"
+									 LostFocus="OnEmailLostFocus"
+									 GotFocus="OnEmailGotFocus"
+									 TextChanged="OnSignUpEmailTextChanged" />
+						</Grid>
+					</Border>
+
+					<TextBlock x:Name="SignUpEmailErrorText"
+							   Margin="0,4,0,0"
+							   Width="599"
+							   HorizontalAlignment="Center"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="12"
+							   Foreground="#FF383C"
+							   Text="{Binding SignUpEmailErrorMessage}"
+							   IsVisible="{Binding SignUpEmailError}" />
+
+					<Border x:Name="SignUpPasswordBorder"
+							Margin="0,24,0,0"
+							Width="599"
+							Height="56"
+							HorizontalAlignment="Center"
+							BorderBrush="#4DBEBCEA"
+							BorderThickness="1"
+							Background="Transparent"
+							PointerEntered="OnBorderPointerEntered"
+							PointerExited="OnBorderPointerExited">
+						<Grid ColumnDefinitions="Auto,*,Auto">
+							<commonControls:SvgImageView Grid.Column="0"
+														 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Lock.svg"
+														 Width="24" Height="24"
+														 Stretch="Uniform"
+														 Margin="16,0,8,0"
+														 Opacity="0.5"
+														 VerticalAlignment="Center" />
+							<TextBox Grid.Column="1"
+									 x:Name="SignUpPasswordTextBox"
+									 Text="{Binding SignUpPassword}"
+									 PlaceholderText="{DynamicResource WelcomeView_Placeholder_Password}"
+									 PasswordChar="•"
+									 Background="Transparent"
+									 PlaceholderForeground="#BEBCEA"
+									 BorderThickness="0"
+									 Foreground="#FFFFFF"
+									 CaretBrush="#BEBCEA"
+									 VerticalAlignment="Center"
+									 VerticalContentAlignment="Center"
+									 Padding="0"
+									 LostFocus="OnSignUpPasswordLostFocus"
+									 GotFocus="OnSignUpPasswordGotFocus"
+									 TextChanged="OnSignUpPasswordTextChanged" />
+							<Button Grid.Column="2"
+									Classes="linkButton"
+									Margin="8,0,16,0"
+									VerticalAlignment="Center"
+									Cursor="Hand"
+									Command="{Binding ToggleSignUpPasswordCommand}">
+								<Grid Width="40" Height="40">
+									<Path Classes="passwordToggleBg"
+										  Data="M34.2857 5.71429H40V34.2857H34.2857V40H5.71429V34.2857H0V5.71429H5.71429V0H34.2857V5.71429Z"
+										  Fill="#4D6357FF" />
+									<commonControls:SvgImageView x:Name="SignUpVisibilityOffIcon"
+																 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Visibility%20Off.svg"
+																 Width="24" Height="24"
+																 Stretch="Uniform"
+																 Opacity="0.5" />
+									<commonControls:SvgImageView x:Name="SignUpVisibilityOnIcon"
+																 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Visibility.svg"
+																 Width="24" Height="24"
+																 Stretch="Uniform"
+																 Opacity="0.5"
+																 IsVisible="False" />
+								</Grid>
+							</Button>
+						</Grid>
+					</Border>
+
+					<TextBlock x:Name="SignUpPasswordErrorText"
+							   Margin="0,4,0,0"
+							   Width="599"
+							   HorizontalAlignment="Center"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="12"
+							   Foreground="#FF383C"
+							   Text="{Binding SignUpPasswordErrorMessage}"
+							   IsVisible="{Binding SignUpPasswordError}" />
+
+					<TextBlock x:Name="PasswordHint"
+							   Margin="0,5,0,0"
+							   Width="599"
+							   HorizontalAlignment="Center"
+							   TextWrapping="Wrap"
+							   FontSize="12"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   Foreground="#B3BEBCEA"
+							   Text="{DynamicResource WelcomeView_PasswordHint}" />
+
+					<StackPanel Margin="0,24,0,0"
+								Width="599"
+								HorizontalAlignment="Center"
+								Spacing="10">
+						<CheckBox x:Name="TermsCheckBox"
+								  Classes="pgCheckbox"
+								  IsChecked="{Binding IsTermsChecked}"
+								  HorizontalAlignment="Left"
+								  FontSize="14">
+							<CheckBox.Resources>
+								<SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#6357FF" />
+								<SolidColorBrush x:Key="ButtonForegroundPressed" Color="#6357FF" />
+							</CheckBox.Resources>
+							<CheckBox.Content>
+								<WrapPanel>
+									<TextBlock Text="{DynamicResource WelcomeView_Terms_Agree}" Foreground="#B3BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" VerticalAlignment="Center" />
+									<Button Content="{DynamicResource WelcomeView_Terms_TermsOfService}" Classes="linkButton" Foreground="#6357FF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" Cursor="Hand" Command="{Binding OpenTermsOfServiceCommand}" VerticalAlignment="Center" />
+									<TextBlock Text="{DynamicResource WelcomeView_Terms_Comma}" Foreground="#B3BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" VerticalAlignment="Center" />
+									<Button Content="{DynamicResource WelcomeView_Terms_PrivacyPolicy}" Classes="linkButton" Foreground="#6357FF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" Cursor="Hand" Command="{Binding OpenPrivacyPolicyCommand}" VerticalAlignment="Center" />
+									<TextBlock Text="{DynamicResource WelcomeView_Terms_And}" Foreground="#B3BEBCEA" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" VerticalAlignment="Center" />
+									<Button Content="{DynamicResource WelcomeView_Terms_License}" Classes="linkButton" Foreground="#6357FF" FontFamily="{DynamicResource BaseAppFont}" FontSize="14" Cursor="Hand" Command="{Binding OpenLicenseAgreementCommand}" VerticalAlignment="Center" />
+								</WrapPanel>
+							</CheckBox.Content>
+						</CheckBox>
+						<CheckBox x:Name="MarketingCheckBox"
+								  Classes="pgCheckbox"
+								  IsChecked="{Binding IsMarketingChecked}"
+								  HorizontalAlignment="Left"
+								  FontSize="14">
+							<CheckBox.Content>
+								<TextBlock Foreground="#B3BEBCEA"
+										   FontFamily="Segoe UI"
+										   FontWeight="400"
+										   FontSize="14"
+										   LineHeight="20"
+										   LetterSpacing="0"
+										   TextAlignment="Center"
+										   Text="{DynamicResource WelcomeView_Marketing}" />
+							</CheckBox.Content>
+						</CheckBox>
+					</StackPanel>
+
+					<TextBlock Margin="0,4,0,0"
+							   Width="599"
+							   HorizontalAlignment="Center"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="12"
+							   Foreground="#FF383C"
+							   Text="{DynamicResource WelcomeView_Error_Terms}"
+							   IsVisible="{Binding TermsError}" />
+
+					<TextBlock Margin="0,4,0,0"
+							   Width="599"
+							   HorizontalAlignment="Center"
+							   FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="12"
+							   Foreground="#FF383C"
+							   Text="{Binding SignUpApiError}"
+							   IsVisible="{Binding SignUpApiError, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}" />
+
+					<Button x:Name="SignUpButton"
+							Margin="0,27,0,0"
+							Width="292"
+							HorizontalAlignment="Center"
+							Content="{DynamicResource WelcomeView_Button_SignUp}"
+							Classes="primaryButton"
+							IsEnabled="{Binding SignUpButtonEnabled}"
+							Command="{Binding SignUpCommand}" />
+
+				</StackPanel>
+
+				<!-- ═══ FORGOT PASSWORD PANEL ═══ -->
+				<StackPanel x:Name="ForgotPasswordPanel" IsVisible="{Binding IsForgotPassword}" VerticalAlignment="Top">
+
+					<!-- INPUT STATE -->
+					<StackPanel IsVisible="{Binding !IsForgotSent}">
+						<TextBlock Margin="0,72,0,0"
+								   Width="599"
+								   HorizontalAlignment="Center"
+								   TextAlignment="Center"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="24"
+								   Foreground="#FFFFFF"
+								   Text="{DynamicResource WelcomeView_Forgot_Title}" />
+
+						<TextBlock Margin="0,16,0,0"
+								   Width="599"
+								   HorizontalAlignment="Center"
+								   TextAlignment="Center"
+								   TextWrapping="Wrap"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="14"
+								   Foreground="#B3BEBCEA"
+								   Text="{DynamicResource WelcomeView_Forgot_Description}" />
+
+						<Border x:Name="ForgotEmailBorder"
+								Margin="0,40,0,0"
+								Width="599"
+								Height="56"
+								HorizontalAlignment="Center"
+								BorderBrush="#4DBEBCEA"
+								BorderThickness="1"
+								Background="Transparent"
+								PointerEntered="OnBorderPointerEntered"
+								PointerExited="OnBorderPointerExited">
+							<Grid ColumnDefinitions="Auto,*">
+								<commonControls:SvgImageView Grid.Column="0"
+															 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Mail.svg"
+															 Width="24" Height="24"
+															 Stretch="Uniform"
+															 Margin="16,0,8,0"
+															 Opacity="0.5"
+															 VerticalAlignment="Center" />
+								<TextBox Grid.Column="1"
+										 x:Name="ForgotEmailTextBox"
+										 Text="{Binding ForgotEmail}"
+										 PlaceholderText="{DynamicResource WelcomeView_Placeholder_Email}"
+										 PlaceholderForeground="#BEBCEA"
+										 Background="Transparent"
+										 BorderThickness="0"
+										 Foreground="#FFFFFF"
+										 CaretBrush="#BEBCEA"
+										 VerticalAlignment="Center"
+										 VerticalContentAlignment="Center"
+										 Padding="0" />
+							</Grid>
+						</Border>
+
+						<TextBlock Margin="0,4,0,0"
+								   Width="599"
+								   HorizontalAlignment="Center"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="12"
+								   Foreground="#FF383C"
+								   Text="{DynamicResource WelcomeView_Error_Email}"
+								   IsVisible="{Binding ForgotEmailError}" />
+
+						<TextBlock Margin="0,4,0,0"
+								   Width="599"
+								   HorizontalAlignment="Center"
+								   TextWrapping="Wrap"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="12"
+								   Foreground="#FF383C"
+								   Text="{Binding ForgotApiError}"
+								   IsVisible="{Binding ForgotApiError, Converter={x:Static converters:StringConverters.IsNotNullOrEmpty}}" />
+
+						<Button x:Name="ForgotSubmitButton"
+								Margin="0,32,0,0"
+								Width="292"
+								HorizontalAlignment="Center"
+								Content="{DynamicResource WelcomeView_Forgot_Submit}"
+								Classes="primaryButton"
+								Command="{Binding SendPasswordResetCommand}" />
+
+						<Button x:Name="ForgotBackButton"
+								Margin="0,16,0,0"
+								HorizontalAlignment="Center"
+								Foreground="#6357FF"
+								Cursor="Hand"
+								Classes="linkButton"
+								Command="{Binding BackToSignInCommand}">
+							<Button.Resources>
+								<SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#6357FF" />
+							</Button.Resources>
+							<TextBlock Text="{DynamicResource WelcomeView_Forgot_BackToSignIn}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"
+									   Foreground="#6357FF" />
+						</Button>
+					</StackPanel>
+
+					<!-- CONFIRMATION STATE -->
+					<StackPanel IsVisible="{Binding IsForgotSent}">
+						<TextBlock Margin="0,72,0,0"
+								   Width="599"
+								   HorizontalAlignment="Center"
+								   TextAlignment="Center"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="24"
+								   Foreground="#FFFFFF"
+								   Text="{DynamicResource WelcomeView_Forgot_Sent_Title}" />
+
+						<TextBlock Margin="0,16,0,0"
+								   Width="599"
+								   HorizontalAlignment="Center"
+								   TextAlignment="Center"
+								   TextWrapping="Wrap"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="14"
+								   Foreground="#B3BEBCEA"
+								   Text="{DynamicResource WelcomeView_Forgot_Sent_Description}" />
+
+						<Button x:Name="ForgotSentBackButton"
+								Margin="0,40,0,0"
+								Width="292"
+								HorizontalAlignment="Center"
+								Content="{DynamicResource WelcomeView_Forgot_BackToSignIn}"
+								Classes="primaryButton"
+								Command="{Binding BackToSignInCommand}" />
+					</StackPanel>
+				</StackPanel>
+
+			</Grid>
+
+			<!-- Enter game application -->
+			<Button x:Name="ContinueButton"
+					Margin="0,35,0,40"
+					HorizontalAlignment="Center"
+					Foreground="#6357FF"
+					Cursor="Hand"
+					Classes="linkButton"
+					Command="{Binding GuestContinueCommand}">
+				<Button.Resources>
+					<SolidColorBrush x:Key="ButtonForegroundPointerOver" Color="#6357FF" />
+				</Button.Resources>
+				<TextBlock Text="{DynamicResource WelcomeView_Button_EnterAsGuest}"
+						   FontFamily="{DynamicResource AppPixelFont}"
+						   FontSize="18"
+						   Foreground="#6357FF" />
+			</Button>
+
+		</StackPanel>
+	</Border>
+</UserControl>

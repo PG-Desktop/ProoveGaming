@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 mc:Ignorable="d"
+			 x:Name="Self"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.NavSectionButton">
+
+	<UserControl.Styles>
+		<!-- Default: octagon chrome (mouse style). Toggle to rectStack via Classes="rectStack". -->
+		<Style Selector="Panel#OctagonChrome">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="Grid#RectStackChrome">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="UserControl.rectStack Panel#OctagonChrome">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="UserControl.rectStack Grid#RectStackChrome">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+	</UserControl.Styles>
+
+	<Button Classes="navButton"
+			Background="Transparent"
+			BorderThickness="0"
+			Padding="0"
+			Cursor="Hand"
+			Command="{ReflectionBinding $parent[UserControl].DataContext.SelectSectionCommand}"
+			CommandParameter="{Binding #Self.Section}">
+		<Panel Width="120" Height="64">
+
+			<!-- Octagon chrome (mouse). -->
+			<Panel x:Name="OctagonChrome">
+				<Path Data="M112,8 H120 V56 H112 V64 H8 V56 H0 V8 H8 V0 H112 V8 Z"
+					  Fill="#336357FF"
+					  IsVisible="{Binding #Self.IsActive}" />
+				<Path Classes="navHoverFrame"
+					  Data="M112,8 H120 V56 H112 V64 H8 V56 H0 V8 H8 V0 H112 V8 Z"
+					  Fill="#4D6357FF" />
+			</Panel>
+
+			<!-- Rect-stack chrome (keyboard). -->
+			<Grid x:Name="RectStackChrome" RowDefinitions="8,48,8">
+				<Rectangle Grid.Row="0" Width="104" Fill="#336357FF" IsVisible="{Binding #Self.IsActive}" />
+				<Rectangle Grid.Row="1" Fill="#336357FF" IsVisible="{Binding #Self.IsActive}" />
+				<Rectangle Grid.Row="2" Width="104" Fill="#336357FF" IsVisible="{Binding #Self.IsActive}" />
+				<Rectangle Grid.Row="0" Width="104" Classes="navHoverFrame" Fill="#4D6357FF" />
+				<Rectangle Grid.Row="1" Classes="navHoverFrame" Fill="#4D6357FF" />
+				<Rectangle Grid.Row="2" Width="104" Classes="navHoverFrame" Fill="#4D6357FF" />
+			</Grid>
+
+			<!-- Icon + label centered. -->
+			<StackPanel Spacing="4" VerticalAlignment="Center" HorizontalAlignment="Center">
+				<commonControls:SvgImageView Classes="navIconBase"
+											 SourceUri="{Binding #Self.IconSource}"
+											 Width="{Binding #Self.IconWidth}"
+											 Height="{Binding #Self.IconHeight}"
+											 Stretch="Uniform"
+											 HorizontalAlignment="Center"
+											 Opacity="{Binding #Self.IsActive, Converter={x:Static converters:BoolToActiveOpacityConverter.Instance}}"
+											 TintColor="{Binding #Self.IsActive, Converter={x:Static converters:BoolToActiveTintConverter.Instance}}" />
+				<TextBlock Text="{Binding #Self.Label}" Classes="navLabel" />
+			</StackPanel>
+		</Panel>
+	</Button>
+</UserControl>

@@ -1,0 +1,474 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:detailSections="using:ProoveGaming.App.Views.DeviceDetailsSections"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Name="Root"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.MacrosSectionView"
+			 Design.Width="336"
+			 Design.Height="714">
+	<UserControl.Styles>
+
+		<!-- The tab strip (macroTab*), search field (macroSearch*) and row styles (macroItemRow,
+		macroRadio*) are shared with the Key Assignment Dialog and live in App.axaml. Same look,
+		different checked semantics: the dialog's radio means "bound to the dialog's key"
+		(IsSelected), this page's means "inspected — highlight its bindings" (IsInspected). -->
+
+		<!-- "+ NEW MACRO" full-width purple button -->
+		<Style Selector="Button.macroAddButton">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="Background" Value="#6357FF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.macroAddButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#786DFF" />
+		</Style>
+		<!-- Content colours live here, not inline on the Path/TextBlock: a local value would beat
+		     the :disabled rules below and keep the label full-white on a disabled button. -->
+		<Style Selector="Button.macroAddButton TextBlock">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="Button.macroAddButton Path">
+			<Setter Property="Fill" Value="#FFFFFF" />
+		</Style>
+		<!-- Same presenter trap as sectionActionButton:disabled (App.axaml): without a re-state
+		     the theme's dark disabled resources melt the button into the panel. Colours follow
+		     the shared primaryButton:disabled look. -->
+		<Style Selector="Button.macroAddButton:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+		<Style Selector="Button.macroAddButton:disabled TextBlock">
+			<Setter Property="Foreground" Value="#4DBEBCEA" />
+		</Style>
+		<Style Selector="Button.macroAddButton:disabled Path">
+			<Setter Property="Fill" Value="#4DBEBCEA" />
+		</Style>
+
+		<!-- Kebab dot -->
+		<Style Selector="Ellipse.macroKebabDot">
+			<Setter Property="Width" Value="3" />
+			<Setter Property="Height" Value="3" />
+			<Setter Property="Fill" Value="#6357FF" />
+		</Style>
+
+		<!-- Kebab button: transparent hit target around the 3 dots -->
+		<Style Selector="Button.macroKebab">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="8,4" />
+			<Setter Property="Cursor" Value="Hand" />
+		</Style>
+		<Style Selector="Button.macroKebab /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+
+		<!-- Command row (Commands tab) — grows on :checked to reveal a sub-row -->
+		<Style Selector="RadioButton.commandRow">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="MinHeight" Value="56" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="Stretch"
+										  VerticalContentAlignment="Stretch" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="RadioButton.commandRow:checked">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+		</Style>
+		<Style Selector="RadioButton.commandRow:pointerover:not(:checked)">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+		<!-- Command row sub-row: only visible when row is :checked -->
+		<Style Selector="Grid.commandSubRow">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="RadioButton.commandRow:checked Grid.commandSubRow">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+	</UserControl.Styles>
+
+	<Grid IsVisible="{Binding IsMacrosSection}">
+
+		<!-- Padding, not a fixed 0: the keyboard panel insets its content 14px less than the
+			 mouse panel, so this makes the "+ NEW MACRO" button start at the same height on both.
+			 Visible 4px bar + bottom gap under the last row — same shape as the Presets list
+			 (the macro library overflows routinely, and a hidden bar read as "no scroll"). -->
+		<!-- Bottom margin: one shared edge for the clip line, the track bottom and a
+			 fully-scrolled last row — see the Presets list. -->
+		<ScrollViewer Classes="pgScrollViewer pgMacrosScroll"
+					  Classes.mouseDevice="{Binding !IsKeyboardDevice}"
+					  Width="348" HorizontalAlignment="Left"
+					  Margin="0,0,0,12"
+					  AllowAutoHide="False"
+					  VerticalScrollBarVisibility="Auto"
+					  HorizontalScrollBarVisibility="Disabled"
+					  Padding="{Binding MacrosContentPadding}">
+			<!-- bluetoothLocked sits on the dimmable blocks below, NOT here: NEW MACRO's :disabled
+				 colours are the mock's absolute alphas, and a root Opacity would halve them again
+				 (PR #124 M1). -->
+			<StackPanel Spacing="8" Width="336" HorizontalAlignment="Left"
+						IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+				<!-- Shown when the macro library could not be written to (or verified on) the
+					 keyboard. Without it a refused upload looks like "clicking a macro does
+					 nothing" — the bind is deliberately skipped when the library isn't stored. -->
+				<Border Classes="warningBanner"
+						IsVisible="{Binding MacroUploadFailed}"
+						Margin="0,16,0,0">
+					<TextBlock Text="{DynamicResource DeviceDetails_Macros_UploadFailed}" />
+				</Border>
+
+				<!-- A key inside an extended-key record cannot take a macro: the dialog stays shut and
+					 this names the record (same message the Key Assignments page shows). -->
+				<Border Classes="warningBanner"
+						IsVisible="{Binding HasExtendedKeyBlockedMessage}"
+						Margin="0,16,0,0">
+					<TextBlock Text="{Binding ExtendedKeyBlockedMessage}" />
+				</Border>
+
+				<!-- 1. Tabs (56h) — natural-width parallelogram tabs (15px slant on each side, 9px rect padding around the text).
+				Hidden: only the Macros tab ships for now, so the strip would be a single
+				non-choice. IsMacrosTabActive defaults to true and nothing else can change it
+				while these buttons are the only way to reach SelectCommandsTab. -->
+				<StackPanel Orientation="Horizontal" Height="56" Margin="0,16,0,0"
+							IsVisible="False">
+					<Button Classes="macroTab" Classes.tabActive="{Binding IsMacrosTabActive}"
+							Command="{Binding SelectMacrosTabCommand}">
+						<Panel Height="56" Background="Transparent">
+							<Grid Classes="macroTabFill" ColumnDefinitions="15,*,15">
+								<Polygon Points="0,56 15,0 15,56" Fill="#4D6357FF" />
+								<Rectangle Grid.Column="1" Fill="#4D6357FF" />
+								<Polygon Grid.Column="2" Points="0,0 15,0 0,56" Fill="#4D6357FF" />
+							</Grid>
+							<TextBlock Classes="macroTabLabel" Margin="24,0" Text="{DynamicResource Macros_Tab_Macros}" />
+						</Panel>
+					</Button>
+					<Button Classes="macroTab" Classes.tabActive="{Binding IsCommandsTabActive}"
+							Command="{Binding SelectCommandsTabCommand}">
+						<Panel Height="56" Background="Transparent">
+							<Grid Classes="macroTabFill" ColumnDefinitions="15,*,15">
+								<Polygon Points="0,56 15,0 15,56" Fill="#4D6357FF" />
+								<Rectangle Grid.Column="1" Fill="#4D6357FF" />
+								<Polygon Grid.Column="2" Points="0,0 15,0 0,56" Fill="#4D6357FF" />
+							</Grid>
+							<TextBlock Classes="macroTabLabel" Margin="24,0" Text="{DynamicResource Macros_Tab_Commands}" />
+						</Panel>
+					</Button>
+				</StackPanel>
+
+				<!-- 2a. MACROS tab content -->
+				<StackPanel Spacing="8" IsVisible="{Binding IsMacrosTabActive}">
+
+					<!-- Selected-button header (title + Reset): shown once a key / hotspot on the
+					     device image is selected. The slot has a FIXED height (the header's 14px
+					     top margin + its 24px line) and stays visible, so "+ NEW MACRO", the
+					     search box and the macro list do not jump up and down every time the
+					     selection appears or clears (a key click, an inspection radio, a reset). -->
+					<Panel Height="38" Classes="bluetoothLocked">
+						<detailSections:SelectedButtonHeaderView
+							IsVisible="{Binding HasSelectedMacroTarget}" />
+					</Panel>
+
+					<Button Classes="macroAddButton" Margin="0,0,0,16"
+							Command="{Binding OpenCreateMacroCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+							<Path Data="M8,0 L6,0 L6,6 L0,6 L0,8 L6,8 L6,14 L8,14 L8,8 L14,8 L14,6 L8,6 Z"
+								  Width="14" Height="14" Stretch="None" VerticalAlignment="Center" />
+							<TextBlock Text="{DynamicResource Macros_NewMacro}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"
+									   VerticalAlignment="Center" />
+						</StackPanel>
+					</Button>
+
+					<!-- Search field -->
+					<Border Classes="macroSearchHost pgInputHost bluetoothLocked" Margin="0,0,0,16">
+						<Grid>
+							<TextBox Classes="macroSearchInput"
+									 Text="{Binding MacroSearchText, Mode=TwoWay}"
+									 PlaceholderText="{DynamicResource Macros_SearchPlaceholder}" />
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Search.svg"
+														 Width="18" Height="18" Stretch="Uniform"
+														 Margin="19,0,0,0"
+														 Opacity="0.5"
+														 HorizontalAlignment="Left"
+														 VerticalAlignment="Center"
+														 IsHitTestVisible="False" />
+						</Grid>
+					</Border>
+
+					<!-- Macro item list — populated from DeviceDetailsViewModel.Macros (initially empty;
+					entries are appended when the user finishes the Create Macro popup). -->
+					<ItemsControl ItemsSource="{Binding Macros}" Classes="bluetoothLocked">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="viewmodels:MacroViewModel">
+								<!-- Two device-type row variants sharing one template (the list view is
+								     shared by mice and keyboards). Exactly one is visible per device;
+								     the device type cannot change while a library is loaded (it reloads
+								     on every device open), so bind-time switching is safe. Distinct
+								     GroupNames keep the collapsed variant out of the visible group's
+								     radio coordinator. The kebab menu is the shared MacroRowKebabView.
+								     See docs/plans/fix-mouse-macro-list-assignment. -->
+								<Panel>
+									<!-- MOUSE row — assignment semantics (restored per the QA report of
+									     2026-08-31; PR #104 had switched it to inspection for both device
+									     types while only keyboards were meant to change): the radio mirrors
+									     "bound to the SELECTED button" (RefreshMacroListSelection), a click
+									     assigns the macro to that button, and the ✕ reverts it — the same
+									     shared reset dispatcher the header's RESET uses, gated identically
+									     so it cannot race an in-flight assignment write (PR #81 review M1). -->
+									<RadioButton Classes="macroItemRow" GroupName="Macros"
+												 Margin="0,0,0,8"
+												 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+												 Command="{Binding AssignCommand}"
+												 CommandParameter="{Binding}">
+										<RadioButton.IsVisible>
+											<MultiBinding Converter="{x:Static BoolConverters.And}">
+												<Binding Path="IsVisible" />
+												<Binding Path="#Root.DataContext.IsMouseDevice" FallbackValue="False" />
+											</MultiBinding>
+										</RadioButton.IsVisible>
+										<!-- No ColumnSpacing: Grid spacing is paid per column even when the
+										     ✕ column is collapsed, which shaved 22 px off every macro name
+										     (PR #81 round 3 m4). Gaps live on the elements instead. -->
+										<Grid ColumnDefinitions="Auto,*,Auto,Auto" Margin="19,0,30,0" VerticalAlignment="Center">
+											<Grid Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center">
+												<Ellipse Classes="macroRadioOuter" />
+												<Ellipse Classes="macroRadioInner" />
+											</Grid>
+											<TextBlock Grid.Column="1" Text="{Binding DisplayName}" Margin="22,0,0,0"
+													   ToolTip.Tip="{Binding Name}"
+													   Foreground="#FFFFFF"
+													   FontFamily="{DynamicResource BaseAppFont}"
+													   FontSize="16"
+													   LineHeight="24"
+													   VerticalAlignment="Center" />
+											<Button Grid.Column="2"
+													Classes="macroUnassign"
+													Margin="22,0,0,0"
+													VerticalAlignment="Center"
+													IsVisible="{Binding IsSelected}"
+													IsEnabled="{Binding #Root.DataContext.CanResetSelectedMacroTarget}"
+													Command="{Binding #Root.DataContext.ResetSelectedMacroTargetCommand}" />
+											<detailSections:MacroRowKebabView Grid.Column="3" Margin="22,0,0,0" VerticalAlignment="Center" />
+										</Grid>
+									</RadioButton>
+
+									<!-- KEYBOARD row — inspection semantics: checking it highlights, on the
+									     device image, every key this macro is bound to. It never assigns —
+									     keyboard assignment lives in the Key Assignment Dialog. Its own
+									     group: the dialog's "KeyDialogMacros" radios bind the same view
+									     models with different (bound-to-this-key) semantics, and one group
+									     spanning both lists would uncheck across them. -->
+									<RadioButton Classes="macroItemRow" GroupName="MacrosInspect"
+												 Margin="0,0,0,8"
+												 IsChecked="{Binding IsInspected, Mode=TwoWay}"
+												 Command="{Binding InspectCommand}"
+												 CommandParameter="{Binding}">
+										<RadioButton.IsVisible>
+											<MultiBinding Converter="{x:Static BoolConverters.And}">
+												<Binding Path="IsVisible" />
+												<Binding Path="#Root.DataContext.IsKeyboardDevice" FallbackValue="False" />
+											</MultiBinding>
+										</RadioButton.IsVisible>
+										<Grid ColumnDefinitions="Auto,*,Auto" Margin="19,0,30,0" VerticalAlignment="Center">
+											<Grid Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center">
+												<Ellipse Classes="macroRadioOuter" />
+												<Ellipse Classes="macroRadioInner" />
+											</Grid>
+											<TextBlock Grid.Column="1" Text="{Binding DisplayName}" Margin="22,0,0,0"
+													   ToolTip.Tip="{Binding Name}"
+													   Foreground="#FFFFFF"
+													   FontFamily="{DynamicResource BaseAppFont}"
+													   FontSize="16"
+													   LineHeight="24"
+													   VerticalAlignment="Center" />
+											<detailSections:MacroRowKebabView Grid.Column="2" Margin="22,0,0,0" VerticalAlignment="Center" />
+										</Grid>
+									</RadioButton>
+								</Panel>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+
+				</StackPanel>
+
+				<!-- 2b. COMMANDS tab content — flat list of commands; the :checked one grows to reveal an icon/sub-label sub-row -->
+				<StackPanel Spacing="8" IsVisible="{Binding IsCommandsTabActive}" Classes="bluetoothLocked">
+					<RadioButton Classes="commandRow" GroupName="Commands">
+						<Grid Margin="19,15,19,15">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_VolumeDown}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+					<RadioButton Classes="commandRow" GroupName="Commands" IsChecked="True">
+						<Grid RowDefinitions="Auto,Auto" Margin="19,15,19,15">
+							<!-- Top: radio + label -->
+							<Grid Grid.Row="0" ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_VolumeUp}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   FontWeight="SemiBold"
+										   VerticalAlignment="Center" />
+							</Grid>
+							<!-- Sub-row: icon + sub-label + Default badge — only visible when :checked -->
+							<Grid Grid.Row="1" Classes="commandSubRow"
+								  ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12"
+								  VerticalAlignment="Center" Margin="34,8,0,0">
+								<Panel Grid.Column="0" Width="24" Height="24">
+									<Rectangle Width="24" Height="24" Fill="#336357FF" />
+									<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Keyboard-Simple.svg"
+																 Width="24" Height="24" Stretch="Uniform" />
+								</Panel>
+								<TextBlock Grid.Column="1" Text="{DynamicResource DeviceDetails_Buttons_Action_Desktop}"
+										   Foreground="#B2BEBCEA"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="14"
+										   VerticalAlignment="Center" />
+								<TextBlock Grid.Column="2" Text="{DynamicResource DeviceDetails_Buttons_Default}"
+										   Foreground="#80BEBCEA"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="12"
+										   LetterSpacing="0.25"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+					<RadioButton Classes="commandRow" GroupName="Commands">
+						<Grid Margin="19,15,19,15">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_Back}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+					<RadioButton Classes="commandRow" GroupName="Commands">
+						<Grid Margin="19,15,19,15">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_BrightnessDown}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+					<RadioButton Classes="commandRow" GroupName="Commands">
+						<Grid Margin="19,15,19,15">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_BrightnessUp}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+					<RadioButton Classes="commandRow" GroupName="Commands">
+						<Grid Margin="19,15,19,15">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_VolumeMute}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+					<RadioButton Classes="commandRow" GroupName="Commands">
+						<Grid Margin="19,15,19,15">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_VolumeToggle}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+					<RadioButton Classes="commandRow" GroupName="Commands">
+						<Grid Margin="19,15,19,15">
+							<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16" VerticalAlignment="Center">
+								<Grid Width="18" Height="18" VerticalAlignment="Center">
+									<Ellipse Classes="macroRadioOuter" />
+									<Ellipse Classes="macroRadioInner" />
+								</Grid>
+								<TextBlock Grid.Column="1" Text="{DynamicResource Macros_Command_BrowserBack}"
+										   Foreground="#FFFFFF"
+										   FontFamily="{DynamicResource BaseAppFont}"
+										   FontSize="16"
+										   VerticalAlignment="Center" />
+							</Grid>
+						</Grid>
+					</RadioButton>
+				</StackPanel>
+
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

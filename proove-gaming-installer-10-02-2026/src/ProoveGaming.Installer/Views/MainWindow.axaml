@@ -1,0 +1,133 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:views="using:ProoveGaming.Installer.Views"
+		xmlns:controls="using:ProoveGaming.Installer.Controls"
+		xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+		xmlns:commonControls="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+		x:Class="ProoveGaming.Installer.Views.MainWindow"
+		Icon="avares://ProoveGaming.Installer/Assets/PG_Favicon_128x128.ico"
+		Title="{DynamicResource Window_Title}"
+		Height="900"
+		Width="1440"
+		Background="Transparent"
+		CanResize="True"
+		WindowDecorations="None"
+		CornerRadius="0"
+		ExtendClientAreaToDecorationsHint="True"
+		WindowStartupLocation="CenterScreen">
+	<Window.Styles>
+		<Style Selector="Button.windowControlButton">
+			<Setter Property="Width" Value="40" />
+			<Setter Property="Height" Value="40"/>
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Opacity" Value="0.7" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Foreground" Value="#B3BEBCEA" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.windowControlButton:pointerover">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+	</Window.Styles>
+	<!-- The modal and its overlay are siblings of the background layout, not children of it, so the
+	     blur can be applied to BackgroundLayoutRoot (background image included) without blurring
+	     the modal itself. Blurring only the content left the background sharp, which read as a
+	     blur that covered just the middle of the window. -->
+	<Grid>
+		<commonLayouts:BackgroundLayoutView x:Name="BackgroundLayoutRoot">
+			<commonLayouts:BackgroundLayoutView.LayoutContent>
+				<Grid x:Name="MainContentGrid" RowDefinitions="Auto,*">
+					<Grid Grid.Row="0" ColumnDefinitions="*,Auto">
+						<Border Grid.Column="0"
+								Background="Transparent"
+								PointerPressed="OnTitleBarPointerPressed">
+							<TextBlock Text="{DynamicResource Window_Title}"
+									   Margin="12,0,0,0"
+									   VerticalAlignment="Center"
+									   Foreground="#BEBCEA"
+									   FontSize="14" />
+						</Border>
+						<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+							<Button x:Name="MinimizeButton"
+									Classes="windowControlButton"
+									Click="OnMinimizeClick">
+								<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Remove.svg"
+															 Width="16"
+															 Height="16" />
+							</Button>
+							<Button x:Name="MaximizeButton"
+									Classes="windowControlButton"
+									Click="OnMaximizeClick">
+								<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Square.svg"
+															 Width="16"
+															 Height="16" />
+							</Button>
+							<Button x:Name="CloseWindowButton"
+									Classes="windowControlButton"
+									Click="OnCloseWindowClick">
+								<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Close.svg"
+															 Width="16"
+															 Height="16" />
+							</Button>
+						</StackPanel>
+					</Grid>
+
+					<Grid x:Name="RootLayoutGrid"
+						  Grid.Row="1"
+						  Margin="24">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+
+						<TextBlock x:Name="HeaderTitleText"
+								   Grid.Row="0"
+								   Margin="0,12,0,0"
+								   Text="{DynamicResource Header_Title}"
+								   Foreground="#1F1F1F"
+								   FontSize="28"
+								   FontWeight="SemiBold" />
+
+						<TextBlock x:Name="HeaderSubtitleText"
+								   Grid.Row="1"
+								   Margin="0,10,0,0"
+								   Text="{DynamicResource Header_Subtitle}"
+								   Foreground="#525252"
+								   TextWrapping="Wrap" />
+
+						<Border x:Name="ContentHostBorder"
+								Grid.Row="2"
+								Margin="0,24,0,24"
+								Padding="16"
+								Background="Transparent"
+								CornerRadius="8">
+							<Grid>
+								<views:SplashStepView x:Name="SplashStepView" />
+								<views:WelcomeStepView x:Name="WelcomeStepView" />
+								<views:AgreementStepView x:Name="AgreementStepView"
+														 IsVisible="False"
+														 Margin="0" />
+								<views:FolderStepView x:Name="FolderStepView" IsVisible="False" Margin="0" />
+								<views:InstallingStepView x:Name="InstallingStepView" IsVisible="False" Margin="0" />
+								<views:CompleteStepView x:Name="CompleteStepView" IsVisible="False" Margin="0" />
+							</Grid>
+						</Border>
+					</Grid>
+				</Grid>
+			</commonLayouts:BackgroundLayoutView.LayoutContent>
+		</commonLayouts:BackgroundLayoutView>
+
+		<Border x:Name="CancelModalOverlay"
+				IsVisible="False"
+				Background="#99120D35" />
+
+		<controls:ModalCancelView x:Name="CancelModalHost"
+								  IsVisible="False"
+								  HorizontalAlignment="Center"
+								  VerticalAlignment="Center" />
+	</Grid>
+</Window>

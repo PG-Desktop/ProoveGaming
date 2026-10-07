@@ -1,0 +1,222 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:designViewModels="using:ProoveGaming.App.ViewModels.Design"
+			 xmlns:detailSections="using:ProoveGaming.App.Views.DeviceDetailsSections"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Name="Root"
+			 ClipToBounds="False"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.RasterKeyboardOverlayView">
+	<Design.DataContext>
+		<designViewModels:ButtonsSectionDesignViewModel />
+	</Design.DataContext>
+	<UserControl.Styles>
+		<!-- Key overlay, transcribed from the 38x39 design SVG:
+			   rect rx="2.9122" fill="#6357FF" fill-opacity="0.2"
+					stroke="#6357FF" stroke-width="1.94146"
+			 The rect's x/y of 0.970732 is just SVG centring its stroke on the edge
+			 (1.94146 / 2), so it carries no offset here — Avalonia draws the border inside
+			 the control bounds, which lands in the same place. Fill and fill-opacity stay
+			 separate rather than collapsing to #336357FF: putting Opacity on the Button
+			 itself would fade the border and any label along with the fill.
+
+			 The resting state is fully transparent. Painting the design on every key at once
+			 tinted the whole board purple and made this page's keyboard look nothing like the
+			 RGB page's — the overlay is an interaction affordance, not a permanent fill. -->
+		<Style Selector="Button.rasterKey">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="FontSize" Value="12" />
+			<Setter Property="Padding" Value="4,2" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+			<Setter Property="CornerRadius" Value="2.9122" />
+			<Setter Property="Cursor" Value="Hand" />
+		</Style>
+
+		<!-- Fluent paints this presenter itself on :pointerover, so its background has to be
+			 set here rather than on the Button, and the border restated or it repaints. -->
+		<Style Selector="Button.rasterKey /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+
+		<!-- Hover: the design exactly as specified. -->
+		<Style Selector="Button.rasterKey:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background">
+				<SolidColorBrush Color="#6357FF" Opacity="0.2" />
+			</Setter>
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1.94146" />
+		</Style>
+
+		<!-- Inspected-macro binding (Macros page): the keys bound to the macro checked in the
+			 macro list. The same box at 0.3 fill — between hover (0.2) and selected (0.4) —
+			 and declared BEFORE .selected so a click-selected key that is also bound still
+			 reads as the selection. Declared AFTER the plain hover rule, so it also wins over
+			 it — which is why the hover feedback needs its own rule below. -->
+		<Style Selector="Button.rasterKey.macroBound /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background">
+				<SolidColorBrush Color="#6357FF" Opacity="0.3" />
+			</Setter>
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1.94146" />
+		</Style>
+		<!-- Hover on a highlighted key: without this the 0.3 rule above eats the plain 0.2
+			 hover and pointing at a highlighted key changes nothing (PR #104 m3). A nudge to
+			 0.35 keeps it below .selected's 0.4, so the ordering story stays intact. -->
+		<Style Selector="Button.rasterKey.macroBound:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background">
+				<SolidColorBrush Color="#6357FF" Opacity="0.35" />
+			</Setter>
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1.94146" />
+		</Style>
+
+		<!-- Configured extended key (both keys of a Rapid Snap pair, on every section that renders
+			 the overlay): the same box in the RS badge green, so a linked key reads apart from a
+			 macro-bound one at a glance. Declared before .selected for the same reason as
+			 .macroBound, and with its own hover rule — the theme repaints the presenter on
+			 :pointerover and would otherwise drop the border. -->
+		<Style Selector="Button.rasterKey.extendedKey /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background">
+				<SolidColorBrush Color="#00CE4F" Opacity="0.25" />
+			</Setter>
+			<Setter Property="BorderBrush" Value="#00CE4F" />
+			<Setter Property="BorderThickness" Value="1.94146" />
+		</Style>
+		<Style Selector="Button.rasterKey.extendedKey:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background">
+				<SolidColorBrush Color="#00CE4F" Opacity="0.35" />
+			</Setter>
+			<Setter Property="BorderBrush" Value="#00CE4F" />
+			<Setter Property="BorderThickness" Value="1.94146" />
+		</Style>
+
+		<!-- Selected: same box, stronger fill so the chosen key stays obvious once the
+			 pointer moves away. Declared after hover so it wins when both apply. -->
+		<Style Selector="Button.rasterKey.selected /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background">
+				<SolidColorBrush Color="#6357FF" Opacity="0.4" />
+			</Setter>
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1.94146" />
+		</Style>
+	</UserControl.Styles>
+	<!-- The physical-key buttons are added programmatically in code-behind, so we get direct
+		 Canvas.Left/Top on each Button and never fight ItemsControl's container wrapping or
+		 virtualisation heuristics. See RasterKeyboardOverlayView.axaml.cs.
+
+		 Every board with a measured table draws the overlays straight onto a rendered keyboard: the
+		 art layer and the button canvas are both sized to the artwork's viewBox and share one
+		 Viewbox, so the overlays stay registered to the keycaps at any scale. Their bounds come from
+		 RasterArtworkLayout / TRacerArtworkLayout / CyrexArtworkLayout, measured from the artwork
+		 itself — the 34px-unit grids in RasterVisualLayout and TRacerVisualLayout have different
+		 proportions and would drift.
+
+		 The art layer binds KeyOverlayArt rather than KeyboardArt: the overlay contract is "the
+		 artwork the measured bounds were taken from". Today every board resolves both to the same
+		 file, but the two have diverged before (Aress drew the Cyrex board here until its own
+		 artwork got a measured table).
+
+		 A board without a measured table keeps the bare canvas and is sized from the view model
+		 instead, because the supported boards differ in size and hardcoding one model's left
+		 the others offset inside an oversized canvas. The code-behind is the single place that
+		 applies either size and hides the art layer when there is no artwork — sizing here as well
+		 would mean two sources competing for the same properties. -->
+	<!-- ClipToBounds MUST be false here AND on the UserControl root above: the hover
+		 tooltip sits ABOVE the hovered key, which on the top row is above the artwork's
+		 top edge — i.e. outside these two elements' bounds. The Viewbox overrides the
+		 default to TRUE (ClipToBoundsProperty.OverrideDefaultValue<Viewbox>(true)) and the
+		 root clips in practice too (the repo's other chrome-overflowing UserControls —
+		 ConfirmDialog, ToggleSwitchControl, PercentSliderControl — all disable it there;
+		 verified on a live Cyrex: with only the Viewbox released, a top-row tip was still
+		 cut at the stage edge). Nothing else draws outside the stage (keys are clamped
+		 into it), so the only content this releases is the tip, and every host centres
+		 the keyboard in a panel with ample headroom. -->
+	<Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
+			 ClipToBounds="False">
+		<Panel x:Name="Stage">
+			<!-- DimOpacity: per-board scrim so a board whose unlit caps are still saturated
+				 (Rampage) darkens enough for the #6357FF selection boxes to read — see
+				 KeyOverlayArtDim. -->
+			<detailSections:RgbKeyboardView x:Name="ArtLayer"
+											Art="{Binding KeyOverlayArt}"
+											ShowBacklight="False"
+											DimOpacity="{Binding KeyOverlayArtDim}"
+											IsHitTestVisible="False" />
+			<Canvas x:Name="KeyboardCanvas" />
+
+			<!-- Hover tooltip: the key's name (or what it now resolves to — a remap target or
+				 bound macro) with its press actuation underneath ("ESC / 2.08"), on a black
+				 chip with a glow. A macro-bound key's tip also carries the unassign ✕ beside
+				 the name, so a binding can be cancelled right where it is shown. Shown /
+				 positioned from code-behind on each key button's PointerEntered/Exited — the
+				 keys are built imperatively, so their hover wiring lives with them, and
+				 Avalonia's ToolTip chrome (popup panel, its own theme, below-pointer placement)
+				 is exactly what the design is not.
+
+				 Hit-testing is per show: the layer stays click-through for a plain tip (it
+				 floats over the row above the hovered key, and a hit-testable surface there
+				 would make those keys unhoverable), and turns hit-testable only while the ✕ is
+				 offered — the pointer must be able to travel from the key into the tip, which
+				 is also what the transparent gap filler under the chip is for: it bridges the
+				 key-to-chip gap so that travel never leaves the key+tip region and the
+				 code-behind's grace timer never sees a false exit.
+
+				 Sizes (font, padding, glow, ✕) are set in code as fractions of the stage width:
+				 everything here is in canvas units inside the shared Viewbox, and the boards'
+				 artwork viewBoxes differ by ~18% for the same 628px host. -->
+			<Canvas x:Name="TipLayer" IsHitTestVisible="False">
+				<Panel x:Name="TipPanel" IsVisible="False">
+					<Grid RowDefinitions="Auto,Auto">
+						<Panel Grid.Row="0" Background="Transparent">
+							<!-- A bright, full-opacity glow: the tip floats over the BLACK keyboard
+								 body for every row but the top one (whose tip lands above the
+								 artwork, on the lighter backdrop), and a softer #6357FF/0.5 glow
+								 composites to near-nothing on black — it read as "only the first
+								 row has a shadow". -->
+							<Border x:Name="TipChrome" Background="Black">
+								<Border.Effect>
+									<DropShadowEffect BlurRadius="24"
+													  Color="#8B82FF"
+													  Opacity="1"
+													  OffsetX="0"
+													  OffsetY="0" />
+								</Border.Effect>
+							</Border>
+							<!-- LineHeight is set in code with the font, never inherited: App.axaml's
+								 global TextBlock style pins it to an absolute 24, which is authored
+								 for 16px screen text and clips glyphs in canvas space. -->
+							<Grid x:Name="TipBody" ColumnDefinitions="Auto,Auto" VerticalAlignment="Center">
+								<StackPanel x:Name="TipContent">
+									<TextBlock x:Name="TipLabel"
+											   HorizontalAlignment="Center"
+											   Foreground="#FFFFFF"
+											   FontFamily="{DynamicResource BaseAppFont}" />
+									<TextBlock x:Name="TipValue"
+											   HorizontalAlignment="Center"
+											   Foreground="#B2BEBCEA"
+											   FontFamily="{DynamicResource BaseAppFont}" />
+								</StackPanel>
+								<!-- Size and left gap are set in code with the rest of the tip's
+									 geometry; Click is wired in the constructor. -->
+								<Button Grid.Column="1"
+										x:Name="TipUnassign"
+										Classes="macroUnassign"
+										IsVisible="False"
+										VerticalAlignment="Center" />
+							</Grid>
+						</Panel>
+						<Rectangle Grid.Row="1" x:Name="TipGapFiller" Fill="Transparent" />
+					</Grid>
+				</Panel>
+			</Canvas>
+		</Panel>
+	</Viewbox>
+</UserControl>

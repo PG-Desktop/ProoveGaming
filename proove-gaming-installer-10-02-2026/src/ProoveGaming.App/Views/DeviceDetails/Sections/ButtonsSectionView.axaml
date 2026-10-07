@@ -1,0 +1,277 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:designViewModels="using:ProoveGaming.App.ViewModels.Design"
+			 xmlns:detailSections="using:ProoveGaming.App.Views.DeviceDetailsSections"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.ButtonsSectionView"
+			 Design.Width="360"
+			 Design.Height="800">
+	<Design.DataContext>
+		<designViewModels:ButtonsSectionDesignViewModel />
+	</Design.DataContext>
+	<UserControl.Styles>
+		<!-- Border colour (normal/hover/selected) comes from the shared pgInputHost style (App.axaml);
+		     don't set BorderBrush here or this local setter would override the hover/focus states. -->
+		<Style Selector="Border.buttonsInputHost">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Height" Value="56" />
+		</Style>
+		<Style Selector="TextBox.buttonsSearchInput">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="PlaceholderForeground" Value="#BEBCEA" />
+			<Setter Property="SelectionBrush" Value="#6357FF" />
+			<Setter Property="SelectionForegroundBrush" Value="#FFFFFF" />
+			<Setter Property="CaretBrush" Value="#BEBCEA" />
+			<Setter Property="Padding" Value="52,0,16,0" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="TextBox.buttonsSearchInput /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox.buttonsSearchInput:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="TextBox.buttonsSearchInput:focus /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="Expander.buttonsExpander">
+			<Setter Property="Width" Value="336" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<StackPanel Background="#1A1424">
+						<ToggleButton Name="PART_HeaderSite"
+									  Content="{TemplateBinding Header}"
+									  ContentTemplate="{TemplateBinding HeaderTemplate}"
+									  IsChecked="{TemplateBinding IsExpanded, Mode=TwoWay}"
+									  HorizontalAlignment="Stretch"
+									  HorizontalContentAlignment="Stretch"
+									  MinHeight="52"
+									  Background="#1A1424"
+									  Foreground="#FFFFFF"
+									  BorderThickness="0"
+									  Padding="0">
+							<ToggleButton.Template>
+								<ControlTemplate>
+									<Border Background="{TemplateBinding Background}"
+											BorderBrush="{TemplateBinding BorderBrush}"
+											BorderThickness="{TemplateBinding BorderThickness}"
+											Padding="{TemplateBinding Padding}"
+											MinHeight="{TemplateBinding MinHeight}">
+										<ContentPresenter Content="{TemplateBinding Content}"
+														  ContentTemplate="{TemplateBinding ContentTemplate}"
+														  HorizontalContentAlignment="Stretch"
+														  VerticalContentAlignment="Center" />
+									</Border>
+								</ControlTemplate>
+							</ToggleButton.Template>
+						</ToggleButton>
+						<ContentPresenter Name="PART_ContentSite"
+										  Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  Margin="16,0"
+										  IsVisible="{TemplateBinding IsExpanded}" />
+					</StackPanel>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="ItemsControl.buttonsOptionList">
+			<Setter Property="Margin" Value="0,0,0,16" />
+		</Style>
+		<Style Selector="ItemsControl.buttonsOptionList > ContentPresenter">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+		</Style>
+		<Style Selector="RadioButton.buttonsOptionRadio">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="MinHeight" Value="56" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="18,0" />
+			<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							Padding="{TemplateBinding Padding}"
+							MinHeight="{TemplateBinding MinHeight}">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="Stretch"
+										  VerticalContentAlignment="Center" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="RadioButton.buttonsOptionRadio:checked">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="2" />
+		</Style>
+		<Style Selector="RadioButton.buttonsOptionRadio:pointerover:not(:checked)">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+		<Style Selector="RadioButton.buttonsOptionRadio:pointerover:checked">
+			<Setter Property="Background" Value="#0DFFFFFF" />
+		</Style>
+		<Style Selector="Ellipse.buttonsOptionCircleOuter">
+			<Setter Property="Width" Value="18" />
+			<Setter Property="Height" Value="18" />
+			<Setter Property="Stroke" Value="#4DBEBCEA" />
+			<Setter Property="StrokeThickness" Value="2" />
+			<Setter Property="Fill" Value="Transparent" />
+		</Style>
+		<Style Selector="RadioButton.buttonsOptionRadio:checked Ellipse.buttonsOptionCircleOuter">
+			<Setter Property="Stroke" Value="#6357FF" />
+		</Style>
+		<Style Selector="Ellipse.buttonsOptionSelectInner">
+			<Setter Property="Width" Value="12" />
+			<Setter Property="Height" Value="12" />
+			<Setter Property="Fill" Value="#6357FF" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="RadioButton.buttonsOptionRadio:checked Ellipse.buttonsOptionSelectInner">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+	</UserControl.Styles>
+
+	<Grid IsVisible="{Binding IsButtonsSection}">
+
+		<ScrollViewer VerticalScrollBarVisibility="Hidden"
+					  HorizontalScrollBarVisibility="Disabled"
+					  Padding="0">
+			<StackPanel Spacing="8"
+						Classes="bluetoothLocked"
+						IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+				<detailSections:SelectedButtonHeaderView
+					IsVisible="{Binding SelectedHotspot, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+				<TextBlock IsVisible="{Binding !IsButtonRemapSupported}"
+						   Text="{DynamicResource DeviceDetails_Buttons_NotSupported}"
+						   Foreground="#BEBCEA"
+						   FontSize="14"
+						   TextWrapping="Wrap"
+						   Margin="0,12,0,0" />
+
+				<StackPanel IsVisible="{Binding IsButtonRemapSupported}" Spacing="8">
+
+				<Border Classes="buttonsInputHost pgInputHost" Margin="0,8,0,8">
+					<Grid>
+						<TextBox Classes="buttonsSearchInput"
+								 Text="{Binding ButtonSearchText, Mode=TwoWay}"
+								 PlaceholderText="{DynamicResource DeviceDetails_Buttons_SearchPlaceholder}" />
+						<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Search.svg"
+													 Width="24"
+													 Height="24"
+													 Margin="16,0,0,0"
+													 Stretch="Uniform"
+													 Opacity="0.5"
+													 VerticalAlignment="Center"
+													 HorizontalAlignment="Left"
+													 IsHitTestVisible="False" />
+					</Grid>
+				</Border>
+
+				<ItemsControl ItemsSource="{Binding ButtonActionGroups}">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<StackPanel />
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate x:DataType="viewmodels:ButtonActionGroupViewModel">
+							<Expander Classes="buttonsExpander"
+									  Margin="0,0,0,8"
+									  IsVisible="{Binding IsVisible}"
+									  IsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+								<Expander.Header>
+									<Grid ColumnDefinitions="*,Auto"
+										  Margin="16,0"
+										  VerticalAlignment="Center"
+										  MinHeight="40">
+										<TextBlock Grid.Column="0"
+												   Text="{Binding Title}"
+												   Foreground="#FFFFFF"
+												   FontSize="16"
+												   VerticalAlignment="Center" />
+										<Panel Grid.Column="1"
+											   Width="24"
+											   Height="24"
+											   VerticalAlignment="Center">
+											<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Property-down.svg"
+																		 Width="24"
+																		 Height="24"
+																		 Opacity="0.7"
+																		 IsVisible="{Binding !IsExpanded}" />
+											<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Property-up.svg"
+																		 Width="24"
+																		 Height="24"
+																		 Opacity="0.7"
+																		 IsVisible="{Binding IsExpanded}" />
+										</Panel>
+									</Grid>
+								</Expander.Header>
+								<ItemsControl Classes="buttonsOptionList"
+											  ItemsSource="{Binding Options}">
+									<ItemsControl.ItemsPanel>
+										<ItemsPanelTemplate>
+											<StackPanel />
+										</ItemsPanelTemplate>
+									</ItemsControl.ItemsPanel>
+									<ItemsControl.ItemTemplate>
+										<DataTemplate x:DataType="viewmodels:ButtonActionOptionViewModel">
+											<RadioButton Classes="buttonsOptionRadio"
+														 Margin="0,0,0,8"
+														 IsVisible="{Binding IsVisible}"
+														 GroupName="{Binding GroupName}"
+														 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+														 Command="{Binding SelectCommand}"
+														 CommandParameter="{Binding}">
+												<Grid ColumnDefinitions="Auto,*"
+													  ColumnSpacing="12"
+													  VerticalAlignment="Center">
+													<Grid Width="18"
+														  Height="18"
+														  VerticalAlignment="Center">
+														<Ellipse Classes="buttonsOptionCircleOuter" />
+														<Ellipse Classes="buttonsOptionSelectInner" />
+													</Grid>
+													<TextBlock Grid.Column="1"
+															   Text="{Binding Label}"
+															   Foreground="#FFFFFF"
+															   FontSize="16"
+															   VerticalAlignment="Center" />
+												</Grid>
+											</RadioButton>
+										</DataTemplate>
+									</ItemsControl.ItemTemplate>
+								</ItemsControl>
+							</Expander>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+
+				</StackPanel>
+
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>

@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:ProoveGaming.App.Controls"
+             mc:Ignorable="d"
+             x:DataType="controls:ToggleSwitchControl"
+             x:Class="ProoveGaming.App.Controls.ToggleSwitchControl"
+             x:Name="Root"
+             ClipToBounds="False">
+    <UserControl.Styles>
+        <Style Selector="ToggleButton.toggle">
+            <Setter Property="Width" Value="52" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="#B3BEBCEA" />
+            <Setter Property="BorderThickness" Value="2" />
+            <Setter Property="CornerRadius" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="ClipToBounds" Value="False" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Panel Width="{TemplateBinding Width}"
+                           Height="{TemplateBinding Height}"
+                           ClipToBounds="False">
+                        <Rectangle Name="HoverOff"
+                                   Width="48" Height="48"
+                                   Fill="#B3BEBCEA"
+                                   Opacity="0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   Margin="-12,-8,0,0" />
+                        <Rectangle Name="HoverOn"
+                                   Width="48" Height="48"
+                                   Fill="#6357FF"
+                                   Opacity="0"
+                                   HorizontalAlignment="Left"
+                                   VerticalAlignment="Top"
+                                   Margin="12,-8,0,0" />
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Width="{TemplateBinding Width}"
+                                Height="{TemplateBinding Height}">
+                            <Rectangle Width="16"
+                                       Height="16"
+                                       Fill="#B3BEBCEA"
+                                       HorizontalAlignment="Left"
+                                       Margin="4,0,0,0"
+                                       VerticalAlignment="Center"
+                                       Name="Thumb" />
+                        </Border>
+                    </Panel>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="ToggleButton.toggle:checked">
+            <Setter Property="BorderBrush" Value="#6357FF" />
+        </Style>
+        <Style Selector="ToggleButton.toggle:checked /template/ Rectangle#Thumb">
+            <Setter Property="Width" Value="20" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Fill" Value="#6357FF" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="Margin" Value="0,0,4,0" />
+        </Style>
+        <!-- Natural hover: toggle is hit-testable (e.g. RGB section) -->
+        <Style Selector="ToggleButton.toggle:pointerover:not(:checked) /template/ Rectangle#HoverOff">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+        <Style Selector="ToggleButton.toggle:pointerover:checked /template/ Rectangle#HoverOn">
+            <Setter Property="Opacity" Value="0.3" />
+        </Style>
+    </UserControl.Styles>
+
+    <ToggleButton Classes="toggle"
+                  IsChecked="{Binding IsChecked, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=controls:ToggleSwitchControl}}"
+                  VerticalAlignment="Center" />
+</UserControl>

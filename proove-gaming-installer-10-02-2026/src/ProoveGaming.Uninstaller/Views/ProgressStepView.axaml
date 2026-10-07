@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+			 xmlns:common="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 x:Class="ProoveGaming.Uninstaller.Views.ProgressStepView">
+	<commonLayouts:StepFrameLayoutView>
+		<commonLayouts:StepFrameLayoutView.StepContent>
+			<Border VerticalAlignment="Center"
+					Padding="0,0,0,0">
+				<StackPanel Width="700"
+							HorizontalAlignment="Center"
+							Spacing="14">
+					<TextBlock Text="{DynamicResource Step2_Title}"
+							   Classes="uninstallerStepTitle"
+							   Foreground="White"
+							   HorizontalAlignment="Center" />
+					<TextBlock x:Name="ProgressStatusText"
+							   Text="{DynamicResource Step2_Subtitle}"
+							   Classes="uninstallerStepSubtitle"
+							   Foreground="#D8D3FF"
+							   HorizontalAlignment="Center" />
+
+					<common:ProgressWithPercentageView x:Name="UninstallProgressView"
+													   HorizontalAlignment="Center" />
+				</StackPanel>
+			</Border>
+		</commonLayouts:StepFrameLayoutView.StepContent>
+	</commonLayouts:StepFrameLayoutView>
+</UserControl>

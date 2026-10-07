@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+			 xmlns:views="using:ProoveGaming.Installer.Views"
+			 x:Class="ProoveGaming.Installer.Views.AgreementStepView">
+	<UserControl.Styles>
+		<Style Selector="ScrollViewer#AgreementScrollViewer">
+			<!--<Setter Property="Background" Value="Transparent" />-->
+			<!--<Setter Property="BorderBrush" Value="Transparent" />-->
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer /template/ ScrollBar#PART_VerticalScrollBar">
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer /template/ ScrollBar#PART_VerticalScrollBar Border">
+			<Setter Property="Background" Value="#272239" />
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical">
+			<Setter Property="Width" Value="4" />
+			<Setter Property="MinWidth" Value="4" />
+			<Setter Property="MaxWidth" Value="4" />
+			<Setter Property="MaxHeight" Value="460" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="ViewportSize" Value="0" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ Thumb">
+			<Setter Property="Opacity" Value="1"/>
+			<Setter Property="CornerRadius" Value="0" />
+			<Setter Property="MinHeight" Value="151" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ Thumb /template/ Border">
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Background" Value="#524E69" />
+			<Setter Property="Opacity" Value="1"/>
+			<Setter Property="CornerRadius" Value="0" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ Thumb:pointerover">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1"/>
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ Thumb:pointerover /template/ Border">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1"/>
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ Thumb:pressed">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1"/>
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ Thumb:pressed /template/ Border">
+			<Setter Property="Background" Value="#786DFF" />
+			<Setter Property="Opacity" Value="1"/>
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_PageUpButton">
+			<Setter Property="Background" Value="#27233A" />
+			<Setter Property="BorderBrush" Value="#27233A" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_PageDownButton">
+			<Setter Property="Background" Value="#27233A" />
+			<Setter Property="BorderBrush" Value="#27233A" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_LineUpButton">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="ScrollViewer#AgreementScrollViewer ScrollBar:vertical /template/ RepeatButton#PART_LineDownButton">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+	</UserControl.Styles>
+	<commonLayouts:StepFrameLayoutView>
+		<commonLayouts:StepFrameLayoutView.StepContent>
+			<Border VerticalAlignment="Top"
+					Margin="0,32,0,0">
+				<Grid Width="600"
+					  HorizontalAlignment="Center"
+					  RowDefinitions="Auto,*,Auto"
+					  RowSpacing="16">
+					<TextBlock Grid.Row="0"
+							   Text="{DynamicResource Step2_Header_Title}"
+							   Classes="installerStepTitle"
+							   Foreground="White"
+							   HorizontalAlignment="Center"
+							   TextAlignment="Center" />
+
+					<Grid Grid.Row="1"
+						  Width="600"
+						  Height="460"
+						  HorizontalAlignment="Center">
+						<Canvas Width="600"
+								Height="460"
+								IsHitTestVisible="False">
+							<Path Data="M0,0 H600 V460 H0 Z"
+								  Fill="#14000000" />
+						</Canvas>
+
+						<ScrollViewer Height="460"
+									  x:Name="AgreementScrollViewer"
+									  AllowAutoHide="False"
+									  VerticalScrollBarVisibility="Visible"
+									  Padding="0,0,10,0">
+							<!-- Fixed width so the wrapped text measures and arranges identically:
+							     with an auto width the long document's scroll extent came up ~2
+							     lines short and the final paragraph could never scroll into view. -->
+							<ContentControl x:Name="AgreementContentHost"
+											Width="576"
+											HorizontalAlignment="Left"
+											Margin="0,0,0,16" />
+						</ScrollViewer>
+					</Grid>
+
+					<Grid Grid.Row="2"
+						  Margin="0,32,0,0"
+						  Width="600"
+						  HorizontalAlignment="Center"
+						  ColumnDefinitions="*,*"
+						  ColumnSpacing="16">
+						<Button x:Name="AgreementBackButton"
+								Grid.Column="0"
+								Content="{DynamicResource Button_Back}"
+								HorizontalAlignment="Stretch"
+								Classes="installerSecondaryButton" />
+
+						<Button x:Name="AgreementNextButton"
+								Grid.Column="1"
+								Content="{DynamicResource Button_AgreeAndContinue}"
+								HorizontalAlignment="Stretch"
+								Classes="installerPrimaryButton" />
+					</Grid>
+				</Grid>
+			</Border>
+		</commonLayouts:StepFrameLayoutView.StepContent>
+	</commonLayouts:StepFrameLayoutView>
+</UserControl>

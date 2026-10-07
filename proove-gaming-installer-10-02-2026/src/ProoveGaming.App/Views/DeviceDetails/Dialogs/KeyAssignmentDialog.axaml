@@ -1,0 +1,306 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:detailSections="using:ProoveGaming.App.Views.DeviceDetailsSections"
+			 xmlns:commonControls="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsDialogs.KeyAssignmentDialog"
+			 x:CompileBindings="False"
+			 x:Name="Root"
+			 Width="920" Height="620"
+			 HorizontalAlignment="Center" VerticalAlignment="Center"
+			 ClipToBounds="False">
+
+	<UserControl.Styles>
+		<!-- The content already sits at 0.5 opacity per the design; disabled halves it again. -->
+		<Style Selector="Button.keyDialogReset:disabled">
+			<Setter Property="Opacity" Value="0.5" />
+		</Style>
+		<Style Selector="Button.keyDialogReset:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<!-- Hover is a slightly brighter shade of the same colour, not the pgLinkButton
+		     underline — the x:Null unsets the shared style's TextDecorations. -->
+		<Style Selector="Button.keyDialogReset:pointerover TextBlock">
+			<Setter Property="TextDecorations" Value="{x:Null}" />
+			<Setter Property="Opacity" Value="0.7" />
+		</Style>
+		<Style Selector="Button.keyDialogReset:pointerover Path">
+			<Setter Property="Opacity" Value="0.7" />
+		</Style>
+	</UserControl.Styles>
+
+	<Panel>
+		<Panel.Effect>
+			<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="100" Color="#6357FF" Opacity="0.35"/>
+		</Panel.Effect>
+		<!-- Chamfered chrome transcribed from the design SVG (920 = 42px rail + 836 panel + 42px
+		     rail): the same shape family as ConfirmDialog / NewPresetDialog at this dialog's size. -->
+		<Canvas Width="920" Height="620">
+			<Path Fill="Black" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+			<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="510.792" Fill="Black"/>
+			<Path Fill="Black" Data="M22.591 606.597L22.591 554.676L0 532.098H42V620H36L22.591 606.597Z"/>
+			<Rectangle Canvas.Left="42" Canvas.Top="0" Width="836" Height="620" Fill="Black"/>
+			<Path Fill="Black" Data="M884 0L884 50L920 86L920 0Z"/>
+			<Path Fill="Black" Data="M878 95.367L878 54L920 95.357Z"/>
+			<Rectangle Canvas.Left="878" Canvas.Top="95.367" Width="42" Height="503.318" Fill="Black"/>
+			<Path Fill="Black" Data="M920 598.686L898.354 620H878L878 598.686H920Z"/>
+		</Canvas>
+
+		<Grid ColumnDefinitions="42,*,42">
+			<Grid Grid.Column="1" Margin="4,30,0,24" RowDefinitions="Auto,Auto,Auto,*">
+
+				<!-- Header: the "<KEY> button" title ("Choose the Hold key" in the Extended Keys pick
+				     purpose), plus the RESET link that reverts the key to its factory record (the
+				     same path as the shared header's Reset link) and closes the dialog — remap
+				     purpose only, a pick has no key to reset. Undoing a pick still lives on the
+				     toast (UNDO). -->
+				<TextBlock Grid.Row="0"
+						   Text="{Binding KeyDialogTitle}"
+						   Foreground="#FFFFFF"
+						   FontFamily="{DynamicResource AppPixelFont}"
+						   FontWeight="250"
+						   FontSize="28"
+						   LineHeight="28"
+						   LetterSpacing="0"
+						   VerticalAlignment="Center" />
+				<Button Grid.Row="0"
+						Classes="pgLinkButton keyDialogReset"
+						HorizontalAlignment="Right" VerticalAlignment="Center"
+						Margin="0,0,24,0"
+						IsVisible="{Binding IsKeyDialogRemapPurpose}"
+						IsEnabled="{Binding CanResetSelectedMacroTarget}"
+						Command="{Binding ResetKeyFromDialogCommand}">
+					<!-- 82×24 from the design SVG: 18×21 circular-arrow icon + RESET, both
+					     #BEBCEA at fill-opacity 0.5. -->
+					<StackPanel Orientation="Horizontal" Height="24" Spacing="8">
+						<Path Width="18" Height="21" Stretch="None"
+							  VerticalAlignment="Center"
+							  Fill="#BEBCEA" Opacity="0.5"
+							  Data="M5.4875 20.2875C4.39583 19.8125 3.44583 19.1708 2.6375 18.3625C1.82917 17.5542 1.1875 16.6042 0.7125 15.5125C0.2375 14.4208 0 13.25 0 12H2C2 13.95 2.67917 15.6042 4.0375 16.9625C5.39583 18.3208 7.05 19 9 19C10.95 19 12.6042 18.3208 13.9625 16.9625C15.3208 15.6042 16 13.95 16 12C16 10.05 15.3208 8.39583 13.9625 7.0375C12.6042 5.67917 10.95 5 9 5H8.85L10.4 6.55L9 8L5 4L9 0L10.4 1.45L8.85 3H9C10.25 3 11.4208 3.2375 12.5125 3.7125C13.6042 4.1875 14.5542 4.82917 15.3625 5.6375C16.1708 6.44583 16.8125 7.39583 17.2875 8.4875C17.7625 9.57917 18 10.75 18 12C18 13.25 17.7625 14.4208 17.2875 15.5125C16.8125 16.6042 16.1708 17.5542 15.3625 18.3625C14.5542 19.1708 13.6042 19.8125 12.5125 20.2875C11.4208 20.7625 10.25 21 9 21C7.75 21 6.57917 20.7625 5.4875 20.2875Z" />
+						<TextBlock Text="{DynamicResource DeviceDetails_Buttons_Reset}"
+								   Foreground="#BEBCEA" Opacity="0.5"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontSize="18"
+								   VerticalAlignment="Center" />
+					</StackPanel>
+				</Button>
+
+				<!-- Tabs — the shared macroTab parallelograms (App.axaml). SYSTEM ships hidden
+				     until commands become device-assignable (IsSystemCommandsSupported); SYSTEM and
+				     MACROS both hide in the Extended Keys pick purpose, whose outputs are keys only.
+				     Natural width, never fixed: 15px slant columns + the label's 24px side
+				     margin (15 slant + 9 text padding), so a longer localized caption widens
+				     the tab instead of touching its edges. -->
+				<StackPanel Grid.Row="1" Orientation="Horizontal" Height="56" Margin="0,16,0,0">
+					<Button Classes="macroTab" Classes.tabActive="{Binding IsKeyDialogKeysTabActive}"
+							Command="{Binding SelectKeyDialogKeysTabCommand}">
+						<Panel Height="56" Background="Transparent">
+							<Grid Classes="macroTabFill" ColumnDefinitions="15,*,15">
+								<Polygon Points="0,56 15,0 15,56" Fill="#4D6357FF" />
+								<Rectangle Grid.Column="1" Fill="#4D6357FF" />
+								<Polygon Grid.Column="2" Points="0,0 15,0 0,56" Fill="#4D6357FF" />
+							</Grid>
+							<TextBlock Classes="macroTabLabel" Margin="24,0" Text="{DynamicResource KeyDialog_Tab_Keys}" />
+						</Panel>
+					</Button>
+					<Button Classes="macroTab" Classes.tabActive="{Binding IsKeyDialogSystemTabActive}"
+							IsVisible="{Binding IsKeyDialogSystemTabVisible}"
+							Command="{Binding SelectKeyDialogSystemTabCommand}">
+						<Panel Height="56" Background="Transparent">
+							<Grid Classes="macroTabFill" ColumnDefinitions="15,*,15">
+								<Polygon Points="0,56 15,0 15,56" Fill="#4D6357FF" />
+								<Rectangle Grid.Column="1" Fill="#4D6357FF" />
+								<Polygon Grid.Column="2" Points="0,0 15,0 0,56" Fill="#4D6357FF" />
+							</Grid>
+							<TextBlock Classes="macroTabLabel" Margin="24,0" Text="{DynamicResource KeyDialog_Tab_System}" />
+						</Panel>
+					</Button>
+					<Button Classes="macroTab" Classes.tabActive="{Binding IsKeyDialogMacrosTabActive}"
+							IsVisible="{Binding IsKeyDialogMacrosTabVisible}"
+							Command="{Binding SelectKeyDialogMacrosTabCommand}">
+						<Panel Height="56" Background="Transparent">
+							<Grid Classes="macroTabFill" ColumnDefinitions="15,*,15">
+								<Polygon Points="0,56 15,0 15,56" Fill="#4D6357FF" />
+								<Rectangle Grid.Column="1" Fill="#4D6357FF" />
+								<Polygon Grid.Column="2" Points="0,0 15,0 0,56" Fill="#4D6357FF" />
+							</Grid>
+							<TextBlock Classes="macroTabLabel" Margin="24,0" Text="{DynamicResource KeyDialog_Tab_Macros}" />
+						</Panel>
+					</Button>
+				</StackPanel>
+
+				<!-- One hint sentence per tab (KEYS has one per purpose). -->
+				<Panel Grid.Row="2" Margin="0,24,0,32">
+					<TextBlock Text="{DynamicResource KeyDialog_Hint_Keys}"
+							   IsVisible="{Binding IsKeyDialogRemapKeysHintVisible}"
+							   Foreground="#B2BEBCEA"
+							   FontFamily="Segoe UI" FontSize="16" LineHeight="24"
+							   TextWrapping="Wrap" />
+					<TextBlock Text="{DynamicResource KeyDialog_Hint_Pick}"
+							   IsVisible="{Binding IsKeyDialogPickKeysHintVisible}"
+							   Foreground="#B2BEBCEA"
+							   FontFamily="Segoe UI" FontSize="16" LineHeight="24"
+							   TextWrapping="Wrap" />
+					<TextBlock Text="{DynamicResource KeyDialog_Hint_System}"
+							   IsVisible="{Binding IsKeyDialogSystemTabActive}"
+							   Foreground="#B2BEBCEA"
+							   FontFamily="Segoe UI" FontSize="16" LineHeight="24"
+							   TextWrapping="Wrap" />
+					<TextBlock Text="{DynamicResource KeyDialog_Hint_Macros}"
+							   IsVisible="{Binding IsKeyDialogMacrosTabActive}"
+							   Foreground="#B2BEBCEA"
+							   FontFamily="Segoe UI" FontSize="16" LineHeight="24"
+							   TextWrapping="Wrap" />
+				</Panel>
+
+				<!-- KEYS: the visual remap-target picker — the same keyboard rendering, wired to
+				     PickRemapTargetCommand through RemapTargetKeys (IsTargetPicker). -->
+				<detailSections:RasterKeyboardOverlayView Grid.Row="3"
+														  VerticalAlignment="Center"
+														  IsTargetPicker="True"
+														  IsVisible="{Binding IsKeyDialogKeysTabActive}" />
+
+				<!-- SYSTEM: consumer-control commands (Smart Infinite family only — the tab is
+				     gated with IsSystemCommandsSupported). A pick commits like a KEYS pick:
+				     dialog closes, undo toast comes up. Plain Buttons with a VM-bound
+				     .selected class — the highlight belongs to SyncAssignmentTargetSelection,
+				     and a radio group's own checked state would fight it (see the
+				     commandOptionRow style in App.axaml). -->
+				<ScrollViewer Grid.Row="3"
+							  Classes="pgScrollViewer"
+							  AllowAutoHide="False"
+							  VerticalScrollBarVisibility="Auto"
+							  HorizontalScrollBarVisibility="Disabled"
+							  IsVisible="{Binding IsKeyDialogSystemTabActive}">
+					<!-- Right margin clears the rows off the 4px design bar (8px gap + bar),
+						 same shape as the section lists (PG-589). -->
+					<ItemsControl Margin="0,0,12,0" ItemsSource="{Binding SystemCommandTargets}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<StackPanel />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="viewmodels:KeyAssignmentOptionViewModel">
+								<Button Classes="commandOptionRow"
+										Classes.selected="{Binding IsSelected}"
+										Margin="0,0,0,8"
+										Command="{Binding SelectCommand}"
+										CommandParameter="{Binding}">
+									<Grid ColumnDefinitions="Auto,*" ColumnSpacing="16"
+										  Margin="19,0,30,0" VerticalAlignment="Center">
+										<Grid Width="18" Height="18" VerticalAlignment="Center">
+											<Ellipse Classes="macroRadioOuter" />
+											<Ellipse Classes="macroRadioInner" />
+										</Grid>
+										<TextBlock Grid.Column="1" Text="{Binding KeyLabel}"
+												   Foreground="#FFFFFF"
+												   FontFamily="{DynamicResource BaseAppFont}"
+												   FontSize="16"
+												   LineHeight="24"
+												   VerticalAlignment="Center" />
+									</Grid>
+								</Button>
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
+				</ScrollViewer>
+
+				<!-- MACROS: search + the macro library. These rows are the ASSIGNMENT surface —
+				     AssignCommand on click, unassign ✕, IsSelected = bound to this dialog's key.
+				     The Macros page's rows bind the same view models with different semantics
+				     (InspectCommand / IsInspected, group "MacrosInspect"), which is why this list
+				     needs its own radio group: one group spanning both lists would uncheck across
+				     them. -->
+				<Grid Grid.Row="3" RowDefinitions="Auto,*"
+					  IsVisible="{Binding IsKeyDialogMacrosTabActive}">
+					<Border Classes="macroSearchHost pgInputHost" Margin="0,0,0,16">
+						<Grid>
+							<TextBox Classes="macroSearchInput"
+									 Text="{Binding MacroSearchText, Mode=TwoWay}"
+									 PlaceholderText="{DynamicResource Macros_SearchPlaceholder}" />
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Search.svg"
+														 Width="18" Height="18" Stretch="Uniform"
+														 Margin="19,0,0,0"
+														 Opacity="0.5"
+														 HorizontalAlignment="Left"
+														 VerticalAlignment="Center"
+														 IsHitTestVisible="False" />
+						</Grid>
+					</Border>
+
+					<ScrollViewer Grid.Row="1"
+								  Classes="pgScrollViewer"
+								  AllowAutoHide="False"
+								  VerticalScrollBarVisibility="Auto"
+								  HorizontalScrollBarVisibility="Disabled">
+						<!-- Right margin clears the rows off the 4px design bar (8px gap + bar),
+							 same shape as the section lists (PG-589). -->
+						<ItemsControl Margin="0,0,12,0" ItemsSource="{Binding Macros}">
+							<ItemsControl.ItemsPanel>
+								<ItemsPanelTemplate>
+									<StackPanel />
+								</ItemsPanelTemplate>
+							</ItemsControl.ItemsPanel>
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="viewmodels:MacroViewModel">
+									<RadioButton Classes="macroItemRow" GroupName="KeyDialogMacros"
+												 Margin="0,0,0,8"
+												 IsVisible="{Binding IsVisible}"
+												 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+												 Command="{Binding AssignCommand}"
+												 CommandParameter="{Binding}">
+										<Grid ColumnDefinitions="Auto,*,Auto" Margin="19,0,30,0" VerticalAlignment="Center">
+											<Grid Grid.Column="0" Width="18" Height="18" VerticalAlignment="Center">
+												<Ellipse Classes="macroRadioOuter" />
+												<Ellipse Classes="macroRadioInner" />
+											</Grid>
+											<TextBlock Grid.Column="1" Text="{Binding DisplayName}" Margin="22,0,0,0"
+													   ToolTip.Tip="{Binding Name}"
+													   Foreground="#FFFFFF"
+													   FontFamily="{DynamicResource BaseAppFont}"
+													   FontSize="16"
+													   LineHeight="24"
+													   VerticalAlignment="Center" />
+											<!-- Same gate and command as every other unassign ✕
+											     (see MacrosSectionView for the race it closes). -->
+											<Button Grid.Column="2"
+													Classes="macroUnassign"
+													Margin="22,0,0,0"
+													VerticalAlignment="Center"
+													IsVisible="{Binding IsSelected}"
+													IsEnabled="{Binding #Root.DataContext.CanResetSelectedMacroTarget}"
+													Command="{Binding #Root.DataContext.ResetSelectedMacroTargetCommand}" />
+										</Grid>
+									</RadioButton>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</ScrollViewer>
+				</Grid>
+			</Grid>
+
+			<!-- Corner close ✕ on the right rail, same shape as the other dialogs'. -->
+			<Button Grid.Column="2"
+					Classes="closeButton"
+					HorizontalAlignment="Stretch" VerticalAlignment="Top"
+					Height="86"
+					Background="Transparent" BorderThickness="0" Padding="0"
+					Cursor="Hand"
+					Command="{Binding CloseKeyAssignmentDialogCommand}">
+				<Button.Template>
+					<ControlTemplate>
+						<Canvas Width="42" Height="86">
+							<Path x:Name="PART_Bg"
+								  Fill="Transparent"
+								  Data="M6 0L6 50L42 86L42 0Z"/>
+							<Path x:Name="PART_Icon"
+								  Fill="#B2BEBCEA"
+								  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+						</Canvas>
+					</ControlTemplate>
+				</Button.Template>
+			</Button>
+		</Grid>
+	</Panel>
+</UserControl>

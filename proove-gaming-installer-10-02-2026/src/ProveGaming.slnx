@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution files/">
+    <File Path="../.github/workflows/release.yml" />
+    <File Path="../.gitignore" />
+    <File Path="../README.md" />
+  </Folder>
+  <Project Path="../tests/ProoveGaming.App.Tests/ProoveGaming.App.Tests.csproj" />
+  <Project Path="../tests/ProoveGaming.Infrastructure.Tests/ProoveGaming.Infrastructure.Tests.csproj" Id="63690ebe-5608-4e3e-9d52-74f8cf75e182" />
+  <Project Path="../tests/ProoveGaming.Installer.Tests/ProoveGaming.Installer.Tests.csproj" />
+  <Project Path="ProoveGaming.App/ProoveGaming.App.csproj" />
+  <Project Path="ProoveGaming.Common/ProoveGaming.Common.csproj" />
+  <Project Path="ProoveGaming.Device.Testing/ProoveGaming.Device.Testing.csproj" Id="5768c9e2-b81c-478f-9615-3db40b02a759" />
+  <Project Path="ProoveGaming.DeviceHost.Checker/ProoveGaming.DeviceHost.Checker.csproj" />
+  <Project Path="ProoveGaming.DeviceHost/ProoveGaming.DeviceHost.csproj" Id="452be37d-14f4-4633-b972-185c0121f8f5" />
+  <Project Path="ProoveGaming.GrpcDependencies/ProoveGaming.GrpcDependencies.csproj" Id="c666ca7e-cfae-412a-a19f-f7156cf20a1d" />
+  <Project Path="ProoveGaming.Infrastructure/ProoveGaming.Infrastructure.csproj" Id="4f65c120-5c33-4ea8-b549-8955a0184ecf" />
+  <Project Path="ProoveGaming.Installer/ProoveGaming.Installer.csproj" />
+  <Project Path="ProoveGaming.Uninstaller/ProoveGaming.Uninstaller.csproj" />
+</Solution>

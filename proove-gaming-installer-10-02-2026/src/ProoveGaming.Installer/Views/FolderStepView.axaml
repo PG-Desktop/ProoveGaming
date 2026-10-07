@@ -1,0 +1,149 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonLayouts="clr-namespace:ProoveGaming.Common.Layouts;assembly=ProoveGaming.Common"
+			 xmlns:views="using:ProoveGaming.Installer.Views"
+			 x:Class="ProoveGaming.Installer.Views.FolderStepView">
+	<UserControl.Styles>
+		<Style Selector="TextBox#InstallPathTextBox">
+			<!-- No fixed height: it fills InstallPathBorder, which is sized by the row. Pinning it to
+			     the border's own height would double-count the 1px border and clip by 2px. -->
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="SelectionBrush" Value="#6357FF" />
+			<Setter Property="SelectionForegroundBrush" Value="#FFFFFF" />
+			<Setter Property="CaretBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="52,0,16,0" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="TextBox#InstallPathTextBox:pointerover">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="SelectionForegroundBrush" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="TextBox#InstallPathTextBox:focus">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="SelectionForegroundBrush" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="TextBox#InstallPathTextBox /template/ TextPresenter#PART_TextPresenter">
+			<Setter Property="Cursor" Value="Hand" />
+		</Style>
+		<Style Selector="TextBox#InstallPathTextBox /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox#InstallPathTextBox:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="TextBox#InstallPathTextBox:focus /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+	</UserControl.Styles>
+	<commonLayouts:StepFrameLayoutView>
+		<commonLayouts:StepFrameLayoutView.StepContent>
+			<Border VerticalAlignment="Center"
+					Padding="0,100,0,0"
+					Margin="0">
+				<Grid Width="600"
+					  HorizontalAlignment="Center"
+					  RowDefinitions="Auto,*,Auto"
+					  RowSpacing="18">
+					<StackPanel Grid.Row="0"
+								Width="600"
+								Spacing="8"
+								HorizontalAlignment="Center">
+						<TextBlock Width="600"
+								   Text="{DynamicResource Step3_Header_Title}"
+								   Classes="installerStepTitle"
+								   Foreground="White"
+								   HorizontalAlignment="Center"
+								   TextAlignment="Center" />
+						<TextBlock Width="600"
+								   Text="{DynamicResource Step3_Header_Description}"
+								   Classes="installerStepSubtitle" />
+					</StackPanel>
+
+					<Border Grid.Row="1"
+							Width="600"
+							HorizontalAlignment="Center"
+							BorderBrush="#6357FF"
+							BorderThickness="0"
+							Background="Transparent"
+							Padding="0">
+						<StackPanel x:Name="LayoutRoot" Width="600" Spacing="10">
+							<Grid Width="600" ColumnDefinitions="483,121" ColumnSpacing="16">
+								<Border x:Name="InstallPathBorder"
+										Grid.Column="0"
+										Height="56"
+										VerticalAlignment="Center"
+										BorderBrush="#6357FF"
+										BorderThickness="1"
+										Background="Transparent">
+									<Grid>
+										<TextBox x:Name="InstallPathTextBox" />
+										<Image Source="avares://ProoveGaming.Common/Assets/Icons/folder.png"
+											   Width="24"
+											   Height="24"
+											   Margin="16,0,0,0"
+											   VerticalAlignment="Center"
+											   HorizontalAlignment="Left"
+											   IsHitTestVisible="False" />
+									</Grid>
+								</Border>
+								<Button x:Name="BrowseButton"
+										Grid.Column="1"
+										Width="NaN"
+										Padding="24,4,24,0"
+										Content="{DynamicResource Button_Browse}"
+										Classes="installerSecondaryButton" />
+							</Grid>
+
+							<TextBlock x:Name="InstallPathErrorText"
+									   Width="600"
+									   Margin="0,-6,0,0"
+									   HorizontalAlignment="Center"
+									   FontFamily="{DynamicResource BaseAppFont}"
+									   FontSize="12"
+									   Foreground="#FF383C"
+									   IsVisible="False" />
+
+							<CheckBox x:Name="CreateDesktopShortcutCheckBox"
+									  Width="600"
+									  Margin="0,22,0,0"
+									  Classes="pgCheckbox pgOptionCheckBox installerOptionCheckBox"
+									  IsChecked="True"
+									  Content="{DynamicResource Label_CreateDesktopShortcut}" />
+
+							<CheckBox x:Name="CreateStartMenuShortcutCheckBox"
+									  Width="600"
+									  Classes="pgCheckbox pgOptionCheckBox installerOptionCheckBox"
+									  IsChecked="True"
+									  Content="{DynamicResource Label_CreateStartMenuShortcut}" />
+						</StackPanel>
+					</Border>
+
+					<Grid Grid.Row="2"
+						  Margin="0"
+						  Width="600"
+						  HorizontalAlignment="Center"
+						  ColumnDefinitions="*,*"
+						  ColumnSpacing="16">
+						<Button x:Name="FolderBackButton"
+								Grid.Column="0"
+								Content="{DynamicResource Button_Back}"
+								HorizontalAlignment="Stretch"
+								Classes="installerSecondaryButton" />
+
+						<Button x:Name="FolderInstallButton"
+								Grid.Column="1"
+								Content="{DynamicResource Button_Install}"
+								HorizontalAlignment="Stretch"
+								Classes="installerPrimaryButton" />
+					</Grid>
+				</Grid>
+			</Border>
+		</commonLayouts:StepFrameLayoutView.StepContent>
+	</commonLayouts:StepFrameLayoutView>
+</UserControl>

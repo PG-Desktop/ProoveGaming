@@ -1,0 +1,40 @@
+T1,Taipan,各DPI档位指示灯颜色 0x0C / 0x4C,(C) 已记录但实际不生效,"文件/协议:Telink-USB20260205.xlsx + Telink_USB协议地址表v1.3.pdf。问题:CMD_RW_DPI_Color(0x0C/0x4C)在命令列表中存在,但地址表将其标记为reserved,固件实际并不应用各档位的DPI指示颜色。","请确认0x0C是否在出货固件中已实现。如果为reserved,请明确标注为不支持,并说明是否有其他可用的替代方式。",出货的固件目前不支持修改颜色,,,,,
+T2,Taipan,通过2.4G接收器和蓝牙写入设置,(A) 未记录/缺失,"文件/协议:Telink 0x0X write protocol / transport。问题:通过2.4G接收器和蓝牙连接时,鼠标不接受主机→设备的写入帧;只有设备→主机的推送帧(0x48/0x49)能够被转发。","请在文档中补充各传输方式(有线/2.4G/蓝牙)下支持的命令,并说明通过接收器/蓝牙进行配置写入是否可行。",只支持有线和2.4G 不支持蓝牙         协议都是一样的，如果2.4G 不能下值需要把你们对应连接的方式发过来或者整个连接设备的代码发过来我们这边看一下,,,,,
+T3,Taipan,当前DPI档位字节 MsConfig 0x0011 滞后于实际状态,(D) 实际实现与文档不符,"文件/协议:Telink_USB地址表PDF + 固件行为。问题:文档中DpiSwitch(0x0011)被描述为当前档位,但实际存储的字节会滞后一次物理按键操作;读取时返回的是上一个档位。","请说明固件何时更新0x0011,并提供一种可靠地读取当前实际档位的方法。","当前DPI档数
+0x01
+范围:0x00…0x07","0x00是第一档
+0x01是第二档",,,,
+T4,Taipan,按需查询当前状态,(A) 未记录/缺失,文件/协议:Telink-USB20260205.xlsx读取命令。问题:Report_MouseState(0x49)仅在物理按键或建立连接时才会推送;没有可以按需请求当前状态的命令。,请提供或说明一个可以立即读取当前状态的命令。,0x49只是用来接受鼠标回传的信息的，不能主动读取,,,,,
+T5,Taipan,CMD_SetProfile 0x07 —切换当前profile,(C) 已记录但实际不生效,"文件/协议:Telink-USB20260205.xlsx。问题:0x07已记录在文档中,但被标注为当前固件尚未实现;主机端无法切换profile。","请实现0x07命令,或说明主机端不支持切换profile,并解释profile应如何被选择。",出货的固件目前不支持profile,,,,,
+T6,Taipan,电量百分比,(A) 未记录/缺失,"文件/协议:Telink-USB20260205.xlsx,CMD_GetBATV 0x08→0x48。问题:电量信息只以毫伏(millivolts)形式返回;缺少电压→百分比的换算曲线/阈值。",请提供工厂软件所使用的官方电压转百分比曲线或阈值。,"Baifen = (100 * (981 - 750)) / (985 - 750); 
+0x03D5 = 981,981这个会变，其他是程序固定的计算出来的结果大于100时让他不超过100就行",,,,,
+T7,Taipan,DPI表按轴布局 / double flag,(B) 文档有误/自相矛盾,"文件/协议:Telink-USB20260205.xlsx 与 Telink_USB协议地址表v1.3.pdf。问题:xlsx中包含按轴double flag,而PDF显示的是普通的X_L/X_H/Y_L/Y_H;两份文档的布局步长(stride)不同。","请提供更新后的文件,或给出协调一致、适用于当前固件的唯一正确DPI档位字节布局。",每个DPI档位的长度都是五个bit一共是1+5*8，41个字节但是因为长度限制每条数据长度有限Telink-USB20260205.xlsx文档里面就没有写完,"DPI[0]:0x00关闭
+0x01打开",DPI[0]X轴DPI值,"DPI[0]X轴DPI值翻倍
+0x00关，0x01开",DPI[0]Y轴DPI值,"DPI[0]Y轴DPI值翻倍
+0x00关，0x01开"
+T8,Taipan,ReportID 0x05对应的HID接口/usage,(A) 未记录/缺失,文件/协议:HID描述符 / Telink协议文档。问题:文档未说明哪个HID接口/usage page承载0x05驱动报文。,请在文档中补充每种传输方式下driver channel对应的接口/usage page/report ID。,report ID都是一样的05,,下面是数据参考图，我们这边的是分开下的,,,
+T9,Taipan,蓝牙帧的承载方式,(A) 未记录/缺失,文件/协议:Telink transport文档。问题:文档中的帧结构仅针对USB HID描述;是否通过蓝牙GATT/HID传输同样的33字节帧未作说明。,"请说明蓝牙传输方式:GATT service/characteristics或HID方式,以及帧结构上的差异。",程序现在不支持蓝牙,,,,,
+T10,Taipan,恢复出厂设置 0x00 / 0xF3 / 0x80,(A) 范围/提交/传输方式待确认,"文件/协议:Telink-USB20260205.xlsx。问题:CMD_Reset 0x00,Para1=0xF3,Para2=0x80描述了一个combined reset,但其作用范围、提交(commit)顺序以及适用的传输方式均未确认。","请确认:该reset是否会恢复DPI/按键/LED/宏/MsConfig;是否需要ValidBankID + 0xD3的commit操作;是否仅在有线模式下有效,还是也适用于接收器/蓝牙模式。",没有回复单独的恢复出厂设置，默认值需要根据要求去下对应的值才行，或者你先用组合键回复默认后读值,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,有线,2.4G:,,,,,,,
+,,,"device's path:
+\\?\hid#vid_248a&pid_fb01&mi_02&col01#8&719c7fb&0&0000#{4d1e55b2-f16f-11cf-88cb-001111000030}
+
+VendorID:0x248A
+ProductID:0xFB01
+VersionNumber:0x1007
+Usage:0x0000
+, UsagePage:0xffef
+,FeatureReportByteLength:0x0040
+,InputReportByteLength:0x40
+,OutputReportByteLength:0x40","VendorID:0x248A
+ProductID:0x8373
+VersionNumber:0x6539
+Usage:0x0000
+, UsagePage:0x0001
+,FeatureReportByteLength:0x0008
+,InputReportByteLength:0x21
+,OutputReportByteLength:0x21",,,,,,,

@@ -1,0 +1,741 @@
+syntax = "proto3";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "ProoveGaming.GrpcDependencies.Device";
+package device;
+
+service Device {
+  // Unary RPC: Get all devices which are found at the moment
+  rpc GetDevices (GetDevicesRequest) returns (BatchDevicesResponse);
+
+  // Unary RPC: Read battery level from a connected HID device
+  rpc GetBatteryLevel (GetBatteryLevelRequest) returns (GetBatteryLevelResponse);
+
+  // Bidirectional streaming: Real-time device updates
+  rpc SubscribeOnDevices (stream SubscribeOnDevicesRequest) returns (stream SubscribeOnDevicesResponse);
+
+  // Unary RPC: Write LED RGB color + effect to a device
+  rpc SetDeviceLedColor (SetDeviceLedColorRequest) returns (SetDeviceLedColorResponse);
+
+  // Unary RPC: Write up to 8 DPI stages (value + indicator color) to device flash
+  rpc SetDpiStages (SetDpiStagesRequest) returns (SetDpiStagesResponse);
+
+  // Unary RPC: Switch the active DPI stage on a device
+  rpc SetActiveDpiStage (SetActiveDpiStageRequest) returns (SetActiveDpiStageResponse);
+
+  // Unary RPC: Set the USB report (polling) rate on a device
+  rpc SetReportRate (SetReportRateRequest) returns (SetReportRateResponse);
+
+  // Unary RPC: Assign functions to a mouse's physical buttons (key-matrix remap)
+  rpc SetButtonBindings (SetButtonBindingsRequest) returns (SetButtonBindingsResponse);
+
+  // Unary RPC: Rewrite one key in the keyboard's user-key matrix (profile 0).
+  rpc SetKeyMapping (SetKeyMappingRequest) returns (SetKeyMappingResponse);
+
+  // Unary RPC: Probe the factory-default key matrix. Returns HID scancode → matrix slot map.
+  rpc ProbeKeyMatrix (ProbeKeyMatrixRequest) returns (ProbeKeyMatrixResponse);
+
+  // Unary RPC: apply a mouse's full desired configuration (RGB + bindings + settings + DPI table +
+  // active stage + report rate) in ONE coordinated device write. Used by the App's preset-apply
+  // path; the per-aspect RPCs above remain for the live physical-button / monitor paths.
+  rpc ApplyDeviceConfiguration (ApplyDeviceConfigurationRequest) returns (ApplyDeviceConfigurationResponse);
+
+  // Unary RPC: Read the key matrix as slot -> full {type, code1, code2} record. Slot-keyed
+  // successor to ProbeKeyMatrix and the only read path that can express modifier keys, which carry
+  // their identity in code1 with a 0x00 scancode. Used by the Smart Infinite family (Cyrex, Aress, Rampage).
+  rpc ReadKeyMatrix (ReadKeyMatrixRequest) returns (ReadKeyMatrixResponse);
+
+  // Unary RPC: Read a magnetic keyboard's global actuation settings (values + adjustable ranges).
+  // supported=false means the board has no actuation (mechanical, incoherent geometry or a failed
+  // probe) and SetKeyActuation must not be called for it.
+  rpc GetKeyActuation (GetKeyActuationRequest) returns (GetKeyActuationResponse);
+
+  // Unary RPC: Apply one set of actuation values to every key of a magnetic keyboard and verify
+  // the write. The keyboard's flash is the source of truth — there is no host-side persistence.
+  rpc SetKeyActuation (SetKeyActuationRequest) returns (SetKeyActuationResponse);
+
+  // Unary RPC: Apply one set of actuation values to the listed key slots only, leaving every other
+  // key untouched, and verify the write. Deliberately a SEPARATE rpc rather than a slots field on
+  // SetKeyActuation: an older DeviceHost answers this with UNIMPLEMENTED instead of silently
+  // dropping the unknown field and flattening the whole board.
+  rpc SetPerKeyActuation (SetPerKeyActuationRequest) returns (SetPerKeyActuationResponse);
+
+  // Unary RPC: Read a Smart Infinite keyboard's Extended Keys (vendor: "advanced keys") — the
+  // managed records in its advanced-key storage area, plus the area size, free bytes and the slots
+  // owned by records the DeviceHost does not manage. supported=false is the BOARD's verdict — no
+  // such area, or one the safety gate refuses — and SetExtendedKeys must NOT be called for it;
+  // success=false means the host could not talk to the board, which says nothing about the hardware
+  // and must be retried rather than shown. An older DeviceHost answers UNIMPLEMENTED; the App keeps
+  // the section in its loading state for that and for success=false alike.
+  rpc GetExtendedKeys (GetExtendedKeysRequest) returns (GetExtendedKeysResponse);
+
+  // Unary RPC: Replace the board's managed Extended Keys with the FULL desired set (an empty list
+  // means "none"). Unmanaged records on the board are preserved and re-pointed. The host writes the
+  // whole storage area, then the whole key matrix, and verifies both by read-back; success=false
+  // means the request was refused (nothing written) or the verify failed.
+  rpc SetExtendedKeys (SetExtendedKeysRequest) returns (SetExtendedKeysResponse);
+
+  // Unary RPC: Upload the full keyboard macro library (packed device format). App SQLite is
+  // the source of truth; the whole library is re-sent on any add/edit/delete/bind change and
+  // on device connect. Bindings themselves reuse SetKeyMapping, which writes a macro record as
+  // [type=0x60, code1=library slot, code2=play mode] — see RasterMacroEncoder.
+  //
+  // Mice take the other route: a macro rides inline on its ButtonBinding, because a mouse
+  // stores one macro per button slot. A keyboard stores an indexed library that key slots
+  // point into, so the library has to be uploaded as a unit.
+  rpc SetMacros (SetMacrosRequest) returns (SetMacrosResponse);
+
+  // Unary RPC: Resolve a catalog entry by VID/PID without a live device. The App's sign-in pull
+  // uses it to hydrate an offline card for a device model the server's roster lists but this
+  // machine has never seen (docs/plans/add-api-v21-device-roster) — the catalog (type label,
+  // artwork, merge rule) lives only in the DeviceHost's AllowedDevices config.
+  rpc GetDeviceCatalogEntry (GetDeviceCatalogEntryRequest) returns (GetDeviceCatalogEntryResponse);
+}
+
+message GetDeviceCatalogEntryRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+}
+
+message GetDeviceCatalogEntryResponse {
+  bool found = 1;                       // false = no catalog row matches; catalog_entry is unset
+  DeviceCatalogEntry catalog_entry = 2;
+}
+
+message SubscribeOnDevicesRequest {
+  int32 requestId = 1;
+}
+
+message SubscribeOnDevicesResponse {
+  int32 requestId = 1;
+  SenderType senderType = 2;
+  repeated HidDeviceResponse hidEntries = 3;
+  BluetoothDeviceResponse bluetoothEntry = 4;
+  DpiStageChange dpiStageChange = 5;      // set when the active DPI stage changed (physical button / startup query)
+  ReportRateChange reportRateChange = 6;  // set when the USB report (polling) rate changed
+  BatteryChange batteryChange = 7;        // set when a device's battery level changed or became unknown
+}
+
+// Pushed when a mouse reports an active-DPI-stage change on its vendor collection.
+// device_path uniquely identifies the physical unit (distinguishes two identical mice).
+message DpiStageChange {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  string device_path = 3;
+  int32 stage_index = 4;
+  string device_key = 5;   // stable per-physical-device identity (Container ID); "" = unknown
+}
+
+// Pushed when a device's battery reading changes, so the App does not have to wait for its own
+// poll to notice. TAIPAN pushes a battery report on its vendor collection whenever it links up or
+// wakes, and the DeviceHost sees that immediately.
+//
+// known = false means the level is no longer available — for TAIPAN, the dongle answering with a
+// zero reading because the mouse is switched off, out of range or flat. The App clears the
+// indicator rather than keeping the last percentage on screen.
+message BatteryChange {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  string device_key = 3;   // stable per-physical-device identity (Container ID); "" = unknown
+  bool known = 4;          // false = no usable reading; percent/is_charging are meaningless
+  int32 percent = 5;
+  bool is_charging = 6;
+}
+
+// Pushed when a mouse reports a report-rate change on its vendor collection. Carried
+// by the same 0x05 vendor report as the DPI stage (report rate at byte offset 2), so
+// it is delivered on a physical polling-button press and by the startup state query.
+message ReportRateChange {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  string device_path = 3;
+  int32 hz = 4;            // 125 | 250 | 500 | 1000
+  string device_key = 5;   // stable per-physical-device identity (Container ID); "" = unknown
+}
+
+message HidDeviceResponse {
+  google.protobuf.StringValue productId = 1;
+  google.protobuf.StringValue vendorId = 2;
+  string releaseNumber = 3;
+  int32 releaseNumberBcd = 4;
+  google.protobuf.StringValue manufacturer = 5;
+  google.protobuf.StringValue serialNumber = 6;
+  repeated string serialPorts = 7;
+  google.protobuf.StringValue friendlyName = 8;
+  google.protobuf.StringValue productName = 9;
+  google.protobuf.StringValue clientName = 10;
+  google.protobuf.Timestamp lastTimeUpdated = 11;
+  DeviceCatalogEntry catalog_entry = 12;
+  string device_key = 13;   // stable per-physical-device identity (Container ID); "" = unknown/legacy
+}
+
+message BluetoothDeviceResponse {
+  google.protobuf.StringValue deviceId = 1;
+  google.protobuf.StringValue name = 2;
+  bool isConnected = 3;
+  bool isPaired = 4;
+  google.protobuf.StringValue clientName = 5;
+  google.protobuf.Timestamp lastTimeUpdated = 6;
+  int32 battery_level = 7;
+  DeviceCatalogEntry catalog_entry = 8;
+}
+
+message GetDevicesRequest {
+    int32 requestId = 1;
+}
+
+message BatchDevicesResponse {
+    int32 requestId = 1;
+    repeated HidDeviceResponse hidEntries = 2;
+    repeated BluetoothDeviceResponse bluetoothEntries = 3;
+}
+
+message GetBatteryLevelRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  string device_key = 3;   // stable per-physical-device identity; "" = first matching unit
+}
+
+message GetBatteryLevelResponse {
+  bool success = 1;
+  int32 battery_value = 2;
+  bool is_charging = 3;
+}
+
+message DeviceCatalogEntry {
+  string name = 1;
+  google.protobuf.StringValue product_name = 2;
+  google.protobuf.StringValue device_name = 3;
+  google.protobuf.StringValue device_type = 4;
+  google.protobuf.StringValue card_type = 5;
+  google.protobuf.StringValue connection_type = 6;
+  google.protobuf.StringValue image_path = 7;
+  bool has_bluetooth = 8;
+  bool supports_rgb = 9;
+  google.protobuf.StringValue rgb_image_path = 10;
+  repeated string supported_mouse_settings = 11;
+  bool supports_button_remap = 12;
+  bool supports_macros = 13;
+  repeated int32 dpi_stages = 14;   // per-device DPI stage values (empty → App uses its default set)
+  // True when this product is ONE physical device reachable over several transports (wired /
+  // 2.4G dongle / Bluetooth). Such a product is always a single card: device_key picks the live
+  // routing target but never splits the card. Unset devices keep per-unit cards.
+  bool merge_transports = 15;
+  // The product_id a merged product persists its settings under, so a transport switch (which
+  // changes the live product_id) does not move the settings bucket. Same value on every entry of
+  // the product; equals the entry's own product_id when not merged.
+  int32 settings_product_id = 16;
+  // Optional render scale for the device image in details views, compensating for artwork whose
+  // canvas padding differs between devices (e.g. BLAZE's mouse renders smaller than TAIPAN's at
+  // the same box size). 0 (unset) → the App renders at 1.0.
+  double image_scale = 17;
+  // Button-remap hotspots (marker + connector line) drawn over the device image, tuned per device
+  // to its own artwork. Empty → the details view shows no hotspots for this device.
+  repeated DeviceHotspot hotspots = 18;
+  // Per-device macro recorder limits (0 = unset → App uses its default). macro_max_delay_ms bounds
+  // the longest recorded inter-event pause (BLAZE's 7-bit delay field caps ~1 s, TAIPAN's 16-bit
+  // delay action allows much longer); macro_max_repetitions bounds the repeat count the UI accepts.
+  int32 macro_max_delay_ms = 19;
+  int32 macro_max_repetitions = 20;
+  // Factory-sane starting values applied when the device is first added, and what the DPI
+  // "Recommendations" / Settings "Restore to default" buttons restore. 0 (or "" for the string
+  // fields) = unset -> the App falls back to its built-in constant for that aspect. default_dpi is
+  // a DPI VALUE, not a stage index — the App resolves it against this entry's own dpi_stages.
+  // See docs/device-defaults.md.
+  int32 default_dpi = 21;
+  int32 default_report_rate_hz = 22;
+  int32 default_button_debounce_ms = 23;
+  int32 default_lift_off_distance_mm = 24;
+  // A bool cannot express "unset", so this is only honoured when default_rgb_effect is non-empty;
+  // a device with no lighting default leaves both at their zero values.
+  bool default_rgb_enabled = 25;
+  string default_rgb_effect = 26;
+  string default_rgb_color_hex = 27;
+  int32 default_rgb_brightness = 28;
+  int32 default_rgb_speed = 29;
+  // True when this device CANNOT be configured over the transport this entry describes — TAIPAN
+  // over its 2.4G receiver and over Bluetooth, where host->device config frames never take effect
+  // (see docs/mouse/taipan). Deliberately negative: proto3 defaults a bool to false, so an older
+  // DeviceHost that never sets it still reads as "configuration works" rather than disabling
+  // saving for every device.
+  bool configuration_unsupported = 30;
+  // True when this keyboard supports magnetic-axis actuation settings (T800, Cyrex, Aress) — the
+  // App shows its Actuation section without a device round-trip. The section additionally trusts
+  // GetKeyActuation.supported, which probes the live board. An older DeviceHost leaves this false,
+  // safely hiding the section.
+  bool supports_actuation = 31;
+  // Audio levels this device exposes ("OutputVolume", "MicrophoneVolume"). Empty on every device
+  // that is not a headset, which is what keeps the Audio section hidden for them.
+  //
+  // Numbered 32-34, not 31-33: this branch and main's actuation work both reached for 31, and
+  // main's supports_actuation is already merged. Field numbers are the wire contract, so the
+  // unreleased side moves.
+  repeated string supported_audio_settings = 32;
+  // Where those levels are applied: "OperatingSystem" (the device's own Windows endpoints — what
+  // Cosmo does) or "Device" (a level held in the device's own firmware). Empty = unset, which the
+  // App reads as OperatingSystem. A per-device capability rather than a fixed rule, because the
+  // next headset may hold its own level.
+  string audio_volume_target = 33;
+  // True when this device has NO readable battery, even on a transport that normally implies one.
+  // Negative for the same reason as configuration_unsupported — an older DeviceHost that never
+  // sets it still reads as "battery works", which is how every existing wireless device behaves.
+  bool battery_unsupported = 34;
+  // Routing identity of the transport this entry describes, from the AllowedDevices config. Needed
+  // by the OS-Bluetooth discovery path, whose BluetoothDeviceResponse carries no VID/PID — without
+  // these a Bluetooth-only card cannot address device commands (e.g. SetDeviceLedColor) at all.
+  // 0 = unset (older DeviceHost), which the App treats exactly as before these fields existed.
+  int32 vendor_id = 35;
+  int32 product_id = 36;
+  // Extra darkening scrim (0..1) the Key Assignments / Macros overlay lays over this board's
+  // artwork so the #6357FF selection box reads on brightly-coloured keycaps (Rampage's are
+  // saturated violet-blue even unlit). 0 (unset / older DeviceHost) → no scrim, which is
+  // correct for every board whose unlit art is already dark.
+  double key_overlay_art_dim = 37;
+  // The vendor_id a merged product persists its SETTINGS under, so a transport switch does not
+  // move the settings bucket. Same value on every entry of the product; equals the entry's own
+  // vendor_id when not merged. The twin of settings_product_id, and computed from the SAME primary
+  // row, so the two pins can never disagree about which transport is canonical.
+  //
+  // It exists because vendor_id alone is not product-wide: RAMPAGE's 2.4G receiver enumerates
+  // under 1389 against the board's 10473, and COSMO's and STARLIGHT's Bluetooth links under 1494
+  // against a product vendor of 3468 — so keying settings by the live vendor gave one physical
+  // device two buckets. 0 = unset (older DeviceHost); the App then falls back to the live vendor,
+  // which is exactly the behaviour it had before this field existed.
+  //
+  // Numbered 38, not 37: the plan that introduced this field predates key_overlay_art_dim landing
+  // on 37. Field numbers are the wire contract, so the unreleased side moves.
+  int32 settings_vendor_id = 38;
+  // Every distinct vendor_id this product's transports enumerate under, including the pinned one
+  // ({10473, 1389} for RAMPAGE). Needed to HEAL a database that was split before settings_vendor_id
+  // existed: settings_vendor_id alone only tells the App the split happened when the device is live
+  // on the alternate transport, so a user who moved permanently to the cable would keep orphaned
+  // dongle-era rows forever. With the full list, any connection of the product heals every
+  // alternate bucket. Empty = unset (older DeviceHost) → the App attempts no migration.
+  repeated int32 transport_vendor_ids = 39;
+  // True when this keyboard has an advanced-key storage area (Extended Keys: Rapid Snap, Instant
+  // Release, Mod-Tap, Toggle) — Cyrex and Aress. Same tri-state rule as supports_actuation: the App
+  // shows the section on this flag and hides it on a hard supported=false from GetExtendedKeys. An
+  // older DeviceHost leaves this false, safely hiding the section.
+  bool supports_extended_keys = 40;
+  // Bounds for the user-editable DPI ladder: the value range and quantum a single DPI point may
+  // take, and how many points the device's stage table holds. dpi_step is the granularity the
+  // firmware actually stores (TAIPAN keeps CPI in 50-DPI units; BLAZE stores raw CPI but its
+  // sensor's real granularity is unverified — see docs/plans/add-custom-dpi-values/).
+  // 0 = unset (older DeviceHost) -> the App falls back to its built-in bounds, exactly as it
+  // behaved before these fields existed. See docs/mouse/blaze/dpi-stage.md.
+  //
+  // Numbered 41-45, not 40-44: this branch and main's extended-keys work both reached for 40, and
+  // main's supports_extended_keys is already merged. Field numbers are the wire contract, so the
+  // unreleased side moves — the same rule settings_vendor_id and supported_audio_settings followed.
+  int32 dpi_min = 41;
+  int32 dpi_max = 42;
+  int32 dpi_step = 43;
+  int32 dpi_slot_min = 44;
+  int32 dpi_slot_max = 45;
+  // The name the App shows for this device when it differs from `name` (catalog "DisplayName").
+  // Empty = show `name`.
+  google.protobuf.StringValue display_name = 46;
+}
+
+// One button-remap hotspot: a labelled button box, a connector line, and the marker the line
+// points at on the device image. Authored in the 1236x756 hotspot-canvas coordinate space. The
+// label text and whether the button is bindable are derived in the App from the id, so only the
+// geometry lives here.
+message DeviceHotspot {
+  string id = 1;            // e.g. "left-click", "side-forward" (see HotspotIdToButton)
+  double button_x = 2;      // labelled button anchor
+  double button_y = 3;
+  double target_x = 4;      // where the connector line lands on the image
+  double target_y = 5;
+  string label_side = 6;    // "Left" | "Right" — which side of button_x the box is drawn
+  bool disabled = 7;        // true → hotspot labels the part but its button can't be bound
+                            // (e.g. left-click, fixed in firmware). Default false = bindable.
+}
+
+enum SenderType
+{
+    Undefined = 0;
+    Usb = 1;
+    Dongle = 2;
+    Bluetooth = 3;
+}
+
+message SetDeviceLedColorRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  int32 r = 3;
+  int32 g = 4;
+  int32 b = 5;
+  int32 effect = 6;
+  int32 brightness = 7;
+  int32 speed = 8;
+  string device_type = 9;
+  string device_key = 10;   // stable per-physical-device identity; "" = first matching unit
+}
+
+message SetDeviceLedColorResponse {
+  bool success = 1;
+}
+
+message DpiStage {
+  int32 dpi_value = 1;
+  int32 r = 2;
+  int32 g = 3;
+  int32 b = 4;
+}
+
+message SetDpiStagesRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  repeated DpiStage stages = 3;
+  string device_key = 4;   // stable per-physical-device identity; "" = first matching unit
+}
+
+message SetDpiStagesResponse {
+  bool success = 1;
+}
+
+message SetActiveDpiStageRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  int32 stage_index = 3;
+  string device_key = 4;   // stable per-physical-device identity; "" = first matching unit
+}
+
+message SetActiveDpiStageResponse {
+  bool success = 1;
+}
+
+message SetReportRateRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  int32 hz = 3;            // 125 | 250 | 500 | 1000
+  string device_key = 4;   // stable per-physical-device identity; "" = first matching unit
+}
+
+message SetReportRateResponse {
+  bool success = 1;
+}
+
+// Assignable actions for a mouse button. Encoded to key-matrix entries in
+// EasenMouseService (source: docs/x43_protocol_904a4f8.md §V).
+enum MouseButtonAction {
+  Unspecified = 0;
+  // Standard mouse buttons (also used to revert to a normal function)
+  LeftClick = 1;
+  RightClick = 2;
+  WheelClick = 3;
+  Forward = 4;
+  Back = 5;
+  // Recommended (media)
+  PlayPause = 6;
+  NextTrack = 7;
+  PreviousTrack = 8;
+  Stop = 9;
+  Mute = 10;
+  VolumeUp = 11;
+  VolumeDown = 12;
+  MediaPlayer = 13;
+  WwwHome = 14;
+  // System
+  MyComputer = 15;
+  Desktop = 16;
+  WwwSearch = 17;
+  // A recorded macro (definition travels inline on the ButtonBinding).
+  Macro = 18;
+}
+
+// How a bound macro repeats. Maps to the device key-matrix macro "type" byte.
+enum MacroRepeatMode {
+  Macro_PlayCount = 0;    // play repeat_count times
+  Macro_LoopForever = 1;  // loop until any button press
+  Macro_WhileHeld = 2;    // loop while the assigned button is held
+}
+
+// One macro step: a key/mouse make or break plus the delay after it.
+message MacroEvent {
+  uint32 key_code = 1;   // USB HID keyboard code, or mouse-button code F0-F4
+  bool is_press = 2;     // true = press/make, false = release/break
+  uint32 delay_ms = 3;   // delay after this step (quantised to 10 ms, max 1270)
+}
+
+// A device-agnostic macro. The App library (SQLite) is the source of truth; this is the
+// wire form sent inline when a macro is assigned to a button.
+message MacroDefinition {
+  string name = 1;
+  uint32 repeat_count = 2;   // 1..65535
+  MacroRepeatMode mode = 3;
+  repeated MacroEvent events = 4;
+}
+
+// One entry in the keyboard's macro library. The index is the on-device slot the events
+// are written to and is the value the key-matrix binding refers to (code1 on
+// Raster/Smart Infinite, code2 on T800). No name here: the device blob has no room for
+// metadata, so names stay in the App library.
+message MacroLibraryEntry {
+  uint32 index = 1;
+  MacroRepeatMode mode = 2;
+  repeated MacroEvent events = 3;
+  // 1..65535. Where it lands is per-family: Raster/Smart Infinite carry the count in the
+  // key-matrix binding's code2 and ignore this field; T800 stores it in the macro blob's
+  // header, whose binding record has no room for a count. 0 (an old client) is clamped to 1.
+  uint32 repeat_count = 4;
+}
+
+message SetMacrosRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  // Carried for symmetry with the other device RPCs, but NOT yet used for routing: the host
+  // resolves the macro service from vendor_id + product_id alone, exactly as SetKeyMapping
+  // does. With two identical keyboards attached the library goes to whichever unit the host
+  // enumerates first. Honouring this field means threading it through the service factories.
+  string device_key = 3;
+  repeated MacroLibraryEntry entries = 4;
+}
+
+message SetMacrosResponse {
+  bool success = 1;
+}
+
+// A physical, device-agnostic mouse button. Each device maps the buttons it supports to
+// its own key-matrix slots; persisted by name so it stays reusable across devices.
+enum MouseButton {
+  Button_Unspecified = 0;
+  Button_Left = 1;
+  Button_Right = 2;
+  Button_Wheel = 3;
+  Button_Forward = 4;
+  Button_Back = 5;
+}
+
+// One button assignment: which physical button does what. Left/DPI are fixed and rejected.
+message ButtonBinding {
+  MouseButton button = 1;
+  MouseButtonAction action = 2;
+  MacroDefinition macro = 3;   // set only when action = Macro
+}
+
+message SetButtonBindingsRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  repeated ButtonBinding bindings = 3;   // the full desired set for the remappable slots
+  string device_key = 4;   // stable per-physical-device identity; "" = first matching unit
+}
+
+message SetButtonBindingsResponse {
+  bool success = 1;
+}
+
+message SetKeyMappingRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  // Flat matrix slot (memory offset = 3 * matrix_index).
+  int32 matrix_index = 3;
+  // Key-record type byte (0x10 = HID keyboard, 0x30 = mouse/wheel, 0x50 = media).
+  int32 type_byte = 4;
+  // For type 0x10: modifier bitmask. For type 0x50: consumer index.
+  int32 code1 = 5;
+  // For type 0x10: HID scancode (e.g. 0x04 = A).
+  int32 code2 = 6;
+}
+
+message SetKeyMappingResponse {
+  bool success = 1;
+}
+
+message ProbeKeyMatrixRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  int32 max_slot = 3; // e.g. 128
+}
+
+message ProbeKeyMatrixResponse {
+  bool success = 1;
+  // HID scancode (uint8) → matrix slot (uint8). Keyed by scancode as int32 for proto3.
+  map<int32, int32> scancode_to_slot = 2;
+  // matrix slot (uint8) → override code2 (uint8), only for slots with an active user override.
+  map<int32, int32> user_overrides = 3;
+}
+
+// ── Unified apply (mouse) ──────────────────────────────────────────────────
+// The full desired mouse configuration, applied in one coordinated device write. Each aspect is
+// optional: a set message / non-empty list / present scalar is applied; an omitted one is left as
+// the device's current/default value. RGB colour+effect via led; buttons is the full remappable
+// set; mouse_settings is debounce/lift-off; dpi_stages is the DPI table; active_stage / report_rate
+// are the live values to persist into the write.
+message DeviceLedConfig {
+  int32 r = 1;
+  int32 g = 2;
+  int32 b = 3;
+  int32 effect = 4;      // app effect byte (see X43LedEncoder mapping); 0xED = Off
+  int32 brightness = 5;
+  int32 speed = 6;
+}
+
+message DeviceMouseSettings {
+  int32 btn_debounce_ms = 1;
+  int32 lift_off_mm = 2;
+}
+
+message ApplyDeviceConfigurationRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  string device_key = 3;   // stable per-physical-device identity; "" = first matching unit
+
+  DeviceLedConfig led = 4;              // unset = don't touch RGB
+  repeated ButtonBinding bindings = 5;  // full desired set for the remappable slots
+  DeviceMouseSettings mouse_settings = 6;  // unset = don't touch debounce/lift-off
+  repeated DpiStage dpi_stages = 7;     // empty = don't touch the DPI table
+  optional int32 active_stage = 8;      // unset = don't touch the active DPI stage
+  optional int32 report_rate_hz = 9;    // unset = don't touch the report rate
+}
+
+message ApplyDeviceConfigurationResponse {
+  bool success = 1;
+}
+
+message ReadKeyMatrixRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  int32 max_slot = 3; // e.g. 128
+}
+
+// One key's assignment as the firmware stores it. For type 0x10 (plain keyboard key) code1 is the
+// modifier bitmask and code2 the HID usage code, so Left Shift is {0x10, 0x02, 0x00}.
+message KeyMatrixRecordProto {
+  int32 type = 1;
+  int32 code1 = 2;
+  int32 code2 = 3;
+}
+
+message ReadKeyMatrixResponse {
+  bool success = 1;
+  // matrix slot (uint8) -> record. Only slots the firmware has written are present.
+  map<int32, KeyMatrixRecordProto> records = 2;
+}
+
+// ── Magnetic-axis actuation (key press force) ──────────────────────────────
+// All travel fields are in HUNDREDTHS OF A MILLIMETRE (2.00 mm = 200) — T800's native unit;
+// Smart Infinite boards convert by their device-reported step. Applied globally to every key.
+
+// One set of global actuation values.
+message KeyActuationValues {
+  uint32 press_centi_mm = 1;          // actuation point (Initial Actuation Point)
+  uint32 release_centi_mm = 2;        // release point
+  bool rapid_trigger = 3;             // Rapid Trigger on/off
+  uint32 quick_press_centi_mm = 4;    // RT quick press travel
+  uint32 quick_release_centi_mm = 5;  // RT quick release travel
+}
+
+message GetKeyActuationRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+}
+
+message GetKeyActuationResponse {
+  bool success = 1;
+  // False when the board has no actuation support (mechanical, incoherent magnetic geometry, or
+  // the probe read failed). The App hides the section and never calls SetKeyActuation.
+  bool supported = 2;
+  KeyActuationValues values = 3;
+  // Adjustable ranges and factory defaults, device-reported on Smart Infinite boards and
+  // documented constants on T800. The App builds its slider ranges from these, never from its own.
+  uint32 press_min_centi_mm = 4;
+  uint32 press_max_centi_mm = 5;
+  uint32 rt_min_centi_mm = 6;
+  uint32 rt_max_centi_mm = 7;
+  // Value granularity in micrometres (10 = 0.01 mm steps).
+  uint32 step_micrometres = 8;
+  KeyActuationValues defaults = 9;
+  // Current values per populated key slot (matrix/travel slot -> values), from the same table
+  // `values` is reduced from. An EMPTY map means the DeviceHost predates per-key actuation — the
+  // App must then hide per-key editing, never treat it as "no keys".
+  map<int32, KeyActuationValues> per_key_values = 10;
+}
+
+message SetKeyActuationRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  KeyActuationValues values = 3;
+}
+
+message SetKeyActuationResponse {
+  bool success = 1;
+}
+
+message SetPerKeyActuationRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  // Target key slots (same slot space as per_key_values). Empty is rejected with success=false.
+  repeated int32 slots = 3;
+  KeyActuationValues values = 4;
+}
+
+message SetPerKeyActuationResponse {
+  bool success = 1;
+}
+
+// ── Extended Keys (advanced keys: Rapid Snap / Instant Release / Mod-Tap / Toggle) ──
+// Cyrex / Aress. One generic message covers all four modes so the per-mode features add no proto
+// change: `mode` is the firmware TYPE byte (0x81 MT, 0x82 TGL, 0x83 SOCD, 0x84 RS); slot1/slot2 are
+// key-matrix slots (slot2 = -1 on the single-key modes MT / TGL); priority is SOCD-only (0 last
+// input, 1 mutual cancel, 2 key 1, 3 key 2); time_ms is the MT / TGL threshold; hold_key / tap_key
+// are the MT outputs (TGL uses hold_key) in MATRIX-RECORD form {0x10, modifierMask, usage} — the
+// host derives the firmware (codeType, code) pair. The pair modes carry no codes: theirs come from
+// the factory table. See docs/knowledge-base/smart-infinite-protocol/advanced-keys-rapid-snap.md.
+
+// A key output as a matrix record {type_byte, code1, code2}; all zero = none.
+message ExtendedKeyCode {
+  int32 type_byte = 1;
+  int32 code1 = 2;
+  int32 code2 = 3;
+}
+
+message ExtendedKey {
+  int32 mode = 1;            // firmware TYPE byte, see above
+  int32 slot1 = 2;           // physical key (MT/TGL) or first key of the pair (RS/SOCD)
+  int32 slot2 = 3;           // second key of the pair (RS/SOCD); -1 otherwise
+  int32 priority = 4;        // SOCD priority; 0 otherwise
+  int32 time_ms = 5;         // MT/TGL threshold in milliseconds; 0 otherwise
+  ExtendedKeyCode hold_key = 6;
+  ExtendedKeyCode tap_key = 7;
+}
+
+message GetExtendedKeysRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+}
+
+message GetExtendedKeysResponse {
+  bool success = 1;
+  // False when the board has no advanced-key area or does not accept matrix writes. The App hides
+  // the section and never calls SetExtendedKeys. Meaningless when success is false, which is the
+  // host saying it could not read the board at all.
+  bool supported = 2;
+  // The managed records currently on the board. Records of modes this DeviceHost does not manage
+  // are not listed; their slots appear in blocked_slots instead.
+  repeated ExtendedKey entries = 3;
+  int32 area_bytes = 4;      // advanced-key storage area size (Device Info byte 8 × 64)
+  int32 free_bytes = 5;      // bytes not used by any record (managed or not)
+  // Key-matrix slots owned by records the host preserves but does not manage (DKS, END, and any
+  // managed mode whose support has not shipped). They cannot join a new record.
+  repeated int32 blocked_slots = 6;
+  // True when this read found the board incoherent — the pointers and the storage area disagreeing,
+  // which is what a torn two-region write leaves behind — and reset its advanced keys before
+  // answering. The entries above are then what survived that reset, not what the user configured, so
+  // a caller must show them but MUST NOT save them as the user's state.
+  bool repaired = 7;
+}
+
+message SetExtendedKeysRequest {
+  int32 vendor_id = 1;
+  int32 product_id = 2;
+  // The FULL desired set of managed records; empty removes every managed record.
+  repeated ExtendedKey entries = 3;
+}
+
+message SetExtendedKeysResponse {
+  bool success = 1;
+}

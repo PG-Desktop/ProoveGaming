@@ -1,0 +1,215 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:controls="clr-namespace:ProoveGaming.App.Controls"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsDialogs.NewPresetDialog"
+			 x:CompileBindings="False"
+			 Width="620" Height="412"
+			 HorizontalAlignment="Center" VerticalAlignment="Center"
+			 ClipToBounds="False">
+
+	<Panel>
+		<Panel.Effect>
+			<DropShadowEffect OffsetX="0" OffsetY="0" BlurRadius="100" Color="#6357FF" Opacity="0.35"/>
+		</Panel.Effect>
+		<!-- 412 tall — the "Set as default" row is hidden in every mode (see below), so there is
+		     only one size now. Cut-corner shape scaled per the same formula ResetPresetDialog /
+		     SavePresetDialog / UnsavedChangesDialog use for their own fixed heights: top-anchored
+		     paths and the top rect's Top are unchanged; every bottom-anchored Y coordinate and the
+		     two height values shift by the same delta (72, from the original 484). -->
+		<Canvas Width="620" Height="412">
+			<Path Fill="Black" Data="M0 21.306L21.477 0L42 0V21.306H0Z"/>
+			<Rectangle Canvas.Left="0" Canvas.Top="21.306" Width="42" Height="302.792" Fill="Black"/>
+			<Path Fill="Black" Data="M22.591 398.598L22.591 346.677L0 324.099H42V412H36L22.591 398.598Z"/>
+			<Rectangle Canvas.Left="42" Canvas.Top="0" Width="536" Height="412" Fill="Black"/>
+			<Path Fill="Black" Data="M584 0L584 50L620 86L620 0Z"/>
+			<Path Fill="Black" Data="M578 95.367L578 54L620 95.357Z"/>
+			<Rectangle Canvas.Left="578" Canvas.Top="95.367" Width="42" Height="295.318" Fill="Black"/>
+			<Path Fill="Black" Data="M620 390.686L598.354 412L578 412L578.001 390.686H620Z"/>
+		</Canvas>
+
+		<Grid ColumnDefinitions="42,*,42">
+
+			<Grid Grid.Column="1" Margin="0,32,0,32" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+
+				<TextBlock Grid.Row="0"
+						   Text="{Binding PresetDialogTitle}"
+						   Foreground="#FFFFFF"
+						   FontFamily="{DynamicResource AppPixelFont}"
+						   FontWeight="250"
+						   FontSize="28"
+						   LineHeight="28"
+						   LetterSpacing="0"
+						   Margin="0,0,0,0" />
+
+				<TextBlock Grid.Row="1"
+						   Text="{Binding PresetDialogSubtitle}"
+						   Foreground="#B2BEBCEA"
+						   FontFamily="Segoe UI"
+						   FontWeight="Normal"
+						   FontSize="16"
+						   LineHeight="24"
+						   LetterSpacing="0"
+						   TextWrapping="Wrap"
+						   Margin="0,8,0,32" />
+
+				<!-- Name input + counter row underneath -->
+				<Border Grid.Row="2"
+						Height="56"
+						BorderBrush="#4DBEBCEA"
+						BorderThickness="1"
+						Background="Transparent">
+					<TextBox Text="{Binding NewPresetName, Mode=TwoWay}"
+							 MaxLength="20"
+							 Background="Transparent"
+							 BorderThickness="0"
+							 Foreground="#FFFFFF"
+							 PlaceholderForeground="#B2BEBCEA"
+							 CaretBrush="#B2BEBCEA"
+							 PlaceholderText="{DynamicResource NewPreset_NamePlaceholder}"
+							 FontFamily="Segoe UI"
+							 FontWeight="Normal"
+							 FontSize="16"
+							 LineHeight="24"
+							 LetterSpacing="0"
+							 Padding="16,0"
+							 VerticalContentAlignment="Center" />
+				</Border>
+
+				<TextBlock Grid.Row="3"
+						   Text="{Binding NewPresetNameCounter}"
+						   Foreground="#BEBCEA" Opacity="0.7"
+						   FontFamily="{DynamicResource BaseAppFont}"
+						   FontSize="12"
+						   LineHeight="16"
+						   HorizontalAlignment="Right"
+						   Margin="0,8,0,20" />
+
+				<StackPanel Grid.Row="4" VerticalAlignment="Top">
+					<Border Height="56"
+							Background="#33BEBCEA">
+						<Grid ColumnDefinitions="Auto,*,Auto" Margin="16,0,16,0" VerticalAlignment="Center">
+							<Path Grid.Column="0"
+								  Width="22" Height="16"
+								  Stretch="Uniform"
+								  Fill="#80BEBCEA"
+								  VerticalAlignment="Center"
+								  Data="M3.675 16C2.675 16 1.82083 15.6417 1.1125 14.925C0.404167 14.2083 0.0333333 13.3417 0 12.325C0 12.175 0.00833333 12.025 0.025 11.875C0.0416667 11.725 0.0666667 11.575 0.1 11.425L2.2 3.025C2.43333 2.125 2.90833 1.39583 3.625 0.8375C4.34167 0.279167 5.15833 0 6.075 0H15.825C16.7417 0 17.5583 0.279167 18.275 0.8375C18.9917 1.39583 19.4667 2.125 19.7 3.025L21.8 11.425C21.8333 11.575 21.8625 11.7292 21.8875 11.8875C21.9125 12.0458 21.925 12.2 21.925 12.35C21.925 13.3667 21.5625 14.2292 20.8375 14.9375C20.1125 15.6458 19.2417 16 18.225 16C17.525 16 16.875 15.8167 16.275 15.45C15.675 15.0833 15.225 14.5833 14.925 13.95L14.225 12.5C14.1417 12.3333 14.0167 12.2083 13.85 12.125C13.6833 12.0417 13.5083 12 13.325 12H8.575C8.39167 12 8.21667 12.0417 8.05 12.125C7.88333 12.2083 7.75833 12.3333 7.675 12.5L6.975 13.95C6.675 14.5833 6.225 15.0833 5.625 15.45C5.025 15.8167 4.375 16 3.675 16ZM3.75 14C4.06667 14 4.35417 13.9167 4.6125 13.75C4.87083 13.5833 5.06667 13.3583 5.2 13.075L5.9 11.65C6.15 11.1333 6.51667 10.7292 7 10.4375C7.48333 10.1458 8.00833 10 8.575 10H13.325C13.8917 10 14.4167 10.15 14.9 10.45C15.3833 10.75 15.7583 11.15 16.025 11.65L16.725 13.075C16.8583 13.3583 17.0542 13.5833 17.3125 13.75C17.5708 13.9167 17.8583 14 18.175 14C18.6417 14 19.0417 13.8458 19.375 13.5375C19.7083 13.2292 19.8833 12.8417 19.9 12.375C19.9 12.3917 19.8833 12.2333 19.85 11.9L17.75 3.525C17.6333 3.075 17.4 2.70833 17.05 2.425C16.7 2.14167 16.2917 2 15.825 2H6.075C5.60833 2 5.19583 2.14167 4.8375 2.425C4.47917 2.70833 4.25 3.075 4.15 3.525L2.05 11.9C2.01667 12 2 12.15 2 12.35C2 12.8167 2.17083 13.2083 2.5125 13.525C2.85417 13.8417 3.26667 14 3.75 14ZM13.1625 6.7125C13.3542 6.52083 13.45 6.28333 13.45 6C13.45 5.71667 13.3542 5.47917 13.1625 5.2875C12.9708 5.09583 12.7333 5 12.45 5C12.1667 5 11.9292 5.09583 11.7375 5.2875C11.5458 5.47917 11.45 5.71667 11.45 6C11.45 6.28333 11.5458 6.52083 11.7375 6.7125C11.9292 6.90417 12.1667 7 12.45 7C12.7333 7 12.9708 6.90417 13.1625 6.7125ZM15.1625 4.7125C15.3542 4.52083 15.45 4.28333 15.45 4C15.45 3.71667 15.3542 3.47917 15.1625 3.2875C14.9708 3.09583 14.7333 3 14.45 3C14.1667 3 13.9292 3.09583 13.7375 3.2875C13.5458 3.47917 13.45 3.71667 13.45 4C13.45 4.28333 13.5458 4.52083 13.7375 4.7125C13.9292 4.90417 14.1667 5 14.45 5C14.7333 5 14.9708 4.90417 15.1625 4.7125ZM15.1625 8.7125C15.3542 8.52083 15.45 8.28333 15.45 8C15.45 7.71667 15.3542 7.47917 15.1625 7.2875C14.9708 7.09583 14.7333 7 14.45 7C14.1667 7 13.9292 7.09583 13.7375 7.2875C13.5458 7.47917 13.45 7.71667 13.45 8C13.45 8.28333 13.5458 8.52083 13.7375 8.7125C13.9292 8.90417 14.1667 9 14.45 9C14.7333 9 14.9708 8.90417 15.1625 8.7125ZM17.1625 6.7125C17.3542 6.52083 17.45 6.28333 17.45 6C17.45 5.71667 17.3542 5.47917 17.1625 5.2875C16.9708 5.09583 16.7333 5 16.45 5C16.1667 5 15.9292 5.09583 15.7375 5.2875C15.5458 5.47917 15.45 5.71667 15.45 6C15.45 6.28333 15.5458 6.52083 15.7375 6.7125C15.9292 6.90417 16.1667 7 16.45 7C16.7333 7 16.9708 6.90417 17.1625 6.7125ZM7.9875 8.2875C8.12917 8.14583 8.2 7.96667 8.2 7.75V6.75H9.2C9.41667 6.75 9.59583 6.67917 9.7375 6.5375C9.87917 6.39583 9.95 6.21667 9.95 6C9.95 5.78333 9.87917 5.60417 9.7375 5.4625C9.59583 5.32083 9.41667 5.25 9.2 5.25H8.2V4.25C8.2 4.03333 8.12917 3.85417 7.9875 3.7125C7.84583 3.57083 7.66667 3.5 7.45 3.5C7.23333 3.5 7.05417 3.57083 6.9125 3.7125C6.77083 3.85417 6.7 4.03333 6.7 4.25V5.25H5.7C5.48333 5.25 5.30417 5.32083 5.1625 5.4625C5.02083 5.60417 4.95 5.78333 4.95 6C4.95 6.21667 5.02083 6.39583 5.1625 6.5375C5.30417 6.67917 5.48333 6.75 5.7 6.75H6.7V7.75C6.7 7.96667 6.77083 8.14583 6.9125 8.2875C7.05417 8.42917 7.23333 8.5 7.45 8.5C7.66667 8.5 7.84583 8.42917 7.9875 8.2875Z" />
+							<TextBlock Grid.Column="1"
+									   Text="{DynamicResource NewPreset_DeviceSelectorLabel}"
+									   Foreground="#FFFFFF"
+									   FontFamily="{DynamicResource BaseAppFont}"
+									   FontSize="16"
+									   LineHeight="20"
+									   VerticalAlignment="Center"
+									   Margin="16,0,0,0" />
+							<Path Grid.Column="2"
+								  Width="8" Height="14"
+								  Stretch="Uniform"
+								  Fill="#B2BEBCEA"
+								  Data="M0 12L6 6L0 0"
+								  VerticalAlignment="Center" />
+						</Grid>
+					</Border>
+
+					<TextBlock Text="{DynamicResource NewPreset_DeviceSelectorHint}"
+							   Foreground="#B2BEBCEA"
+							   FontFamily="Segoe UI"
+							   FontWeight="Normal"
+							   FontSize="12"
+							   LineHeight="16"
+							   LetterSpacing="0.25"
+							   TextWrapping="Wrap"
+							   Margin="0,4,0,0" />
+
+					<!-- Set-as-Default row: hidden for now in every mode (New/Edit/Duplicate) — not
+					     needed as a dialog control. Left in place (VM plumbing untouched) rather than
+					     deleted, in case it comes back; IsVisible="False" is the only change. -->
+					<Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto" Margin="0,24,0,0"
+						  IsVisible="False">
+						<TextBlock Grid.Row="0" Grid.Column="0"
+								   Text="{DynamicResource NewPreset_SetDefaultTitle}"
+								   Foreground="#FFFFFF"
+								   FontFamily="Segoe UI"
+								   FontWeight="SemiBold"
+								   FontSize="18"
+								   LineHeight="24"
+								   LetterSpacing="0"
+								   VerticalAlignment="Center" />
+
+						<controls:ToggleSwitchControl Grid.Row="0" Grid.Column="1"
+													  IsChecked="{Binding NewPresetSetAsDefault, Mode=TwoWay}"
+													  IsEnabled="{Binding !IsSetAsDefaultLocked}"
+													  VerticalAlignment="Center"
+													  Margin="16,0,0,0" />
+
+						<TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+								   Text="{DynamicResource NewPreset_SetDefaultDescription}"
+								   Foreground="#B2BEBCEA"
+								   FontFamily="Segoe UI"
+								   FontWeight="Normal"
+								   FontSize="14"
+								   LineHeight="20"
+								   LetterSpacing="0"
+								   TextWrapping="Wrap"
+								   Margin="0,4,0,0" />
+					</Grid>
+				</StackPanel>
+
+				<!-- Buttons pinned to the bottom of the modal body. Width is intentionally not set —
+				     both size to their content, with Padding giving the 16px left/right text margin,
+				     so "SAVE" / "CONFIRM" / "DUPLICATE" each get a naturally-fitted button instead of
+				     a shared static width. -->
+				<StackPanel Grid.Row="5"
+							Orientation="Horizontal"
+							HorizontalAlignment="Right"
+							Spacing="12"
+							VerticalAlignment="Bottom">
+					<Button Classes="secondaryButton"
+							Padding="16,0" Height="40"
+							Cursor="Hand"
+							Command="{Binding CancelNewPresetCommand}">
+						<TextBlock Text="{DynamicResource NewPreset_Cancel}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontSize="18"
+								   LetterSpacing="0"/>
+					</Button>
+					<Button Classes="primaryButton"
+							Padding="16,0" Height="40"
+							Cursor="Hand"
+							Command="{Binding ConfirmNewPresetCommand}">
+						<TextBlock Text="{Binding PresetDialogActionLabel}"
+								   FontFamily="{DynamicResource AppPixelFont}"
+								   FontWeight="250"
+								   FontSize="18"
+								   LetterSpacing="0"/>
+					</Button>
+				</StackPanel>
+
+			</Grid>
+
+			<!-- Top-right close X -->
+			<Button Grid.Column="2"
+					Classes="closeButton"
+					HorizontalAlignment="Stretch" VerticalAlignment="Top"
+					Height="86"
+					Background="Transparent" BorderThickness="0" Padding="0"
+					Cursor="Hand"
+					Command="{Binding CancelNewPresetCommand}">
+				<Button.Template>
+					<ControlTemplate>
+						<Canvas Width="42" Height="86">
+							<Path x:Name="PART_Bg"
+								  Fill="Transparent"
+								  Data="M6 0L6 50L42 86L42 0Z"/>
+							<Path x:Name="PART_Icon"
+								  Fill="#B2BEBCEA"
+								  Data="M18.4 31L17 29.6L22.6 24L17 18.4L18.4 17L24 22.6L29.6 17L31 18.4L25.4 24L31 29.6L29.6 31L24 25.4L18.4 31Z"/>
+						</Canvas>
+					</ControlTemplate>
+				</Button.Template>
+			</Button>
+
+		</Grid>
+	</Panel>
+</UserControl>

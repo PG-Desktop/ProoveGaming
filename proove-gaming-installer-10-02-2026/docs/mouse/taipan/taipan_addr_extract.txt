@@ -1,0 +1,784 @@
+功能块
+数据长度(Byte)
+地址空间
+备注
+Wheel Speed
+profile 1  
+1
+0x0000
+(请参考后面的设置)
+profile 2
+1
+0x0001
+profile 3
+1
+0x0002
+profile 4
+1
+0x0003
+profile 5
+1
+0x0004
+Sensor_LiftValue
+1
+0x0005
+ProfileIndex
+1
+0x0006
+DPI Led Mode
+DPI LED Option
+1
+0x0007
+DPI指示灯的呈现方式
+DpiLed Blink Option
+1
+0x0008
+DPI指示灯点亮的时间
+DpiLed Blink Times
+1
+0x0009
+DPI指示灯闪灯的次数
+DpiLed Color Select
+1
+0x000A
+DPI指示灯颜色选择
+PollingRate
+profile 1 
+1
+0x000B
+profile 2 
+1
+0x000C
+profile 3
+1
+0x000D
+profile 4
+1
+0x000E
+profile 5
+1
+0x000F
+ProfileSwitch
+On/OFF
+1
+0x0010
+Bit0: 开/关 Profile 1
+Bit1: 开/关 Profile 2
+Bit2: 开/关 Profile 3
+Bit3: 开/关 Profile 4
+Bit4: 开/关 Profile 5
+DpiSwitch
+Current DPI
+1
+0x0011
+LedModeSwitch
+Current LedMode
+1
+0x0012
+Profile 1/2/3/4/5 (DPI地址表), 0x0040
+CPI V l
+1
+MS支持的档数
+1
+0x0000
+最大DPI档数
+第1段开关
+1
+0x0001
+第1段CPI(X轴)_L
+1
+0x0002
+第1段CPI(X轴)_H
+1
+0x0003
+第1段CPI(Y轴)_L
+1
+0x0004
+第1段CPI(Y轴)_H
+1
+0x0005
+第2段开关
+1
+0x0006
+第2段CPI(X轴)_L
+1
+0x0007
+第2段CPI(X轴)_H
+1
+0x0008
+第2段CPI(Y轴)_L
+1
+0x0009
+第2段CPI(Y轴)_H
+1
+0x000A
+第3段开关
+1
+0x000B
+第3段CPI(X轴)_L
+1
+0x000C
+第3段CPI(X轴)_H
+1
+0x000D
+第3段CPI(Y轴)_L
+1
+0x000E
+第3段CPI(Y轴)_H
+1
+0x000F
+第4段开关
+1
+0x0010
+第4段CPI(X轴)_L
+1
+0x0011
+第4段CPI(X轴)_H
+1
+0x0012
+第4段CPI(Y轴)_L
+1
+0x0013
+
+CPI Value1
+第4段CPI(Y轴)_H
+1
+0x0014
+第5段开关
+1
+0x0015
+第5段CPI(X轴)_L
+1
+0x0016
+第5段CPI(X轴)_H
+1
+0x0017
+第5段CPI(Y轴)_L
+1
+0x0018
+第5段CPI(Y轴)_H
+1
+0x0019
+第6段开关
+1
+0x001A
+第6段CPI(X轴)_L
+1
+0x001B
+第6段CPI(X轴)_H
+1
+0x001C
+第6段CPI(Y轴)_L
+1
+0x001D
+第6段CPI(Y轴)_H
+1
+0x001E
+第7段开关
+1
+0x001F
+第7段CPI(X轴)_L
+1
+0x0020
+第7段CPI(X轴)_H
+1
+0x0021
+第7段CPI(Y轴)_L
+1
+0x0022
+第7段CPI(Y轴)_H
+1
+0x0023
+第8段开关
+1
+0x0024
+第8段CPI(X轴)_L
+1
+0x0025
+第8段CPI(X轴)_H
+1
+0x0026
+第8段CPI(Y轴)_L
+1
+0x0027
+第8段CPI(Y轴)_H
+1
+0x0028
+Profile 1/2/3/4/5 (Button地址表), 0x0070
+ButtonFunc1
+LowByte
+1
+0x0000
+最大按键索引
+HighByte
+1
+0x0001
+Button1
+btFuncNum
+1
+0x0002
+BtModifer
+1
+0x0003
+BtAlpha1
+1
+0x0004
+BtAlpha2
+1
+0x0005
+Button2
+4
+0x0006~
+Button3
+4
+0x000A~
+Button4
+4
+0x000E~
+Button5
+4
+0x0012~
+Button6
+4
+0x0016~
+Button7
+4
+0x001A~
+Button8
+4
+0x001E~
+Button9
+4
+0x0022~
+Button10
+4
+0x0026~
+Button11
+4
+0x002A~
+Button12
+4
+0x002E~
+Button13
+4
+0x0032~
+Button14
+4
+0x0036~
+Button15
+4
+0x003A~
+Button16
+4
+0x003E~
+Button17
+4
+0x0042~
+Button18
+4
+0x0046~
+Button19
+4
+0x004A~
+Button20
+4
+0x004E~
+Button21
+4
+0x0052~
+Button22
+4
+0x0056~
+
+Button23(Wheel_Up)
+4
+0x005A~
+Button24(Wheel_Dn)
+4
+0x005E~
+Button25
+4
+0x0062~
+ 必须写0FFH,为保存KeyMap返回Profile
+RGB灯颜色控制（暂保留）
+DPI LED
+StageTable
+Stage1 RGB
+3
+Stage2
+3
+Stage3
+3
+Stage4
+3
+Stage5
+3
+Stage6
+3
+Stage7
+3
+Stage8
+3
+Profile LED
+StageTable
+Stage1 RGB
+3
+只允许赋FFH值做开关用
+Stage2
+3
+Stage3
+3
+Stage4
+3
+Stage5
+3
+Stage6
+3
+Stage7
+3
+Stage8
+3
+RGB灯效控制(参考说明二), 0x0030
+Profile 1
+EnableSW
+1
+0x0000
+开/关
+RGB R值(0~255)
+1
+0x0001
+红灯配色比例值
+RGB G值(0~255)
+1
+0x0002
+绿灯配色比例值
+RGB B值(0~255)
+1
+0x0003
+蓝灯配色比例值
+RGB灯效模式
+1
+0x0004
+RGB呼吸速度
+1
+0x0005
+RGB颜色来源选择
+1
+0x0006
+RGB 亮度(参考以下设置)
+1
+0x0007
+Profile 2
+EnableSW
+1
+0x0008
+开/关
+RGB R值(0~255)
+1
+0x0009
+红灯配色比例值
+RGB G值(0~255)
+1
+0x000A
+绿灯配色比例值
+RGB B值(0~255)
+1
+0x000B
+蓝灯配色比例值
+RGB灯效模式
+1
+0x000C
+RGB呼吸速度
+1
+0x000D
+RGB颜色来源选择
+1
+0x000E
+RGB 亮度(参考以下设置)
+1
+0x000F
+Profile 3
+EnableSW
+1
+0x0010
+开/关
+RGB R值(0~255)
+1
+0x0011
+红灯配色比例值
+RGB G值(0~255)
+1
+0x0012
+绿灯配色比例值
+RGB B值(0~255)
+1
+0x0013
+蓝灯配色比例值
+RGB灯效模式
+1
+0x0014
+RGB呼吸速度
+1
+0x0015
+RGB颜色来源选择
+1
+0x0016
+RGB 亮度(参考以下设置)
+1
+0x0017
+
+Profile 4
+EnableSW
+1
+0x0018
+开/关
+RGB R值(0~255)
+1
+0x0019
+红灯配色比例值
+RGB G值(0~255)
+1
+0x001A
+绿灯配色比例值
+RGB B值(0~255)
+1
+0x001B
+蓝灯配色比例值
+RGB灯效模式
+1
+0x001C
+RGB呼吸速度
+1
+0x001D
+RGB颜色来源选择
+1
+0x001E
+RGB 亮度(参考以下设置)
+1
+0x001F
+Profile 5
+EnableSW
+1
+0x0020
+开/关
+RGB R值(0~255)
+1
+0x0021
+红灯配色比例值
+RGB G值(0~255)
+1
+0x0022
+绿灯配色比例值
+RGB B值(0~255)
+1
+0x0023
+蓝灯配色比例值
+RGB灯效模式
+1
+0x0024
+RGB呼吸速度
+1
+0x0025
+RGB颜色来源选择
+1
+0x0026
+RGB 亮度(参考以下设置)
+1
+0x0027
+保留
+EnableSW
+1
+0x0028
+开/关
+RGB R值(0~255)
+1
+0x0029
+红灯配色比例值
+RGB G值(0~255)
+1
+0x002A
+绿灯配色比例值
+RGB B值(0~255)
+1
+0x002B
+蓝灯配色比例值
+RGB灯效模式
+1
+0x002C
+RGB呼吸速度
+1
+0x002D
+RGB颜色来源选择
+1
+0x002E
+RGB 亮度(参考以下设置)
+1
+0x002F
+RGB灯颜色控制（供颜色来源选择）
+MacroKey
+20组
+(每组64个Action)
+Macro 1
+200 byte
+0x0000  ~ 0x
+Macro 2
+200 byte
+0x00C8
+Macro 3
+200 byte
+0x0190
+Macro 4
+200 byte
+0x0258
+Macro 5
+200 byte
+0x0320
+Macro 6
+200 byte
+0x03E8
+Macro 7
+200 byte
+0x04B0
+Macro 8
+200 byte
+0x0578
+Macro 9
+200 byte
+0x0640
+Macro 10
+200 byte
+0x0708
+Macro 11
+200 byte
+0x07D0
+Macro 12
+200 byte
+0x0898
+Macro 13
+200 byte
+0x0960
+Macro 14
+200 byte
+0x0A28
+Macro 15
+200 byte
+0x0AF0
+Macro 16
+200 byte
+0x0BB8
+Macro 17
+200 byte
+0x0C80
+Macro 18
+200 byte
+0x0D48
+Macro 19
+200 byte
+0x0E10
+Macro 20
+200 byte
+0x0ED8~ 0x0F9F
+指令类型
+FIFO DATA
+Byte0-Byte1
+指令字(Byte2)
+Byte3
+Byte4
+Byte5
+Byte6
+Byte7
+RESET(复位)
+0x05/加密Byte1
+ReportID
+0x40
+RESET类型
+参数1
+参数2
+参数3
+
+重要配置 读/写
+0x05/加密Byte1
+ReportID
+0x41/0x01
+逻辑地址_L
+逻辑地址_H
+数据长度
+封包起停位
+DPI值 读/写
+0x05/加密Byte1
+ReportID
+0x42/0x02
+逻辑地址_L
+逻辑地址_H
+数据长度
+封包起停位
+Button值 读/写
+0x05/加密Byte1
+ReportID
+0x43/0x03
+逻辑地址_L
+逻辑地址_H
+数据长度
+封包起停位
+灯效值 读/写
+0x05/加密Byte1
+ReportID
+0x44/0x04
+逻辑地址_L
+逻辑地址_H
+数据长度
+封包起停位
+宏功能值 读/写
+0x05/加密Byte1
+ReportID
+0x45/0x05
+逻辑地址_L
+逻辑地址_H
+数据长度
+封包起停位
+Set_MouseState
+0x05/加密Byte1
+ReportID
+0x46
+1为可用，0为禁用
+\
+0为所有灯正常
+1为关掉所有灯\
+Set_Profile
+0x05/加密Byte1
+ReportID
+0x47
+Profile_ID(0~4)
+\
+\
+\
+Get_BATV(电池电量)
+0x05/加密Byte1
+ReportID
+0x48
+电池电量Para_L
+电池电量Para_H \
+\
+Report_MouseState
+0x05/加密Byte1
+ReportID
+0x49
+当前ProfileID
+当前DPI档
+当前报告率
+当前灯效档位
+相 关 参 数 说 明
+一. ReportID
+    1. ID = 0xFA
+支待Buffer: 33Byte
+说明: 1. Buffer共33个BYTE, 前8个BYTE为命令数据, 后25个Byte为传输的数据
+      2. 传输时，每笔数据的前8个BYTE都为命令数据,  驱动软件需要实时更新目标地址 和 当笔数据有效长度
+      3. 加密:  Byte1 = (Byte2 + Byte3 + Byte4 +Byte5 +Byte6 + Byte7) xor 0x66   （相加的高字节舍弃）
+      4. 封包起停位：  0xD1为第一批数据(且后面一定还有数据)，  0xD2为传输中的数据, 0xD3/0x00表示只有1笔或最后1笔
+二. RESET(复位)
+    1. RESET类型:     
+0xF1:  重启整个设备 
+0xF2:  启动Boot系统
+参数1：密钥1
+不同的机种不一样
+参数2：密钥2
+参数3：密钥3
+参数4：密钥4
+参数5：密钥5
+0xF3:  重置设备的相关参数（参数1）
+       包括:  01. Profile的ID
+              02. DPI值
+              04. RGB值
+              08. PollingRate
+              10. DPI LED灯值
+              80. 复位上述所有参数值
+注1: Button和Mac的设置,不需要重置, 当它们的数据写入EEprom后, 下次按键时,会直接从EEprom中取数据
+三. RGB灯效控制
+     1. EnableSW (使能开关):
+灯效模式
+EnableSW参数值
+全彩RGB灯模式
+Bit7:  为1时使能此灯效配置模式
+       为0时禁用此灯效配置模式
+Bit7:  为1时使能此灯效配置模式
+
+Matrix灯模式
+       为0时禁用此灯效配置模式
+Bit0~Bit6:  用来存放单色呼吸时调用的颜色
+            值: 0~6代表七色（对应RGB颜色来源Profile Led）
+     2. RGB灯效模式:
+灯效模式
+灯效模式参数值
+全彩RGB灯模式
+0x00:  表示关闭
+0x01:  表示常亮模式
+0x02:  表示呼吸模式
+0x03:  表示幻彩模式
+Matrix灯模式
+0x00:  表示关闭
+0x01:  表示呼吸模式，支持七色、单色，常亮灯效
+0x02:  表示循环幻彩跑马
+0x03:  表示拖尾循环跑马
+0x04:  表示雨点模式
+0x05:  表示上、下幻彩跑马
+0x06:  表示拖尾跑马
+0x07:  表示反应
+     3. RGB呼吸速度:
+灯效模式
+RGB呼吸速度参数值
+全彩RGB灯模式
+0x01:  表示呼吸的速度为2.1s
+0x02:  表示2.7s
+0x03:  表示3.3s
+0x04:  表示3.9s
+0x05:  表示4.5s
+0x06:  表示5.0s
+0x07:  表示5.6s
+0x08:  表示6.2s
+Matrix灯模式
+共9档： 值1~9
+     4. RGB颜色来源选择:
+灯效模式
+RGB颜色来源参数值
+全彩RGB灯模式
+0x00/0x01: 颜色值取R,G,B的值
+0x02:  颜色值 查DPI LEDStageTable表(见上表)
+0x03:  颜色值 查ProfileLEDStageTable表(见上表) 
+              (七色循环模式 参考）
+       
+Bit0-表示七色呼吸颜色值 查ProfileLEDStageTable表
+Bit1-常亮
+
+Matrix灯模式
+1.呼吸模式
+Bit2-单色呼吸
+颜色值取R,G,B的值
+Bit3-霓虹
+Bit4-常量闪烁
+2.循环幻彩跑马
+00H--逆时针跑马
+01H--顺时针
+3.拖尾循环跑马
+填0
+4.雨点模式
+填0
+5.上、下幻彩跑马
+00H--往上幻彩
+01H--往下幻彩
+     5. RGB 亮度:
+灯效模式
+RGB亮度参数值
+全彩RGB灯模式
+0x00:  表示关闭
+0x01:  表示低亮
+0x02:  表示中亮
+0x03:  表示高亮
+Matrix灯模式
+同上（全彩RGB灯模式）
+四. Wheel设置
+    bit7:
+为1时,表示开灯
+为0时,表示关灯
+    bit6-bit0:
+为滚轮速度调节
+例: 当此值为05H时, 滚轮每动一下,根据方向发5个动作给PC

@@ -1,0 +1,164 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Name="Root"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.DeviceImageWithHotspotsView">
+	<!-- Shared device image + button-remap hotspot overlay used by both the Buttons and Macros
+	     pages. The hotspot connector lines / buttons are positioned on a canvas whose coordinates
+	     were laid out against 1236, but the canvas itself is sized to the room this control has and
+	     the hotspots are re-mapped into it (SetCanvasWidth / TransformX). It is NOT fixed at 1236
+	     any more: centred at that width it overhung the narrower panels and clipped the outermost
+	     labels — see the 2026-10-01 note in docs/plans/add-macro-button-assignment/. This control
+	     reports its own width, because the panels around it are not the same width as it is.
+	     On the Macros page each hotspot bound to a macro grows a second line with the macro name +
+	     an unassign (✕); the Buttons page keeps every hotspot single-line. -->
+	<UserControl.Styles>
+		<Style Selector="Button.partHotspotButton">
+			<Setter Property="Background" Value="#1E162E" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="Padding" Value="0,0,0,2" />
+			<Setter Property="FontSize" Value="16" />
+			<Setter Property="FontFamily" Value="{DynamicResource BaseAppFont}" />
+			<Setter Property="Height" Value="32" />
+			<Setter Property="HorizontalContentAlignment" Value="Center" />
+			<Setter Property="VerticalContentAlignment" Value="Center" />
+		</Style>
+		<Style Selector="Button.partHotspotButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
+			<Setter Property="BorderBrush" Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}" />
+		</Style>
+		<Style Selector="Button.partHotspotButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource TemplatedParent}}" />
+			<Setter Property="BorderBrush" Value="{Binding BorderBrush, RelativeSource={RelativeSource TemplatedParent}}" />
+		</Style>
+		<!-- The unassign (✕) chrome is the shared Button.macroUnassign in App.axaml — it is also
+		     used by the macro list rows on keyboards. -->
+	</UserControl.Styles>
+
+	<!-- The hotspot coordinate space. 1236 is what the labels were laid out against, but this
+	     control lives in the layout's `*` column and that is only ~600 wide near the design
+	     width: centred at a fixed 1236 the canvas hangs ~318px off each side of the panel and
+	     the outermost labels are clipped by it — worse the longer a bound macro's name, since
+	     that is what ButtonWidth grows from. Bound to the width the panel actually has (capped
+	     at the design 1236) so the hotspots move inward instead, which is what SetCanvasWidth
+	     and TransformX were built for. -->
+	<Grid Width="{Binding HotspotCanvasWidth}" Height="756" HorizontalAlignment="Center">
+
+		<!-- Animated RGB glow behind the device image. The silhouette is a MOUSE outline, so it is
+		     gated on lighting support rather than drawn for every device. -->
+		<Viewbox Width="{Binding DeviceImageWidth}" Height="{Binding DeviceImageHeight}" Stretch="Uniform"
+				 HorizontalAlignment="Center" VerticalAlignment="Center"
+				 IsHitTestVisible="False"
+				 IsVisible="{Binding IsRgbSupported}">
+			<Canvas Width="1672" Height="1860" ClipToBounds="False">
+				<Path Data="M1195.02 929.837C1195.02 1092.51 1232.12 1253.98 1182.27 1371.37C1116.37 1526.54 1014.86 1613.7 835.552 1613.7C656.245 1613.7 550.48 1526.54 484.583 1371.37C434.729 1253.98 476.086 1092.51 476.086 929.837C476.086 858.561 486.286 777.759 484.583 698.721C482.053 581.298 471.106 467.771 505.828 395.167C571.58 257.682 730.151 245.977 835.552 245.977C940.952 245.977 1098.25 257.682 1164 395.167C1198.72 467.771 1184.43 581.298 1182.27 698.721C1180.81 777.759 1195.02 858.561 1195.02 929.837Z"
+					  Fill="{Binding AnimatedGlowBrush}"
+					  IsHitTestVisible="False">
+					<Path.Effect>
+						<BlurEffect Radius="123"/>
+					</Path.Effect>
+				</Path>
+			</Canvas>
+		</Viewbox>
+
+		<Svg Path="{Binding DeviceDetailImagePath}"
+			 Width="{Binding DeviceImageWidth}"
+			 Height="{Binding DeviceImageHeight}"
+			 Stretch="Uniform"
+			 HorizontalAlignment="Center"
+			 VerticalAlignment="Center"
+			 IsHitTestVisible="False"
+			 IsVisible="{Binding HasNoDeviceOnlyBitmap}" />
+		<Image Source="{Binding DeviceOnlyBitmap}"
+			   Width="{Binding DeviceImageWidth}"
+			   Height="{Binding DeviceImageHeight}"
+			   Stretch="Uniform"
+			   HorizontalAlignment="Center"
+			   VerticalAlignment="Center"
+			   RenderOptions.BitmapInterpolationMode="HighQuality"
+			   IsHitTestVisible="False"
+			   IsVisible="{Binding HasDeviceOnlyBitmap}" />
+
+		<ItemsControl ItemsSource="{Binding PartHotspots}"
+					  IsVisible="{Binding AreHotspotsVisible}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<Canvas />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.Styles>
+				<Style Selector="ItemsControl > ContentPresenter">
+					<Setter Property="Canvas.Left" Value="0" />
+					<Setter Property="Canvas.Top" Value="0" />
+				</Style>
+			</ItemsControl.Styles>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="viewmodels:DevicePartHotspotViewModel">
+					<Canvas Width="{Binding #Root.DataContext.HotspotCanvasWidth}" Height="756">
+						<Path Data="{Binding ConnectorPathData}"
+							  Stroke="{Binding ConnectorColor}"
+							  StrokeThickness="1"
+							  StrokeLineCap="Round"
+							  ZIndex="20"
+							  IsHitTestVisible="False" />
+						<Ellipse Width="{Binding ConnectorPointSize}"
+								 Height="{Binding ConnectorPointSize}"
+								 Canvas.Left="{Binding ConnectorPointX}"
+								 Canvas.Top="{Binding ConnectorPointY}"
+								 Fill="{Binding ConnectorColor}"
+								 ZIndex="21"
+								 IsHitTestVisible="False" />
+						<Svg Path="avares://ProoveGaming.App/Assets/device-ellipse.svg"
+							 Width="32"
+							 Height="32"
+							 Stretch="Fill"
+							 Canvas.Left="{Binding TargetX}"
+							 Canvas.Top="{Binding TargetY}"
+							 IsHitTestVisible="False" />
+						<Button Classes="partHotspotButton"
+								Canvas.Left="{Binding ButtonX}"
+								Canvas.Top="{Binding ButtonY}"
+								Width="{Binding ButtonWidth}"
+								Height="{Binding ButtonHeight}"
+								Background="{Binding ButtonBackgroundColor}"
+								IsEnabled="{Binding IsAssignable}"
+								Command="{Binding #Root.DataContext.SelectHotspotCommand}"
+								CommandParameter="{Binding}">
+							<StackPanel Spacing="4">
+								<TextBlock Text="{Binding Label}"
+										   Foreground="{Binding ButtonLabelColor}"
+										   FontSize="16"
+										   LineHeight="24"
+										   HorizontalAlignment="{Binding LabelAlignment}" />
+								<!-- Macros page: the assigned macro + unassign (✕). Hidden on the Buttons
+								     page and for buttons not bound to a macro. -->
+								<Grid ColumnDefinitions="*,Auto"
+									  ColumnSpacing="8"
+									  IsVisible="{Binding ShowAssignedMacro}">
+									<TextBlock Grid.Column="0"
+											   Text="{Binding AssignedMacroDisplayName}"
+											   ToolTip.Tip="{Binding AssignedMacroName}"
+											   Foreground="#BEBCEA"
+											   FontSize="14"
+											   LineHeight="18"
+											   VerticalAlignment="Center" />
+									<Button Grid.Column="1"
+										Classes="macroUnassign"
+										Command="{Binding #Root.DataContext.UnassignHotspotCommand}"
+										CommandParameter="{Binding}" />
+								</Grid>
+							</StackPanel>
+						</Button>
+					</Canvas>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+	</Grid>
+</UserControl>

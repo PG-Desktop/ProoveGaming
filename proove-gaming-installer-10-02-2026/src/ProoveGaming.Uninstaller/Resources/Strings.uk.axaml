@@ -1,0 +1,27 @@
+﻿<ResourceDictionary xmlns="https://github.com/avaloniaui"
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<x:String x:Key="Window_Title">Програма видалення Proove Gaming</x:String>
+
+	<x:String x:Key="Step1_Title">Готові до видалення?</x:String>
+	<x:String x:Key="Step1_Subtitle">Ви впевнені, що хочете видалити Proove Gaming?</x:String>
+	<x:String x:Key="Label_DeleteUserProfilesAndSettings">Видалити профілі користувача та налаштування</x:String>
+	<x:String x:Key="Button_Cancel">СКАСУВАТИ</x:String>
+	<x:String x:Key="Button_Uninstall">ВИДАЛИТИ</x:String>
+
+	<x:String x:Key="Step2_Title">Видалення Proove Gaming</x:String>
+	<x:String x:Key="Step2_Subtitle">Видалення файлів...</x:String>
+	<x:String x:Key="Step2_Subtitle_StoppingService">Зупинка служби Device Host...</x:String>
+	<x:String x:Key="Step2_Subtitle_RemovingService">Видалення служби Device Host...</x:String>
+	<x:String x:Key="Step2_Subtitle_RemovingFiles">Видалення файлів...</x:String>
+
+	<x:String x:Key="Step3_Title_Success">Видалення завершено</x:String>
+	<x:String x:Key="Step3_Subtitle_Success">Proove Gaming було видалено з вашого комп’ютера.</x:String>
+	<x:String x:Key="Complete_Message_Prefix">Натисніть</x:String>
+	<x:String x:Key="Complete_Message_Action">Завершити</x:String>
+	<x:String x:Key="Complete_Message_Suffix">щоб вийти.</x:String>
+	<x:String x:Key="Step3_Title_Failed">Видалення завершено з проблемами</x:String>
+	<x:String x:Key="Step3_Subtitle_Failed">Деякі файли не вдалося видалити одразу. Їх буде видалено після перезавантаження.</x:String>
+	<x:String x:Key="Step3_Title_Refused">Нічого не видалено</x:String>
+	<x:String x:Key="Step3_Subtitle_Refused">Не вдалося підтвердити, що ця папка є встановленням Proove Gaming, тому нічого не видалено. Перевстановіть Proove Gaming, а потім видаліть його ще раз. Подробиці — у файлі proove-uninstall.log у тимчасовій папці.</x:String>
+	<x:String x:Key="Button_Finish">ЗАВЕРШИТИ</x:String>
+</ResourceDictionary>

@@ -1,0 +1,151 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:commonControls="using:ProoveGaming.Common.Controls"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 x:Class="ProoveGaming.App.Views.ChooseNicknameView"
+			 x:DataType="viewmodels:ChooseNicknameViewModel">
+	<!-- suggestionButton / suggestionDivider styles are app-level (App.axaml) — shared with the
+	     profile Change-nickname dialog. -->
+
+	<Border VerticalAlignment="Top"
+			HorizontalAlignment="Center"
+			Width="640">
+		<StackPanel>
+
+			<TextBlock Text="{DynamicResource ChooseNicknameView_Title}"
+					   Classes="stepTitle"
+					   Foreground="White"
+					   HorizontalAlignment="Center" />
+
+			<TextBlock Margin="0,16,0,0"
+					   Width="599"
+					   HorizontalAlignment="Center"
+					   TextAlignment="Center"
+					   TextWrapping="Wrap"
+					   FontFamily="{DynamicResource BaseAppFont}"
+					   FontSize="16"
+					   FontWeight="400"
+					   LineHeight="24"
+					   LetterSpacing="0"
+					   Foreground="#B2BEBCEA"
+					   Text="{DynamicResource ChooseNicknameView_Subtitle}" />
+
+			<!-- Nickname input -->
+			<Border x:Name="NicknameBorder"
+					Margin="0,32,0,0"
+					Width="599"
+					Height="56"
+					HorizontalAlignment="Center"
+					BorderBrush="#4DBEBCEA"
+					BorderThickness="1"
+					Background="Transparent">
+				<Grid ColumnDefinitions="Auto,*">
+					<commonControls:SvgImageView Grid.Column="0"
+												 SourceUri="avares://ProoveGaming.Common/Assets/Icons/Person.svg"
+												 Width="24" Height="24"
+												 Stretch="Uniform"
+												 Margin="16,0,8,0"
+												 Opacity="0.5"
+												 VerticalAlignment="Center" />
+					<TextBox Grid.Column="1"
+							 x:Name="NicknameTextBox"
+							 PlaceholderText="{DynamicResource ChooseNicknameView_Placeholder}"
+							 PlaceholderForeground="#BEBCEA"
+							 Background="Transparent"
+							 BorderThickness="0"
+							 Foreground="#BEBCEA"
+							 CaretBrush="#BEBCEA"
+							 VerticalAlignment="Center"
+							 VerticalContentAlignment="Center"
+							 Padding="0"
+							 Text="{Binding Nickname}"
+							 GotFocus="OnNicknameGotFocus" />
+				</Grid>
+			</Border>
+
+			<!-- Status row: always reserves space so layout never jumps -->
+			<Grid Height="20"
+				  Margin="0,4,0,0"
+				  Width="599"
+				  HorizontalAlignment="Center">
+				<TextBlock x:Name="NicknameErrorText"
+						   FontFamily="{DynamicResource BaseAppFont}"
+						   FontSize="12"
+						   Foreground="#FF383C"
+						   Text="{Binding NicknameErrorMessage}"
+						   IsVisible="{Binding NicknameError}" />
+				<TextBlock x:Name="NicknameSuccessText"
+						   FontFamily="{DynamicResource BaseAppFont}"
+						   FontSize="12"
+						   Foreground="#00CE4F"
+						   Text="{DynamicResource ChooseNicknameView_Success_Nickname}"
+						   IsVisible="{Binding NicknameSuccess}" />
+			</Grid>
+
+			<!-- Recommended nicknames divider -->
+			<Grid Margin="0,32,0,0"
+				  Width="599"
+				  HorizontalAlignment="Center"
+				  ColumnDefinitions="*,Auto,*">
+				<Path Grid.Column="0" Classes="suggestionDivider" />
+				<TextBlock Grid.Column="1"
+						   Classes="suggestionDividerLabel"
+						   Text="{DynamicResource ChooseNicknameView_Or}" />
+				<Path Grid.Column="2" Classes="suggestionDivider" />
+			</Grid>
+
+			<!-- Suggestions row -->
+			<Grid Margin="0,16,0,0"
+				  HorizontalAlignment="Center"
+				  ColumnDefinitions="Auto,8,Auto,8,Auto,16,Auto">
+				<Button Grid.Column="0"
+						Classes="suggestionButton"
+						Content="{Binding Suggestion1}"
+						Command="{Binding SelectSuggestionCommand}"
+						CommandParameter="{Binding Suggestion1}"
+						Click="OnSuggestionClick" />
+				<Button Grid.Column="2"
+						Classes="suggestionButton"
+						Content="{Binding Suggestion2}"
+						Command="{Binding SelectSuggestionCommand}"
+						CommandParameter="{Binding Suggestion2}"
+						Click="OnSuggestionClick" />
+				<Button Grid.Column="4"
+						Classes="suggestionButton"
+						Content="{Binding Suggestion3}"
+						Command="{Binding SelectSuggestionCommand}"
+						CommandParameter="{Binding Suggestion3}"
+						Click="OnSuggestionClick" />
+				<Button Grid.Column="6"
+						Classes="linkButton"
+						Cursor="Hand"
+						VerticalAlignment="Center"
+						Command="{Binding RefreshCommand}">
+					<commonControls:SvgImageView
+					SourceUri="avares://ProoveGaming.Common/Assets/Icons/Autorenew.svg"
+					Width="20" Height="20"
+					Stretch="Uniform" />
+				</Button>
+			</Grid>
+
+			<!-- Action buttons -->
+			<Grid Margin="0,40,0,0"
+				  Width="599"
+				  HorizontalAlignment="Center"
+				  ColumnDefinitions="*,16,*">
+				<Button Grid.Column="0"
+						Content="{DynamicResource Button_Back}"
+						HorizontalAlignment="Stretch"
+						Classes="secondaryButton"
+						Command="{Binding BackCommand}" />
+				<Button Grid.Column="2"
+						Content="{DynamicResource Button_Next}"
+						HorizontalAlignment="Stretch"
+						IsEnabled="{Binding NextEnabled}"
+						Classes="primaryButton"
+						Command="{Binding NextCommand}" />
+			</Grid>
+
+		</StackPanel>
+	</Border>
+</UserControl>

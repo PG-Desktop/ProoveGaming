@@ -1,0 +1,94 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.App.Views.AgreementTermsView">
+	<UserControl.Styles>
+		<!-- The scrollbar itself is the shared pgScrollViewer design bar (App.axaml); only the
+		     host chrome below is Agreement-specific. -->
+		<Style Selector="ScrollViewer#AgreementScrollViewer">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+
+		<Style Selector="Button#BackButton">
+			<Setter Property="Background" Value="#1A6357FF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="BorderThickness" Value="1" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="FontFamily" Value="{DynamicResource AppPixelFont}" />
+			<Setter Property="FontSize" Value="18" />
+			<Setter Property="Height" Value="56" />
+		</Style>
+		<Style Selector="Button#BackButton:pointerover">
+			<Setter Property="Background" Value="#4D786DFF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="Button#BackButton:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4D786DFF" />
+			<Setter Property="BorderBrush" Value="#6357FF" />
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+		<Style Selector="Button#BackButton:pressed /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4D6357FF" />
+		</Style>
+	</UserControl.Styles>
+
+	<Border VerticalAlignment="Center">
+		<Border VerticalAlignment="Top"
+				Margin="0,32,0,0">
+			<Grid Width="600"
+				  HorizontalAlignment="Center"
+				  RowDefinitions="Auto,*,Auto"
+				  RowSpacing="16">
+
+				<TextBlock Grid.Row="0"
+						   x:Name="TitleText"
+						   FontFamily="{DynamicResource AppPixelFont}"
+						   FontSize="36"
+						   FontWeight="ExtraLight"
+						   LineHeight="36"
+						   Foreground="White"
+						   HorizontalAlignment="Center"
+						   TextAlignment="Center"
+						   TextWrapping="Wrap" />
+
+				<Grid Grid.Row="1"
+					  Width="600"
+					  Height="460"
+					  HorizontalAlignment="Center">
+					<Canvas Width="600"
+							Height="460"
+							IsHitTestVisible="False">
+						<Path Data="M0,0 H600 V460 H0 Z"
+							  Fill="#14000000" />
+					</Canvas>
+
+					<ScrollViewer Height="460"
+								  x:Name="AgreementScrollViewer"
+								  Classes="pgScrollViewer"
+								  AllowAutoHide="False"
+								  VerticalScrollBarVisibility="Visible"
+								  Padding="0">
+						<!-- Fixed width so the wrapped text measures and arranges identically —
+						     the installer's identically-shaped box measured its scroll extent
+						     ~2 lines short with an auto width (PR review S2). -->
+						<ContentControl x:Name="DocumentHost"
+										Width="540"
+										HorizontalAlignment="Left"
+										Margin="16,12,20,24"/>
+					</ScrollViewer>
+				</Grid>
+
+				<Button x:Name="BackButton"
+						Grid.Row="2"
+						Margin="0,32,0,0"
+						Width="292"
+						HorizontalAlignment="Center"
+						HorizontalContentAlignment="Center"
+						VerticalContentAlignment="Center"
+						Content="{DynamicResource Button_Back}" />
+			</Grid>
+		</Border>
+	</Border>
+</UserControl>

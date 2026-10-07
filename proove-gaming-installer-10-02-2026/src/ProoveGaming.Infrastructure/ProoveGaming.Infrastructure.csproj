@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>$(WindowsTargetFramework)</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ProoveGaming.Infrastructure.Tests" />
+    <!-- The probe project drives the SHIPPING parsers rather than copies of them; a probe that
+         reimplements the rule it is checking proves nothing about the code that runs. -->
+    <InternalsVisibleTo Include="ProoveGaming.Device.Testing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HidSharpCore" Version="1.3.0" />
+    <PackageReference Include="InTheHand.BluetoothLE" Version="4.0.45" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.12" />
+  </ItemGroup>
+
+</Project>

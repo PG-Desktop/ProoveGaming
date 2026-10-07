@@ -1,0 +1,513 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 xmlns:converters="using:ProoveGaming.App.Converters"
+			 xmlns:controls="using:ProoveGaming.App.Controls"
+			 xmlns:commonControls="clr-namespace:ProoveGaming.Common.Controls;assembly=ProoveGaming.Common"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.DpiSectionView"
+			 Design.Width="336"
+			 Design.Height="800">
+	<UserControl.Styles>
+
+		<!-- Single-select option, shared by the DPI stages and the Polling Rate group.
+
+		     The radio VISUAL — hover frame, outer ring, inner dot — lives in this ControlTemplate,
+		     not in the call sites' DataTemplates. Both lists need exactly the same eight lines of
+		     markup for it, and a per-list copy is the duplication CLAUDE.md warns about ("the
+		     trigger is the second copy, not the third"). Here each list supplies only its own
+		     content: a label, plus the stage's colour dot for DPI.
+
+		     Consequence worth knowing: template children sit in their own name scope, so every
+		     style targeting them needs `/template/`. A bare `Ellipse.dpiRadioCircleOuter` selector
+		     silently matches nothing once the ellipse moves in here. -->
+		<Style Selector="RadioButton.dpiRadioOption">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="MinHeight" Value="36" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<!-- The Border is the hit-test surface: its transparent Background makes the whole
+					     UniformGrid cell clickable, not just the pixels the content paints. It also
+					     consumes the Background/Border/Padding setters above — without it they bind to
+					     nothing. -->
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}"
+							Padding="{TemplateBinding Padding}"
+							HorizontalAlignment="Stretch">
+						<!-- Grid, not a horizontal StackPanel: a StackPanel gives every child only its
+						     desired width along the stacking axis, so the content could never fill
+						     the cell and the DPI row's delete icon could not sit flush right. The
+						     `*` column stretches it instead. The polling-rate row is unaffected —
+						     its TextBlock still left-aligns inside the wider column. -->
+						<Grid ColumnDefinitions="Auto,*" VerticalAlignment="Center">
+							<!-- 32x32 is the hover frame's footprint; the 20x20 ring stays centred in it. -->
+							<Panel Grid.Column="0" Width="32" Height="32" VerticalAlignment="Center">
+								<Path Classes="optionHoverFrame" />
+								<Grid Width="20" Height="20"
+									  HorizontalAlignment="Center" VerticalAlignment="Center">
+									<Ellipse Classes="dpiRadioCircleOuter" />
+									<Ellipse Classes="dpiRadioCircleInner" />
+								</Grid>
+							</Panel>
+							<!-- The 6px gap after the radio slot is a STYLE, not a local value here, so
+							     the DPI rows can override it — a local value in a template outranks
+							     any style and could not be overridden. See dpiPointRow below. -->
+							<ContentPresenter Grid.Column="1"
+											  Content="{TemplateBinding Content}"
+											  ContentTemplate="{TemplateBinding ContentTemplate}"
+											  VerticalContentAlignment="Center" />
+						</Grid>
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<!-- Default gap between the radio slot and the row's content, for both lists. -->
+		<Style Selector="RadioButton.dpiRadioOption /template/ ContentPresenter">
+			<Setter Property="Margin" Value="6,0,0,0" />
+		</Style>
+		<!-- DPI point rows close that gap. The row has only 76px of content, and the widest value
+		     ("12000" is 43px at 16px) left the right-aligned delete frame sitting on its last digit.
+		     Taking the 6px back on the LEFT buys the clearance without pushing the button outward:
+		     a button nudged past the cell edge had its own frame clipped instead. The radio circle is
+		     20px centred in a 32px slot, so 6px of visual gap remains either way.
+		     Declared after the default above — equal specificity, so the later rule wins. -->
+		<Style Selector="RadioButton.dpiPointRow /template/ ContentPresenter">
+			<Setter Property="Margin" Value="0" />
+		</Style>
+
+		<Style Selector="RadioButton.dpiRadioOption /template/ Ellipse.dpiRadioCircleOuter">
+			<Setter Property="Width" Value="20" />
+			<Setter Property="Height" Value="20" />
+			<Setter Property="Stroke" Value="#4DBEBCEA" />
+			<Setter Property="StrokeThickness" Value="2" />
+			<Setter Property="Fill" Value="Transparent" />
+		</Style>
+		<Style Selector="RadioButton.dpiRadioOption:checked /template/ Ellipse.dpiRadioCircleOuter">
+			<Setter Property="Stroke" Value="#6357FF" />
+		</Style>
+		<Style Selector="RadioButton.dpiRadioOption /template/ Ellipse.dpiRadioCircleInner">
+			<Setter Property="Width" Value="12" />
+			<Setter Property="Height" Value="12" />
+			<Setter Property="Fill" Value="#6357FF" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="RadioButton.dpiRadioOption:checked /template/ Ellipse.dpiRadioCircleInner">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- The DPI stage's indicator colour, shown left of its value. Deliberately much smaller than
+		     the value text — a dot, not a swatch. Filled per-row from the stage's own colour, so no
+		     Fill is set here. Lives in the DataTemplate content, not the template, so no
+		     `/template/`: it is per-item DATA, unlike the radio visual above. -->
+		<Style Selector="Ellipse.dpiStageColorDot">
+			<Setter Property="Width" Value="6" />
+			<Setter Property="Height" Value="6" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+
+		<!-- The custom-value field. Chromeless in EVERY state: its bordered host (rgbHexInputHost)
+		     owns the outline, so a border here would double it — and the Fluent theme repaints
+		     PART_BorderElement on :pointerover and :focus, which is why those states are cleared
+		     explicitly rather than left to the base setter. -->
+		<Style Selector="TextBox.dpiValueInput">
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="MinHeight" Value="0" />
+			<Setter Property="CaretBrush" Value="#FFFFFF" />
+		</Style>
+		<Style Selector="TextBox.dpiValueInput /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox.dpiValueInput:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox.dpiValueInput:focus /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+		<Style Selector="TextBox.dpiValueInput:focus:pointerover /template/ Border#PART_BorderElement">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+		</Style>
+
+		<!-- Per-point delete, reproducing the recorded-macro step row (MacroRecorderStepsView): the
+		     icon is invisible until its row is hovered, and gets the same octagon hover frame the
+		     Back button uses. Same affordance, so removing a DPI point reads like removing a
+		     recorded step. The point row is a RadioButton rather than a Border, so the hover
+		     selectors hang off the row's own class instead of a wrapper's. -->
+		<Style Selector="RadioButton.dpiRadioOption Button.pointDelete">
+			<Setter Property="Opacity" Value="0" />
+		</Style>
+		<Style Selector="RadioButton.dpiRadioOption:pointerover Button.pointDelete">
+			<Setter Property="Opacity" Value="1" />
+		</Style>
+		<Style Selector="RadioButton.dpiRadioOption Button.pointDelete:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<Style Selector="RadioButton.dpiRadioOption Path.pointDeleteHoverFrame">
+			<Setter Property="Data" Value="{StaticResource CutCornerFrameGeometry}" />
+			<Setter Property="Fill" Value="#4D6357FF" />
+			<Setter Property="Stretch" Value="Fill" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="RadioButton.dpiRadioOption Button.pointDelete:pointerover Path.pointDeleteHoverFrame">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- Hover frame: the same cut-corner shape and fill the back button uses
+		     (DeviceDetailsView's BackHoverFrame), so hovering anything selectable on this screen
+		     reads the same way. It sits behind the RADIO CIRCLE only, not the whole option cell —
+		     the same relationship the back button has, where the frame surrounds its icon rather
+		     than the button's full hit area.
+
+		     Data is the shared CutCornerFrameGeometry (56x56, 8px corners). Because this frame is
+		     also square (32x32), Stretch="Fill" scales it uniformly and the corners stay true — no
+		     skew, unlike stretching a square shape across a wide cell. The chamfer lands at
+		     8 * 32/56 ≈ 4.6px, keeping the motif in proportion to the smaller target. -->
+		<Style Selector="RadioButton.dpiRadioOption /template/ Path.optionHoverFrame">
+			<Setter Property="Data" Value="{StaticResource CutCornerFrameGeometry}" />
+			<Setter Property="Fill" Value="#4D6357FF" />
+			<Setter Property="Stretch" Value="Fill" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<!-- Display-only DPI rows would never enter :pointerover — their RadioButton is not
+		     hit-testable (IsInteractive). Currently unreachable: SupportsDpiStageSwitch is true for
+		     every mouse and the DPI section is hidden for keyboards, so every visible row is
+		     interactive. The guard stays for a future device whose stage is set only by the
+		     physical DPI button. -->
+		<Style Selector="RadioButton.dpiRadioOption:pointerover /template/ Path.optionHoverFrame">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+	</UserControl.Styles>
+
+	<!-- Width matches the 336px content exactly, and clipping is left on. Both were previously
+		 widened/disabled so the stage TOGGLE's hover glow (a 48x48 rectangle overflowing a 52x32
+		 switch) would not be cropped. The toggles are gone: the radio hover frame is 32x32 inside a
+		 40px row, entirely within the content, so nothing overflows. Restoring the clip also closes
+		 what the old setting cost — a ScrollViewer with ClipToBounds=False can paint scrolled-out
+		 content outside its own viewport. -->
+	<!-- No bottom margin (was 24). The viewport's height comes from the panel that hosts every
+		 section — DeviceDetailsView's 756px chassis less its content inset — so a margin here is
+		 pure subtraction from what this section gets to scroll. 24 was also unique to DPI: RGB and
+		 Actuation set none, Presets and Macros set 12, and the chrome's bottom band is already
+		 cleared by the host grid's own 42px inset. Removing it returns 24px to the list. -->
+	<ScrollViewer IsVisible="{Binding IsDpiSection}"
+				  VerticalScrollBarVisibility="Hidden"
+				  HorizontalScrollBarVisibility="Disabled"
+				  HorizontalAlignment="Left"
+				  Width="336"
+				  Padding="0">
+	<StackPanel Margin="0" Spacing="8" Width="336" HorizontalAlignment="Left"
+				IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+		<!-- Recommendation button: writes all 7 stages + colors to the device.
+			 Outside the bluetoothLocked wrapper below: its :disabled colours are the mock's
+			 absolute alphas, and a panel Opacity on top would halve them again (PR #124 M1). -->
+		<Button Classes="sectionActionButton"
+				Content="{DynamicResource DeviceDetails_Dpi_Recommendations}"
+				Command="{Binding ApplyDpiRecommendationsCommand}" />
+
+		<!-- 16px spacer -->
+		<Border Height="16" Background="Transparent" IsHitTestVisible="False" />
+
+		<StackPanel Spacing="8" Classes="bluetoothLocked">
+
+		<!-- The device's DPI stages, three per row -->
+		<!-- Points AND the add button come from one collection, so the button sits in the point flow
+		     rather than under it. Two DataTemplates selected by type, the way the home grid mixes
+		     device cards with its AddDeviceCardViewModel tile. -->
+		<ItemsControl ItemsSource="{Binding DpiPointCells}">
+			<ItemsControl.DataTemplates>
+				<DataTemplate DataType="{x:Type viewmodels:DpiPresetViewModel}">
+					<!-- One radio per stage, matching the Polling Rate group below: the stages are
+					     mutually exclusive (exactly one is active on the device), which a radio
+					     states and a row of independent toggles does not.
+
+					     IsChecked is OneWay and the click goes through SelectCommand, so the
+					     DEVICE's active stage stays the single source of truth — the same contract
+					     the toggle had. The IsInteractive guard would make a row display-only for a
+					     device whose stage only the physical DPI button can set; today no shipped
+					     device takes that path (see the optionHoverFrame comment above).
+
+					     Deliberately no GroupName: exclusivity is already enforced by the VM
+					     (HighlightActiveDpiStage rewrites IsSelected for the whole list), and
+					     Avalonia's group manager is keyed by the WINDOW, so a GroupName here would
+					     couple this list with the second DpiSectionView instance in the other
+					     device panel and fight the VM with direct IsChecked writes. -->
+					<!-- 108 + the 4px right margin = 112 = 336/3, so the WrapPanel below still lays
+					     the points out three to a row exactly as the UniformGrid did. The width is
+					     explicit because the panel can no longer impose it — and only ever holds a
+					     number, never localized text, so it cannot be outgrown by a translation. -->
+					<RadioButton Classes="dpiRadioOption dpiPointRow"
+								 Height="40"
+								 Width="108"
+								 Margin="0,0,4,8"
+								 IsHitTestVisible="{Binding IsInteractive}"
+								 IsChecked="{Binding IsSelected, Mode=OneWay}"
+								 Command="{Binding SelectCommand}">
+						<!-- Content only: the radio circle and hover frame come from the
+						     dpiRadioOption template.
+
+						     The delete button FOLLOWS the value rather than sitting at the cell's right
+						     edge, so the space between a number and its bin icon is the same on every row —
+						     right-aligned, "800" left a wide gap while "12000" had none.
+
+						     Spacing is 0 because the button carries its own: the 20px icon is centred in a
+						     32px hover frame, so 6px of the frame sits between the last digit and the icon's
+						     ink. In a StackPanel the button also keeps its full 32x32 desired size instead of
+						     being squeezed by a wide value, which is what made the icon look smaller on the
+						     "12000" row. Widest case fits: 43px of text + 32px of button = 75 of the 76px the
+						     row has once dpiPointRow closes the content margin. -->
+						<StackPanel Orientation="Horizontal" Spacing="0" VerticalAlignment="Center">
+							<!-- This stage's indicator colour, to the left of its value. HIDDEN for
+							     now by request (2026-09-14) — not deleted, because the per-stage
+							     palettes and their positional semantics may come back. Everything
+							     behind it is intact: DpiPresetViewModel still carries R/G/B and
+							     BuildDpiPresets still assigns them by slot, so restoring the dot is
+							     this one attribute. -->
+							<Ellipse Classes="dpiStageColorDot"
+									 Fill="{Binding HexColor}"
+									 Margin="0,0,6,0"
+									 IsVisible="False" />
+							<TextBlock Text="{Binding Label}"
+									   Foreground="#FFFFFF"
+									   FontSize="16"
+									   VerticalAlignment="Center" />
+							<!-- Removes this point. Collapsed on the last surviving one: the stage
+							     table cannot be emptied. Command is on the VM, not the row, so the
+							     ancestor binding — the row itself is the parameter. -->
+							<Button Classes="pointDelete"
+									Padding="0"
+									Background="Transparent" BorderThickness="0" Cursor="Hand"
+									VerticalAlignment="Center"
+									IsVisible="{Binding CanRemove}"
+									Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).RemoveDpiPointCommand}"
+									CommandParameter="{Binding}">
+								<!-- 32x32, the same footprint the radio circle's hover frame occupies
+								     at the other end of the row, so the two hover targets on a row
+								     are the same size and every row's icon lands on the same
+								     baseline. The frame reuses CutCornerFrameGeometry (the shared
+								     56x56 octagon, Stretch=Fill) rather than a hand-written path:
+								     the source is square, so scaling keeps the chamfer true. -->
+								<Panel Width="32" Height="32">
+									<Path Classes="pointDeleteHoverFrame" />
+									<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Delete.svg"
+										TintColor="#6357FF" Width="20" Height="20" Stretch="Uniform"
+										HorizontalAlignment="Center" VerticalAlignment="Center" />
+								</Panel>
+							</Button>
+						</StackPanel>
+					</RadioButton>
+				</DataTemplate>
+
+				<!-- Appends a point, up to the device's slot ceiling; the VM drops this cell at the
+				     ceiling, the counterpart of a row's delete button disappearing at the floor.
+
+				     The "+" is the shared Add.svg at 18px, sized like the New Preset button's
+				     (DeviceDetailsView.axaml) — an ICON, not a glyph in the label, specifically so
+				     pgLinkButton's hover underline (which selects TextBlock) lands on the words
+				     alone. Pixel font at 18/Light matches the section's RECOMMENDATIONS button
+				     (App.axaml, Button.sectionActionButton); the caps live in the resource strings,
+				     not a ToUpper here — uk has its own.
+
+				     Deliberately NO Width: at 18px the label measures 90px in en and 130px in uk, so
+				     with the icon it needs 116/156px against a point cell's 108. Sized to content it
+				     keeps its full label, and the WrapPanel below moves it to the next line on the
+				     counts where the remainder of the row is too narrow. -->
+				<DataTemplate DataType="{x:Type viewmodels:AddDpiPointCellViewModel}">
+					<Button Classes="pgLinkButton"
+							Height="40"
+							Margin="0,0,4,8"
+							VerticalAlignment="Center"
+							Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).AddDpiPointCommand}">
+						<StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+							<commonControls:SvgImageView SourceUri="avares://ProoveGaming.Common/Assets/Icons/Add.svg"
+														 TintColor="#6357FF"
+														 Width="18" Height="18" Stretch="Uniform"
+														 VerticalAlignment="Center" />
+							<TextBlock Text="{DynamicResource DeviceDetails_Dpi_AddPoint}"
+									   FontFamily="{DynamicResource AppPixelFont}"
+									   FontSize="18"
+									   FontWeight="Light"
+									   Foreground="#6357FF"
+									   VerticalAlignment="Center" />
+						</StackPanel>
+					</Button>
+				</DataTemplate>
+			</ItemsControl.DataTemplates>
+			<!-- WrapPanel, not the UniformGrid the Polling Rate list uses: a UniformGrid forces every
+			     cell to one third of the width, which the add button's label does not fit in. Wrapping
+			     keeps the points three to a row (they carry the 112px cell width themselves) while
+			     letting the add button take the width it needs — and wrap instead of clip when the
+			     row it lands on is too full. -->
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<WrapPanel Orientation="Horizontal" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</ItemsControl>
+
+		<!-- Custom value for the SELECTED point. Header row is title | value box; the step caption
+		     sits under the title, then the slider — the same title/subtitle/slider stack the
+		     Actuation section uses, so the two sections read identically.
+
+		     16px below the point grid: the parent StackPanel already contributes its Spacing of 8,
+		     so the margin supplies the other 8 rather than a spacer Border (which would have to be
+		     0px high to land on 16 — a spacer that spaces nothing). -->
+		<StackPanel Spacing="8" Margin="0,8,0,0" IsVisible="{Binding HasDpiPoints}">
+			<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+				<StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+					<TextBlock Text="{Binding DpiPointTitle}"
+							   Foreground="#FFFFFF" FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="18" FontWeight="SemiBold"
+							   VerticalAlignment="Center" />
+					<TextBlock Text="{Binding DpiStepLabel}"
+							   Foreground="#B2BEBCEA" FontFamily="{DynamicResource BaseAppFont}"
+							   FontSize="14" LineHeight="20" />
+				</StackPanel>
+				<!-- Same chrome as the RGB picker's closed-state HEX box (style in App.axaml): the
+				     grey unit mark, then the value. The border comes from the host ALONE — the
+				     TextBox inside is chromeless, or the two 1px strokes read as a double outline.
+				     MinWidth, never Width: the box must grow with its content, not be measured off
+				     one language. -->
+				<Border Grid.Column="1" Classes="rgbHexInputHost" VerticalAlignment="Center">
+					<StackPanel Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+						<!-- The "DPI" counterpart of the picker's HEX wordmark. A TextBlock, not an
+						     SVG: "DPI" is a unit and never translated, so there is nothing the
+						     wordmark asset would buy. #70698B is the same tint HEX.svg is given —
+						     #BEBCEA at 50% over this row's background. -->
+						<TextBlock Text="DPI"
+								   Foreground="#70698B"
+								   FontFamily="{DynamicResource BaseAppFont}"
+								   FontSize="14"
+								   FontWeight="SemiBold"
+								   VerticalAlignment="Center" />
+						<TextBox Name="CustomDpiInput"
+								 Classes="dpiValueInput"
+								 MinWidth="54"
+								 VerticalAlignment="Center"
+								 VerticalContentAlignment="Center"
+								 FontFamily="{DynamicResource BaseAppFont}"
+								 FontSize="16"
+								 Text="{Binding CustomDpiText, Mode=OneWay}"
+								 GotFocus="OnCustomDpiGotFocus"
+								 TextInput="OnCustomDpiTextInput"
+								 TextChanged="OnCustomDpiTextChanged"
+								 KeyDown="OnCustomDpiKeyDown"
+								 LostFocus="OnCustomDpiLostFocus" />
+					</StackPanel>
+				</Border>
+			</Grid>
+
+			<!-- Same control and visual as the RGB brightness / Actuation sliders. The VM quantizes
+			     the fraction to the device's DPI step. -->
+			<!-- FractionChanged previews; DragCompleted is what reaches the mouse. See
+			     PercentSliderControl.DragCompleted. -->
+			<controls:PercentSliderControl Percent="{Binding CustomDpiPct}"
+										   FractionChanged="OnCustomDpiFractionChanged"
+										   DragCompleted="OnCustomDpiDragCompleted" />
+		</StackPanel>
+
+		<!-- 12px spacer before Polling Rate -->
+		<Border Height="12" Background="Transparent" IsHitTestVisible="False" />
+
+		<!-- Polling Rate -->
+		<TextBlock Text="{DynamicResource DeviceDetails_Dpi_PollingRate}"
+				   Foreground="#FFFFFF"
+				   FontSize="18"
+				   FontWeight="SemiBold" />
+		<TextBlock Text="{DynamicResource DeviceDetails_Dpi_PollingRate_Subtitle}"
+				   Foreground="#BEBCEA"
+				   FontSize="14"
+				   Opacity="0.7"
+				   TextWrapping="Wrap" />
+
+		<!-- Polling rate options: 3 per row via UniformGrid -->
+		<ItemsControl ItemsSource="{Binding PollingRateOptions}">
+			<ItemsControl.ItemTemplate>
+				<DataTemplate x:DataType="viewmodels:PollingRateOptionViewModel">
+					<!-- No GroupName for the same reason as the DPI stages above: HighlightPollingRate
+					     is the single writer of IsSelected, and a window-keyed group would couple the
+					     two DpiSectionView instances. -->
+					<RadioButton Classes="dpiRadioOption"
+								 Height="40"
+								 Margin="0,0,4,8"
+								 IsChecked="{Binding IsSelected, Mode=OneWay}"
+								 Command="{Binding SelectCommand}">
+						<!-- Content only — see the DPI list above. -->
+						<TextBlock Text="{Binding Label}"
+								   Foreground="#FFFFFF"
+								   FontSize="14"
+								   FontWeight="SemiBold"
+								   VerticalAlignment="Center" />
+					</RadioButton>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<UniformGrid Columns="3" />
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+		</ItemsControl>
+
+		<!-- 8px spacer before Lift-Off Distance (was 24). With the parent StackPanel's own Spacing
+		     of 8 on each side the gap is 24px, down from 40 — reclaiming the 16px that pushed the
+		     bottom of the lift-off slider past the viewport and forced a scroll to reach it. -->
+		<Border Height="8" Background="Transparent" IsHitTestVisible="False" />
+
+		<!-- Lift-Off Distance slider (device-specific, e.g. BLAZE) -->
+		<StackPanel IsVisible="{Binding HasLiftOffDistance}" Spacing="8">
+			<Grid ColumnDefinitions="*,Auto" VerticalAlignment="Center">
+				<TextBlock Grid.Column="0"
+						   Text="{DynamicResource DeviceDetails_Dpi_LiftOffDistance}"
+						   Foreground="#FFFFFF" FontSize="18" FontWeight="SemiBold"
+						   VerticalAlignment="Center" />
+				<TextBlock Grid.Column="1"
+						   Text="{Binding LiftOffSetting.DisplayValue}"
+						   Foreground="#FFFFFF" FontSize="18" VerticalAlignment="Center" />
+			</Grid>
+			<TextBlock Text="{DynamicResource DeviceDetails_Dpi_LiftOffDistance_Subtitle}"
+					   Foreground="#BEBCEA" FontSize="14" Opacity="0.7" TextWrapping="Wrap" />
+			<Grid Name="LiftOffSliderGrid" Height="32" ClipToBounds="False"
+				  PointerPressed="OnLiftOffPointerPressed"
+				  PointerMoved="OnLiftOffPointerMoved"
+				  Cursor="Hand">
+				<Rectangle Fill="#49475E" Height="9" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+				<Rectangle Fill="#6357FF" Height="9" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Width>
+						<MultiBinding Converter="{x:Static converters:PercentageWidthConverter.Instance}">
+							<Binding Path="LiftOffSetting.SliderPct" />
+							<Binding ElementName="LiftOffSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Width>
+				</Rectangle>
+				<Rectangle Fill="#6357FF" Width="9" Height="28" VerticalAlignment="Center" HorizontalAlignment="Left">
+					<Rectangle.Margin>
+						<MultiBinding Converter="{x:Static converters:PercentageThumbMarginConverter.Instance}">
+							<Binding Path="LiftOffSetting.SliderPct" />
+							<Binding ElementName="LiftOffSliderGrid" Path="Bounds.Width" />
+						</MultiBinding>
+					</Rectangle.Margin>
+				</Rectangle>
+			</Grid>
+		</StackPanel>
+		</StackPanel>
+
+	</StackPanel>
+	</ScrollViewer>
+</UserControl>

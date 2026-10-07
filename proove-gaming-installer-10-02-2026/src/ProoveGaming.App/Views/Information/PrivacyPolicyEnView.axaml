@@ -1,0 +1,101 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.App.Views.Information.PrivacyPolicyEnView">
+	<TextBlock Classes="legalDocRoot">
+		<Run Classes="legalDocTitle" Text="Privacy Policy" />
+		<LineBreak />
+		<Run Classes="legalDocDate" Text="Proove Gaming Application — Effective Date: 28.08.2026" />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" FontStyle="Italic" Text="BE FIRST COMPANY LIMITED is registered at FLAT/RM 602, 6/F, KAI YUE COMMERCIAL BUILDING, NO.2C, ARGYLE STREET, MONGKOK, KL, HONG KONG. Business Registration Certificate No. 71957264-000-06-26-2, valid from 11 June 2026 to 10 June 2027." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="This Privacy Policy explains how BE FIRST COMPANY LIMITED (&quot;PROOVE GAMING&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;), acting as data controller, collects, uses, stores, and protects personal data when you use the companion Proove Gaming application (&quot;Application&quot;). We are committed to processing personal data lawfully, fairly, and transparently in accordance with applicable data protection law, including, where applicable, the EU/UK General Data Protection Regulation (&quot;GDPR&quot;)." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="1. Personal Data We Collect" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We collect only the minimum amount of personal data necessary to provide the Application's functionality:" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="● Account data: email address, username/nickname, and password (stored in encrypted/hashed form and never in plain text)." />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="● Additional profile data: first name, last name, phone number, country, date of birth, and profile avatar image, if you choose to provide them." />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="● Device and technical data: information about the connected PROOVE GAMING device (model, firmware version), device settings/profiles that you create, and basic diagnostic or usage data necessary for the Application to function." />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="● Communications: information you provide when contacting customer support." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="2. How We Use Personal Data" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We use personal data to: create and manage your account; authenticate you and recover your password; enable you to configure, personalize, and synchronize your PROOVE GAMING device settings; provide customer support; maintain the security and integrity of the Application; deliver software or firmware updates; and comply with legal obligations. We do not use your personal data to make automated decisions that produce legal or similarly significant effects concerning you." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We may also use aggregated or anonymized data that does not identify any individual for internal analytics, product development, and quality assurance. Such aggregated data is not considered personal data and is not subject to the individual rights described in this Policy." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="3. Legal Bases for Processing" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="Where GDPR or a similar law applies, we process personal data on the following legal bases: performance of a contract (to provide the Application and account features you request); legitimate interests (to protect the Application and improve our products); consent (for additional profile data, such as an avatar, and for any additional marketing communications, which you may withdraw at any time); and compliance with legal obligations." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="4. Data Sharing and Disclosure" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We do not sell personal data. We may share personal data with: service providers who process data on our behalf (for example, providers of cloud hosting, authentication, and infrastructure services), subject to contractual confidentiality and data protection obligations; affiliated companies within our corporate group for the purpose of operating the Application; and government authorities, where disclosure is required by law, court order, or to protect our legal rights, safety, or property." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="5. International Data Transfers" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="If personal data is transferred to a country other than your own (including countries outside the European Economic Area), we will ensure an adequate level of protection, such as standard contractual clauses or an applicable adequacy decision, before the transfer takes place." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="6. Data Retention" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We retain personal data for as long as your account remains active, and for a reasonable period thereafter to comply with legal obligations, resolve disputes, and enforce our agreements. You may request deletion of your account and associated personal data at any time, subject to any applicable legal retention requirements." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="7. Data Security" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We implement appropriate technical and organizational measures to protect personal data against unauthorized access, loss, misuse, or alteration, including password encryption/hashing, access controls, and secure data transmission. No method of transmission or storage is completely secure, and we cannot guarantee absolute security." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="8. Your Rights" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="Subject to applicable law, you have the right to: access the personal data we hold about you; request correction of inaccurate data; request deletion of your data (&quot;right to be forgotten&quot;); request restriction of, or object to, certain processing; request a portable copy of your data; and withdraw consent at any time where processing is based on consent. To exercise these rights, contact us at " /><InlineUIContainer BaselineAlignment="Baseline"><Button Classes="legalDocEmailLink" Content="support@proovegaming.com" Click="OnEmailLinkClicked"/></InlineUIContainer><Run Classes="legalDocText" Text=". You also have the right to lodge a complaint with your local data protection authority." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="9. Children's Privacy" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Application is not intended for children under 16 years of age (or the relevant age of digital consent in your jurisdiction). We do not knowingly collect personal data from children under this age. If we become aware that we have inadvertently collected such data, we will take steps to delete it promptly." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="10. Cookies and Similar Technologies" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Application may use locally stored identifiers or similar technologies strictly necessary to keep you signed in and remember your device settings. Where analytics or non-essential technologies are used, we will provide appropriate notice and, where required, obtain your consent." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="11. Changes to This Privacy Policy" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. We will notify you of material changes through the Application or by email. The &quot;Last Updated&quot; date at the top of this Policy indicates when it was last revised." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="13. Marketing Communications" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="If you agree to receive marketing or promotional communications about PROOVE GAMING products, you may withdraw your consent and unsubscribe at any time via the link provided in each communication or through your account settings. We will not send marketing communications unless you have opted in, or after you have opted out." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="14. Automated Processing" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We do not use your personal data for profiling or automated decision-making that produces legal or similarly significant effects concerning you. Device configuration and profile synchronization are performed based on your own configuration settings." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="15. Data Breach Notification" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="In the event of a personal data breach that poses a risk to your rights and freedoms, we will notify the relevant supervisory authority and, where required by applicable law, affected users without undue delay and in accordance with applicable legal timeframes." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="16. Contact Us" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="If you have any questions about this Privacy Policy or how we process your personal data, contact us at: " /><InlineUIContainer BaselineAlignment="Baseline"><Button Classes="legalDocEmailLink" Content="support@proovegaming.com" Click="OnEmailLinkClicked"/></InlineUIContainer><Run Classes="legalDocText" Text="." />
+	</TextBlock>
+</UserControl>

@@ -1,0 +1,105 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 x:Class="ProoveGaming.App.Views.Information.TermsOfServiceEnView">
+	<TextBlock Classes="legalDocRoot">
+		<Run Classes="legalDocTitle" Text="Terms of Service" />
+		<LineBreak />
+		<Run Classes="legalDocDate" Text="Proove Gaming Application — Effective Date: 28.08.2026" />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="These Terms of Service (&quot;Terms&quot;) govern access to and use of the companion Proove Gaming application (&quot;Application&quot;) provided by BE FIRST COMPANY LIMITED, a company registered at FLAT/RM 602, 6/F, KAI YUE COMMERCIAL BUILDING, NO.2C, ARGYLE STREET, MONGKOK, KL, HONG KONG (Business Registration Certificate No. 71957264-000-06-26-2, valid from 11 June 2026 to 10 June 2027) (&quot;PROOVE GAMING&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). By downloading, installing, or using the Application, you (&quot;User&quot; or &quot;you&quot;) agree to these Terms and our Privacy Policy and License Agreement, which are incorporated herein by reference. If you do not agree, do not install or use the Application." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="1. Description of the Service" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Application is a companion application designed for use with Proove Gaming-branded peripheral devices, including gaming mice, keyboards, and headsets (&quot;Devices&quot;). The Application allows you to create and manage a personal account, configure and personalize connected Devices, store and synchronize device profiles and settings, and receive firmware or software updates. The Application is intended for use by individuals who own or have lawful access to a genuine PROOVE GAMING-branded Device, and is not intended for use with third-party or non-PROOVE GAMING equipment." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="2. Eligibility and Account Registration" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="To use the account-based features of the Application, you must register and create a personal account. You must be at least 18 years old, or the age of digital consent in your jurisdiction if higher, to create an account without parental or guardian consent. During registration, you will be asked to provide an email address, choose a username (nickname), and set a password." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="You are responsible for maintaining the confidentiality of your account credentials and for all activity that occurs under your account. You agree to provide accurate, current, and complete information and to update it promptly if it changes. We reserve the right to suspend or terminate accounts that contain false, misleading, or fraudulent information." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="3. License to Use the Application" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="Subject to your compliance with these Terms, we grant you a limited, non-exclusive, non-transferable, revocable license to install and use the Application on compatible devices solely for your personal, non-commercial use of genuine PROOVE GAMING-branded Devices. Additional terms governing the software license itself are set out in a separate License Agreement, which prevails over these Terms with respect to intellectual property matters and license scope in the event of any conflict." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="4. Acceptable Use" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="When using the Application, you agree not to: (a) reverse engineer, decompile, or disassemble the Application, except as permitted by applicable law; (b) use the Application with counterfeit, unauthorized, or non-PROOVE GAMING equipment in a manner that circumvents device restrictions; (c) attempt to gain unauthorized access to accounts, systems, or networks connected to the Application; (d) upload unlawful, defamatory, obscene, or infringing content, including as part of an avatar or profile; (e) interfere with or disrupt the integrity or performance of the Application; or (f) use the Application in violation of any applicable law or regulation." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="5. Devices and Compatibility" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Application is designed to work with genuine PROOVE GAMING-branded mice, keyboards, and headsets. We do not warrant compatibility, functionality, or support for counterfeit products, modified hardware, or third-party peripheral devices. Use of the Application with unauthorized equipment is at your own risk and may void applicable product warranties." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="6. Intellectual Property" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="The Application, including its software, design, graphics, trademarks (including &quot;Proove Gaming&quot; and &quot;PROOVE GAMING&quot;), and all related intellectual property, is owned by BE FIRST COMPANY LIMITED or its licensors and is protected by copyright and other intellectual property laws. Nothing in these Terms transfers any ownership rights to you. You retain ownership of any personal content you upload (such as an avatar image), but grant us a limited license to store and display it within the Application solely for the purpose of providing the service." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="7. Updates and Changes to the Application" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We may update, modify, or discontinue features of the Application, including firmware-related features, at any time, with or without notice, to improve performance, security, or compatibility. We are not obligated to support discontinued Devices or versions of the Application indefinitely." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="8. Disclaimer of Warranties" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="THE APPLICATION IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE,&quot; WITHOUT WARRANTIES OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, OR UNINTERRUPTED OPERATION, EXCEPT WHERE SUCH DISCLAIMER IS NOT PERMITTED BY APPLICABLE LAW." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="9. Limitation of Liability" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="To the maximum extent permitted by applicable law, BE FIRST COMPANY LIMITED shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of data, profits, or goodwill, arising out of or related to your use of the Application. Our total aggregate liability for any claim arising under these Terms shall not exceed the amount, if any, you paid for the Application or the related Device during the twelve (12) months preceding the claim." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="10. Suspension and Termination" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We may suspend or terminate your access to the Application, in whole or in part, if you violate these Terms, misuse the Application, or if required by law. You may stop using the Application and delete your account at any time through the in-app settings or by contacting us at " /><InlineUIContainer BaselineAlignment="Baseline"><Button Classes="legalDocEmailLink" Content="support@proovegaming.com" Click="OnEmailLinkClicked"/></InlineUIContainer><Run Classes="legalDocText" Text=". Sections of these Terms that by their nature should survive termination (including intellectual property, disclaimer of warranties, and limitation of liability) will continue to apply." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="11. Changes to These Terms" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We may revise these Terms from time to time. Material changes will be notified through the Application or by email to the address associated with your account. Continued use of the Application after changes take effect constitutes acceptance of the revised Terms." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="12. Governing Law and Disputes" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="These Terms are governed by the laws of Hong Kong without regard to its conflict of laws principles. Any dispute arising out of or related to these Terms shall be subject to the exclusive jurisdiction of the courts of Hong Kong, unless mandatory consumer protection law in your country of residence provides otherwise." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="13. Feedback" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="If you submit ideas, suggestions, or feedback regarding the Application or the Devices, you grant us a perpetual, irrevocable, royalty-free license to use such feedback for any purpose, including improving our products, without any obligation to compensate you." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="14. Force Majeure" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="We shall not be liable for any failure or delay in performance caused by circumstances beyond our reasonable control, including natural disasters, internet or infrastructure outages, government actions, labor disputes, or other force majeure events." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="14. Assignment" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="You may not assign or transfer your rights or obligations under these Terms without our prior written consent. We may transfer these Terms, in whole or in part, in connection with a merger, acquisition, corporate reorganization, or sale of assets." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="16. Severability and No Waiver" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="If any provision of these Terms is held invalid or unenforceable, the remaining provisions will remain in full force and effect. Our failure to enforce any right or provision of these Terms will not be deemed a waiver of such right or provision." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="17. Entire Agreement" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="These Terms, together with the Privacy Policy and the License Agreement, constitute the entire agreement between you and BE FIRST COMPANY LIMITED regarding the Application and supersede all prior agreements and understandings, whether written or oral, relating to its subject matter." />
+		<LineBreak />
+		<LineBreak />
+		<Run Classes="legalDocHeading" Text="18. Contact Information" />
+		<LineBreak />
+		<Run Classes="legalDocText" Text="If you have any questions about these Terms, please contact us at: " /><InlineUIContainer BaselineAlignment="Baseline"><Button Classes="legalDocEmailLink" Content="support@proovegaming.com" Click="OnEmailLinkClicked"/></InlineUIContainer><Run Classes="legalDocText" Text="." />
+	</TextBlock>
+</UserControl>

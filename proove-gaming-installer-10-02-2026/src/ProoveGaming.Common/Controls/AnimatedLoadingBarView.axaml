@@ -1,0 +1,9 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="ProoveGaming.Common.Controls.AnimatedLoadingBarView">
+    <Image x:Name="LoadingImage"
+           Width="312"
+           Height="17"
+           Stretch="Uniform"
+           HorizontalAlignment="Center" />
+</UserControl>

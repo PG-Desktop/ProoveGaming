@@ -1,0 +1,398 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+			 xmlns:viewmodels="using:ProoveGaming.App.ViewModels"
+			 mc:Ignorable="d"
+			 x:DataType="viewmodels:DeviceDetailsViewModel"
+			 x:Class="ProoveGaming.App.Views.DeviceDetailsSections.PresetsSectionView"
+			 Design.Width="336"
+			 Design.Height="714">
+	<UserControl.Styles>
+
+		<!-- Preset item row — 88h, white 5% bg, 2px purple border when :checked. -->
+		<Style Selector="RadioButton.presetItemRow">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Height" Value="88" />
+			<Setter Property="Background" Value="#0DFFFFFF" />
+			<Setter Property="Foreground" Value="#FFFFFF" />
+			<Setter Property="BorderBrush" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="2" />
+			<Setter Property="Padding" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Template">
+				<ControlTemplate>
+					<Border Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+						<ContentPresenter Content="{TemplateBinding Content}"
+										  ContentTemplate="{TemplateBinding ContentTemplate}"
+										  HorizontalContentAlignment="Stretch"
+										  VerticalContentAlignment="Stretch" />
+					</Border>
+				</ControlTemplate>
+			</Setter>
+		</Style>
+		<Style Selector="RadioButton.presetItemRow:checked">
+			<Setter Property="BorderBrush" Value="#6357FF" />
+		</Style>
+		<Style Selector="RadioButton.presetItemRow:pointerover:not(:checked)">
+			<Setter Property="Background" Value="#1A6357FF" />
+		</Style>
+
+		<!-- Radio dot (18/12 ring + fill) — reused per row -->
+		<Style Selector="Ellipse.presetRadioOuter">
+			<Setter Property="Width" Value="18" />
+			<Setter Property="Height" Value="18" />
+			<Setter Property="Stroke" Value="#4DBEBCEA" />
+			<Setter Property="StrokeThickness" Value="2" />
+			<Setter Property="Fill" Value="Transparent" />
+		</Style>
+		<Style Selector="RadioButton:checked Ellipse.presetRadioOuter">
+			<Setter Property="Stroke" Value="#6357FF" />
+		</Style>
+		<Style Selector="Ellipse.presetRadioInner">
+			<Setter Property="Width" Value="12" />
+			<Setter Property="Height" Value="12" />
+			<Setter Property="Fill" Value="#6357FF" />
+			<Setter Property="HorizontalAlignment" Value="Center" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="RadioButton:checked Ellipse.presetRadioInner">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- Kebab (three purple dots) — hover shows the same octagon background as the
+		     read/unread button on notification items. -->
+		<Style Selector="Ellipse.presetKebabDot">
+			<Setter Property="Width" Value="3.33" />
+			<Setter Property="Height" Value="3.33" />
+			<Setter Property="Fill" Value="#6357FF" />
+		</Style>
+		<Style Selector="Button.presetKebab">
+			<Setter Property="Background" Value="Transparent" />
+			<Setter Property="BorderThickness" Value="0" />
+			<!-- 32px hit area (14 + 4 content + 14 = 32) matches the hover octagon so the
+			     Flyout's right edge (Placement=BottomEdgeAlignedRight) lands on the octagon's
+			     right edge instead of clipping into the dots. -->
+			<Setter Property="Padding" Value="14,0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="ClipToBounds" Value="False" />
+		</Style>
+		<Style Selector="Button.presetKebab /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+		<!-- Hover background: chamfered rectangle behind the dots. Two visibility triggers:
+		     (1) :pointerover on the button (hover),
+		     (2) the .menuOpen class the kebab button carries while its popup is open
+		         (Classes.menuOpen="{Binding IsKebabMenuOpen}"). -->
+		<Style Selector="Path.presetKebabBg">
+			<Setter Property="IsVisible" Value="False" />
+		</Style>
+		<Style Selector="Button.presetKebab:pointerover Path.presetKebabBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+		<Style Selector="Button.presetKebab.menuOpen Path.presetKebabBg">
+			<Setter Property="IsVisible" Value="True" />
+		</Style>
+
+		<!-- Kebab menu items — match the HomeView card kebab menu style exactly. -->
+		<Style Selector="Button.presetMenuItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4D6357FF" />
+		</Style>
+		<Style Selector="Button.presetMenuItemDelete:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="#4DFF383C" />
+		</Style>
+		<!-- Disabled Delete (shown on the default preset, which is undeletable). Dim the
+		     content and suppress the red hover background so it visually reads as inert. -->
+		<Style Selector="Button.presetMenuItemDelete:disabled">
+			<Setter Property="Opacity" Value="0.4" />
+			<Setter Property="Cursor" Value="Arrow" />
+		</Style>
+		<Style Selector="Button.presetMenuItemDelete:disabled /template/ ContentPresenter#PART_ContentPresenter">
+			<Setter Property="Background" Value="Transparent" />
+		</Style>
+
+	</UserControl.Styles>
+
+	<!-- Visible 4px bar (shared pgScrollViewer style): the preset list is user-grown and
+		 overflows routinely, and a hidden bar read as "no scroll here". Width 348 = the 336
+		 content column + the 12px bar zone (the host cell is widened to fit it — see the
+		 sections host margins in DeviceDetailsView), so the bar sits clear of the rows. -->
+	<!-- The bottom margin ends the viewport 12px above the panel band, so the clip line,
+		 the track's bottom and a fully-scrolled last row all share one edge. -->
+	<ScrollViewer IsVisible="{Binding IsPresetsSection}"
+				  Classes="pgScrollViewer pgPresetsScroll"
+				  Width="348" HorizontalAlignment="Left"
+				  Margin="0,0,0,12"
+				  AllowAutoHide="False"
+				  VerticalScrollBarVisibility="Auto"
+				  HorizontalScrollBarVisibility="Disabled"
+				  Padding="0">
+		<StackPanel Width="336" HorizontalAlignment="Left" Spacing="8"
+					Classes="bluetoothLocked"
+					IsEnabled="{Binding !Device.IsBluetoothConfigLocked, FallbackValue=True}">
+
+			<!-- Section header: item-count label on the left, purple category on the right.
+			     Both use the pixel font at 14 to match the design's 12px glyph height. -->
+			<Grid Height="24" Margin="0,24,0,16" ColumnDefinitions="*,Auto">
+				<TextBlock Grid.Column="0"
+						   Text="{Binding PresetsCountLabel}"
+						   Foreground="#B2BEBCEA"
+						   FontFamily="Segoe UI"
+						   FontWeight="Normal"
+						   FontSize="14"
+						   LineHeight="18"
+						   LetterSpacing="0"
+						   VerticalAlignment="Center" />
+				<TextBlock Grid.Column="1"
+						   Text="{DynamicResource Presets_Header_ItemsLabel}"
+						   Foreground="#6357FF"
+						   FontFamily="{DynamicResource AppPixelFont}"
+						   FontSize="14"
+						   LineHeight="18"
+						   LetterSpacing="0"
+						   VerticalAlignment="Center" />
+			</Grid>
+
+			<!-- Empty-state hint: shown only when there are genuinely no presets — not while a
+				 device open is still loading them (ShowNoPresetsHint gates on both). -->
+			<TextBlock Text="{DynamicResource Presets_EmptyHint}"
+					   Foreground="#B2BEBCEA"
+					   FontFamily="{DynamicResource BaseAppFont}"
+					   FontSize="14"
+					   LineHeight="20"
+					   LetterSpacing="0.25"
+					   TextWrapping="Wrap"
+					   IsVisible="{Binding ShowNoPresetsHint}" />
+
+			<!-- Preset list — appended when Confirm is clicked in the New Preset dialog. -->
+			<ItemsControl ItemsSource="{Binding Presets}">
+				<ItemsControl.ItemsPanel>
+					<ItemsPanelTemplate>
+						<StackPanel Spacing="8" />
+					</ItemsPanelTemplate>
+				</ItemsControl.ItemsPanel>
+				<ItemsControl.ItemTemplate>
+					<DataTemplate x:DataType="viewmodels:PresetViewModel">
+						<RadioButton Classes="presetItemRow" GroupName="Presets"
+									 IsChecked="{Binding IsSelected, Mode=TwoWay}"
+									 Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).SelectPresetCommand}"
+									 CommandParameter="{Binding}">
+							<Grid Margin="19,19,19,16" RowDefinitions="Auto,*,Auto">
+
+								<!-- Top row: radio (left) + title (center) + kebab (right) -->
+								<Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15" Height="18">
+									<Grid Grid.Column="0" Width="18" Height="18">
+										<Ellipse Classes="presetRadioOuter" />
+										<Ellipse Classes="presetRadioInner" />
+									</Grid>
+									<TextBlock Grid.Column="1"
+											   Text="{Binding Name}"
+											   Foreground="#FFFFFF"
+											   FontFamily="{DynamicResource BaseAppFont}"
+											   FontSize="16"
+											   FontWeight="SemiBold"
+											   LineHeight="20"
+											   LetterSpacing="0"
+											   VerticalAlignment="Center"
+											   TextTrimming="CharacterEllipsis" />
+									<Button Grid.Column="2" Classes="presetKebab"
+											x:Name="KebabButton"
+											Classes.menuOpen="{Binding IsKebabMenuOpen}"
+											Command="{Binding ToggleKebabMenuCommand}"
+											VerticalAlignment="Center">
+										<!-- Fixed-size Grid so the 32x32 hover octagon can extend beyond
+										     the button (via ClipToBounds=False) without resizing the layout
+										     and pushing the dots. Matches the notification-button pattern. -->
+										<Grid Width="4" Height="15" ClipToBounds="False">
+											<Path Classes="presetKebabBg"
+												  Width="32" Height="32"
+												  HorizontalAlignment="Center" VerticalAlignment="Center"
+												  Stretch="Uniform" Fill="#4D6357FF"
+												  Data="M27.4286 4.57143H32V27.4286H27.4286V32H4.57143V27.4286H0V4.57143H4.57143V0H27.4286V4.57143Z"/>
+											<StackPanel Spacing="2.5" HorizontalAlignment="Center" VerticalAlignment="Center">
+												<Ellipse Classes="presetKebabDot" />
+												<Ellipse Classes="presetKebabDot" />
+												<Ellipse Classes="presetKebabDot" />
+											</StackPanel>
+										</Grid>
+									</Button>
+
+									<!-- Kebab menu popup — IsOpen is bound two-way to the row's
+									     IsKebabMenuOpen property. Toggle command opens it, IsLightDismissEnabled
+									     closes it on click-outside, and each menu-item command sets the property
+									     to false directly on the ViewModel. No code-behind needed. -->
+									<Popup Grid.Column="2"
+										   PlacementTarget="{Binding #KebabButton}"
+										   Placement="BottomEdgeAlignedRight"
+										   HorizontalOffset="20"
+										   IsLightDismissEnabled="True"
+										   IsOpen="{Binding IsKebabMenuOpen, Mode=TwoWay}">
+										<!-- Chamfered black menu: min 204x176, top-right and bottom-left 16px
+										     chamfers, purple glow at 30%/blur 40. MinWidth + a stretching middle
+										     (not a fixed Width) so localized rows size the menu — same rule as the
+										     card DotsOverlay. The Grid margin gives the shadow room; the
+										     HorizontalOffset above shifts the popup so the visible menu right edge
+										     still aligns with the kebab hover-octagon right. -->
+										<Grid MinWidth="204" Height="176" Margin="20,15,20,20">
+											<Grid.Effect>
+												<DropShadowEffect BlurRadius="40" Color="#6357FF" Opacity="0.3"/>
+											</Grid.Effect>
+
+											<Grid ColumnDefinitions="16,*,16" Height="176">
+												<Rectangle VerticalAlignment="Top" Height="160" Fill="Black"/>
+												<Path Fill="Black" Data="M16 176 L0 160 L16 160 Z"/>
+												<Rectangle Grid.Column="1" Height="176" Fill="Black"/>
+												<Path Grid.Column="2" Fill="Black" Data="M0 0 L16 16 L0 16 Z"/>
+												<Rectangle Grid.Column="2" VerticalAlignment="Top" Margin="0,16,0,0" Height="160" Fill="Black"/>
+											</Grid>
+
+											<StackPanel Margin="16,8,16,0" Spacing="0" VerticalAlignment="Top">
+														<!-- Edit -->
+														<Button Classes="presetMenuItem"
+																Background="Transparent" BorderThickness="0"
+																Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+																HorizontalContentAlignment="Left"
+																Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).EditPresetCommand}"
+																CommandParameter="{Binding}">
+															<StackPanel Orientation="Horizontal" Spacing="10">
+																<Viewbox Width="18" Height="18">
+																	<Canvas Width="18" Height="18">
+																		<Path Fill="#BEBCEA" Opacity="0.7"
+																			  Data="M2 16H3.425L13.2 6.225L11.775 4.8L2 14.575V16ZM0 18V13.75L13.2 0.575C13.4 0.3917 13.6208 0.25 13.8625 0.15C14.1042 0.05 14.3583 0 14.625 0C14.8917 0 15.15 0.05 15.4 0.15C15.65 0.25 15.8667 0.4 16.05 0.6L17.425 2C17.625 2.1833 17.7708 2.4 17.8625 2.65C17.9542 2.9 18 3.15 18 3.4C18 3.6667 17.9542 3.9208 17.8625 4.1625C17.7708 4.4042 17.625 4.625 17.425 4.825L4.25 18H0ZM12.475 5.525L11.775 4.8L13.2 6.225L12.475 5.525Z" />
+																	</Canvas>
+																</Viewbox>
+																<TextBlock Text="{DynamicResource Presets_Menu_Edit}"
+																		   Foreground="White"
+																		   FontFamily="{DynamicResource BaseAppFont}"
+																		   FontSize="16"
+																		   FontWeight="SemiBold"
+																		   VerticalAlignment="Center"/>
+															</StackPanel>
+														</Button>
+
+														<!-- Duplicate -->
+														<Button Classes="presetMenuItem"
+																Background="Transparent" BorderThickness="0"
+																Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+																HorizontalContentAlignment="Left"
+																Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).DuplicatePresetCommand}"
+																CommandParameter="{Binding}">
+															<StackPanel Orientation="Horizontal" Spacing="10">
+																<Viewbox Width="17" Height="20">
+																	<Canvas Width="17" Height="20">
+																		<Path Fill="#BEBCEA" Opacity="0.7"
+																			  Data="M6 16C5.45 16 4.9792 15.804 4.5875 15.413C4.1958 15.021 4 14.55 4 14V2C4 1.45 4.1958 0.9792 4.5875 0.5875C4.9792 0.1958 5.45 0 6 0H15C15.55 0 16.0208 0.1958 16.4125 0.5875C16.8042 0.9792 17 1.45 17 2V14C17 14.55 16.8042 15.021 16.4125 15.413C16.0208 15.804 15.55 16 15 16H6ZM6 14H15V2H6V14ZM2 20C1.45 20 0.9792 19.804 0.5875 19.413C0.1958 19.021 0 18.55 0 18V4H2V18H13V20H2Z" />
+																	</Canvas>
+																</Viewbox>
+																<TextBlock Text="{DynamicResource Presets_Menu_Duplicate}"
+																		   Foreground="White"
+																		   FontFamily="{DynamicResource BaseAppFont}"
+																		   FontSize="16"
+																		   FontWeight="SemiBold"
+																		   VerticalAlignment="Center"/>
+															</StackPanel>
+														</Button>
+
+														<!-- Reset (circular arrow) -->
+														<Button Classes="presetMenuItem"
+																Background="Transparent" BorderThickness="0"
+																Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+																HorizontalContentAlignment="Left"
+																Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).RestorePresetCommand}"
+																CommandParameter="{Binding}">
+															<StackPanel Orientation="Horizontal" Spacing="10">
+																<Viewbox Width="18" Height="21">
+																	<Canvas Width="18" Height="21">
+																		<Path Fill="#BEBCEA" Opacity="0.7"
+																			  Data="M5.4875 20.288C4.3958 19.812 3.4458 19.171 2.6375 18.363C1.8292 17.554 1.1875 16.604 0.7125 15.512C0.2375 14.421 0 13.25 0 12H2C2 13.95 2.6792 15.604 4.0375 16.962C5.3958 18.321 7.05 19 9 19C10.95 19 12.6042 18.321 13.9625 16.962C15.3208 15.604 16 13.95 16 12C16 10.05 15.3208 8.396 13.9625 7.037C12.6042 5.679 10.95 5 9 5H8.85L10.4 6.55L9 8L5 4L9 0L10.4 1.45L8.85 3H9C10.25 3 11.4208 3.237 12.5125 3.713C13.6042 4.188 14.5542 4.829 15.3625 5.638C16.1708 6.446 16.8125 7.396 17.2875 8.488C17.7625 9.579 18 10.75 18 12C18 13.25 17.7625 14.421 17.2875 15.512C16.8125 16.604 16.1708 17.554 15.3625 18.363C14.5542 19.171 13.6042 19.812 12.5125 20.288C11.4208 20.763 10.25 21 9 21C7.75 21 6.5792 20.763 5.4875 20.288Z" />
+																	</Canvas>
+																</Viewbox>
+																<TextBlock Text="{DynamicResource Presets_Menu_Restore}"
+																		   Foreground="White"
+																		   FontFamily="{DynamicResource BaseAppFont}"
+																		   FontSize="16"
+																		   FontWeight="SemiBold"
+																		   VerticalAlignment="Center"/>
+															</StackPanel>
+														</Button>
+
+														<!-- Delete (red) — disabled on the default preset (undeletable, but visible so
+														     users understand why the entry is there and greyed out). -->
+														<Button Classes="presetMenuItemDelete"
+																IsEnabled="{Binding !IsDefault}"
+																Background="Transparent" BorderThickness="0"
+																Padding="12,0,12,0" Height="40" HorizontalAlignment="Stretch"
+																HorizontalContentAlignment="Left"
+																Command="{Binding $parent[ItemsControl].((viewmodels:DeviceDetailsViewModel)DataContext).DeletePresetCommand}"
+																CommandParameter="{Binding}">
+															<StackPanel Orientation="Horizontal" Spacing="10">
+																<Viewbox Width="16" Height="18">
+																	<Canvas Width="16" Height="18">
+																		<Path Fill="#FF383C"
+																			  Data="M3 18C2.45 18 1.9792 17.804 1.5875 17.413C1.1958 17.021 1 16.55 1 16V3H0V1H5V0H11V1H16V3H15V16C15 16.55 14.8042 17.021 14.4125 17.413C14.0208 17.804 13.55 18 13 18H3ZM13 3H3V16H13V3ZM5 14H7V5H5V14ZM9 14H11V5H9V14Z" />
+																	</Canvas>
+																</Viewbox>
+																<TextBlock Text="{DynamicResource Presets_Menu_Delete}"
+																		   Foreground="#FF383C"
+																		   FontFamily="{DynamicResource BaseAppFont}"
+																		   FontSize="16"
+																		   FontWeight="SemiBold"
+																		   VerticalAlignment="Center"/>
+															</StackPanel>
+														</Button>
+													</StackPanel>
+												</Grid>
+											</Popup>
+								</Grid>
+
+								<!-- Bottom row: icon tile aligned to title's left edge (33 = radio 18 + gap 15),
+								     then description + Default badge on the right. -->
+								<Grid Grid.Row="2" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="9" Height="24" Margin="33,0,0,0">
+
+									<!-- 24x24 tile — purple-tinted background + monitor icon in BEBCEA 70% -->
+									<Grid Grid.Column="0" Width="24" Height="24">
+										<Rectangle Fill="#336357FF" />
+										<Canvas Width="14.67" Height="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+											<Path Fill="#B2BEBCEA"
+												  Data="M0 12V10.667H14.667V12H0Z
+                                                        M2 10C1.634 10 1.320 9.869 1.059 9.608C0.799 9.347 0.668 9.033 0.668 8.667V1.333C0.668 0.967 0.799 0.653 1.059 0.392C1.320 0.131 1.634 0 2 0H12.667C13.033 0 13.348 0.131 13.608 0.392C13.869 0.653 14 0.967 14 1.333V8.667C14 9.033 13.869 9.347 13.608 9.608C13.348 9.869 13.033 10 12.667 10H2Z
+                                                        M2 8.667H12.667V1.333H2V8.667Z" />
+										</Canvas>
+									</Grid>
+
+									<!-- App-association label (Games and Apps). Hardcoded to Desktop until the
+									     selector in the New Preset dialog becomes interactive. -->
+									<TextBlock Grid.Column="1"
+											   Text="{DynamicResource Presets_Item_App}"
+											   Foreground="#B2BEBCEA"
+											   FontFamily="{DynamicResource BaseAppFont}"
+											   FontSize="14"
+											   LineHeight="20"
+											   LetterSpacing="0"
+											   VerticalAlignment="Center"
+											   TextTrimming="CharacterEllipsis" />
+
+									<!-- "Default" badge on the right, only when the preset is the active default. -->
+									<TextBlock Grid.Column="2"
+											   Text="{DynamicResource Presets_DefaultBadge}"
+											   IsVisible="{Binding IsDefault}"
+											   Foreground="#80BEBCEA"
+											   FontFamily="{DynamicResource BaseAppFont}"
+											   FontSize="14"
+											   LineHeight="20"
+											   LetterSpacing="0"
+											   VerticalAlignment="Center" />
+								</Grid>
+
+							</Grid>
+						</RadioButton>
+					</DataTemplate>
+				</ItemsControl.ItemTemplate>
+			</ItemsControl>
+
+		</StackPanel>
+	</ScrollViewer>
+</UserControl>
